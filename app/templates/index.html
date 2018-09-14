@@ -1,0 +1,15 @@
+{#
+index.html
+
+This template contains the HTML for the root index page of the
+application.
+#}
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Logged in as: {{ current_user.username }}</h1>
+<br><br><br>
+<h2>Woo, go you!</h2>
+<br><br><br>
+{% endblock %}
