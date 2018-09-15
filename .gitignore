@@ -1,6 +1,6 @@
+*.pyc
+*.sw[po]
 __pycache__
 app.db
-*.pyc
-tags
-*.sw[po]
 migrations
+tags
