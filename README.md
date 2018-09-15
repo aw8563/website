@@ -5,6 +5,7 @@ Requirements
 ------------
 
 You'll need to have Python 3 and virtualenv installed. It's also highly recommended that you [install virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/install.html), which will make your life a lot easier. I will be using virtualenv wrapper commands in my installation & run instructions.
+You don't NEED to have virtualenvwrapper - if you want to climb to High Hrothgar without fast travel, feel free.
 
 Installation & Running
 ----------------------
@@ -19,6 +20,13 @@ Prior to running this application, you'll need to do a couple things:
 		Activate a virtualenv
 		workon 1531
 
+		---
+
+		OR
+
+		virtualenv --python=python3 venv
+		. venv/bin/activate
+		
 	2). Install pip dependencies
 	
 		pip install -r requirements.txt
