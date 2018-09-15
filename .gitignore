@@ -1,0 +1,6 @@
+__pycache__
+app.db
+*.pyc
+tags
+*.sw[po]
+migrations

@@ -1,0 +1,44 @@
+{# 
+base.html
+
+This template constitutes the 'base' file that's inherented by every
+other template.
+
+It contains things that we'd want in every page - such as the navbar,
+header and footer.
+#}
+
+<html lang="en">
+    <head>
+        {% if title %}
+            <title>{{ title }} - Skeleton framework</title>
+        {% else %}
+            <title>Default title, please set me - Skeleton framework</title>
+        {% endif %}       
+    </head>
+    <body>
+        <div>
+            OwO What's this? -> 
+            <a href="{{ url_for('index') }}">Home</a>
+            {% if current_user.is_anonymous %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% else %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </div>
+        <hr>
+        {% block content%}{% endblock %}
+        {% block container %}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+        {% endblock %}
+    </body>
+</html>
