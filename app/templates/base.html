@@ -11,34 +11,53 @@ header and footer.
 <html lang="en">
     <head>
         {% if title %}
-            <title>{{ title }} - Skeleton framework</title>
+            <title>MediSoft - {{ title }}</title>
         {% else %}
-            <title>Default title, please set me - Skeleton framework</title>
-        {% endif %}       
+            <title>MediSoft</title>
+        {% endif %}
+
+        {# Style sheets and favicon - included on all pages #} 
+        <link rel="shortcut icon" href="/static/img/favicon.ico">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/static/css/materialize.min.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/css/general.css"/>
+
+        {# Page specific CSS injection point #}
+        {% block stylesheets %}{% endblock %}     
     </head>
     <body>
-        <div>
-            OwO What's this? -> 
-            <a href="{{ url_for('index') }}">Home</a>
-            {% if current_user.is_anonymous %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('register') }}">Register</a>
-            {% else %}
-                <a href="{{ url_for('logout') }}">Logout</a>
+
+        <!-- Nav bar -->
+        <nav class="red darken-3" role="navigation">
+            <div class="nav-wrapper container">
+                <a id="logo-container" class="brand-logo" href="/"/>
+                    <img src="/static/img/caduceus_logo.svg" height="64"/>
+                </a>
+
+                <ul id="nav-main" class="right">
+                    {% if current_user.is_anonymous %}
+                        <li><a href="{{ url_for('login') }}" id="nav-login-btn">Login</a></li>
+                        <li><a href="{{ url_for('register') }}" id="nav-register-btn">Register</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('logout') }}" id="nav-logout-btn">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            {% block content%}{% endblock %}
+            {% block container %}
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
             {% endif %}
+            {% endwith %}
+            {% endblock %}
         </div>
-        <hr>
-        {% block content%}{% endblock %}
-        {% block container %}
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        {% endwith %}
-        {% endblock %}
     </body>
 </html>
