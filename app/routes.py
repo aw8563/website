@@ -87,14 +87,7 @@ def login():
 
     return render_template('login.html', title='Sign In', form=form)
 
-@app.route('/logout')
-def logout():
-    """
-    This view simply logs out the user, if they're logged in. (By terminating
-    their current session).
+@app.route('/profile')
+def profile():
 
-    If the user is not logged in, this method does nothing.
-    """
-
-    logout_user()
-    return redirect(url_for('index'))
+    return render_template('profile.html', title='home')
