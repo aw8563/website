@@ -3,13 +3,30 @@ index.html
 
 This template contains the HTML for the root index page of the
 application.
+
+It's basically a placeholder at this point, and should include 
+the system we can use for booking / viewing appointments and
+that good stuff.
 #}
 
 {% extends "base.html" %}
 
+{% block stylesheets %}
+    {#----- index.html specific stylesheets -----#}
+
+    <!-- <link rel="stylesheet" type="text/css" href="/static/css/index.css"/> -->
+{% endblock %}
+
 {% block content %}
-<h1>Logged in as: {{ current_user.username }}</h1>
-<br><br><br>
-<h2>Woo, go you!</h2>
-<br><br><br>
+    {#----- Main content block for login page -----#}
+
+    <h1>Logged in as: {{ current_user.username }}</h1>
+    <br><br><br>
+    <h2>Woo, go you!</h2>
+    <br><br><br>
+{% endblock %}
+
+{% block scripts %}
+    {#----- index.html specific javascript -----#}
+
 {% endblock %}

@@ -1,0 +1,27 @@
+/*
+ * general.css
+ *
+ * This file contains styles which are applied to EVERY page which inherits
+ * from base.html
+ */
+
+/* We don't want to show text select cursor */
+html, body {
+    cursor: default;
+    height: 100%;
+}
+
+/* We don't want the nav bar to wrap over multiple lines */
+nav {
+    white-space: nowrap;
+}
+
+/* We want to show we're able to click on the nav bar buttons */
+nav .button-collapse {
+    cursor: pointer;
+}
+
+/* Get rid of stupid dotted outline on links */
+a {
+   outline: 0;
+}
