@@ -9,12 +9,10 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from werkzeug.urls import url_parse
-
-from app.classes import *
-import csv
+from app.classes import*
 
 @app.route('/')
-#@login_required
+@login_required
 def index():
     """
     This view represents the handler for the root 'index' or 'home' screen of
@@ -25,78 +23,6 @@ def index():
     """
 
     return render_template('index.html', title='home')
-
-@app.route('/search', methods = ['GET', 'POST'])
-def search():
-    centreList = []
-    providerList = []
-
-    with open('health_centres.csv') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            centreType = row['centre_type']
-            centreName = row['name'] 
-            centrePhone = row['phone']
-            centreID = row['abn'] 
-            centreSub = row['suburb']
-            centre = health_care_centre(centreName, centreSub, centrePhone,
-                     "","", type = centreType)
-            centreList.append(centre)
-            
-
-    with open('provider.csv') as g:
-        reader = csv.DictReader(g)
-        for row in reader:
-            email = row['provider_email']
-            type = row['provider_type']
-            pw = row['password']  
-            provider = health_care_provider(email_address = email,type = type)
-            providerList.append(provider)  
-
-    with open('provider_health_centre.csv') as g:
-        reader = csv.DictReader(g)
-        n = 0
-        for row in reader:
-            email = row['provider_email']
-            centre = row['health_centre_name']
-            for provider in providerList:    
-                if (provider._email_address == email):
-                    provider.addCentre(centre)     #add centre to provider
-
-            for c in centreList: # add provider to centre
-                if (c._name == centre):
-                    c.addProvider(email[0:email.find('@')])
-       
-    if (request.method == 'POST'): #redirect to the search screen
-        search = request.form['search']
-        print(search)
-        results = [] #for centres
-        results2 = [] #for providers
-        for centres in centreList:
-            if (matchC(centres, search)):        
-
-                results.append(centres)
-                for p in centres._providerList:
-                    results2.append(p)
-
-        for providers in providerList:
-            if (matchP(providers, search)):
-                results2.append(providers)
-                for c in providers._working_centre:
-                    results.append(c)
-                    
-        results = list(set(results))
-        results2 = list(set(results2))
-
-        if (len(results) > 0 or len(results2) > 0):
-            return render_template('results.html', display = results, display2 = results2)
-   
-        return render_template('results.html', display = ["EMPTY"],display2 = ["EMPTY"])
-
-    return render_template('search.html', title = 'search')
-
-
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
