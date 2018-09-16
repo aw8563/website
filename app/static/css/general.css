@@ -20,3 +20,8 @@ nav {
 nav .button-collapse {
     cursor: pointer;
 }
+
+/* Get rid of stupid dotted outline on links */
+a {
+   outline: 0;
+}
