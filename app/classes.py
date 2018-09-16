@@ -140,13 +140,3 @@ class appointment:
 #print(andy.get_medicare_number())
 #andy.set_medicare_number(1234)
 #print(andy.get_medicare_number())
-def matchC(centre, search):
-    if (search == centre._name or search == centre._suburb or search == centre._type):
-        return 1
-    return 0
-
-def matchP(provider, search):
-    if (search == provider._full_name or search == provider._email_address or search == provider._type):
-        return 1
-    return 0
-

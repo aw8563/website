@@ -4,4 +4,3 @@ __pycache__
 app.db
 migrations
 tags
-venv
