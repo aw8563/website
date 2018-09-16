@@ -9,6 +9,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from werkzeug.urls import url_parse
+from app.classes import*
 
 @app.route('/')
 @login_required
