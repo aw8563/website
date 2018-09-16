@@ -9,6 +9,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from werkzeug.urls import url_parse
+from app.classes import*
 
 @app.route('/')
 @login_required
@@ -98,3 +99,11 @@ def logout():
 
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    apple = health_care_provider("andy", "andy@gmail.com", 1, 1, "GP", rating = 5)
+    orange = health_care_centre("kevin", "kevinsinton", 000, "eloboost", 2, "medicalcentre")
+
+    #altnerate between orange/apple
+    return render_template('profile.html', title='Profile', object = orange)    
