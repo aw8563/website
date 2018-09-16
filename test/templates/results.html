@@ -1,6 +1,12 @@
 <h1> RESULTS </h1>
 
-
+<h2> CENTRES </h2>
 {% for a in display %}
 <p1> {{a}} </p1><br>
 {% endfor %}
+
+<h2> PROVIDERS </h2>
+{% for a in display2 %}
+<p1> {{a}} </p1><br>
+{% endfor %}
+<a href="{{url_for('home')}}">Back to search</a>
