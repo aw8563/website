@@ -11,6 +11,7 @@ from app.models import User
 from werkzeug.urls import url_parse
 from app.classes import *
 import csv
+
 @app.route('/')
 #@login_required
 def index():
@@ -21,11 +22,29 @@ def index():
     This is loaded when no route is specified in the URL, or when redirected to
     as a 'safety net'.
     """
-
+    
     return render_template('index.html', title='home')
+
+
+@app.route('/booking', methods = ['GET', 'POST'])
+def booking():
+    if (request.method == "POST"):
+        provider = request.form['provider']
+
+    return render_template('booking.html')
+
+@app.route('/profile', methods = ['POST', 'GET'])
+def profile():
+    
+    if (request.method == "POST"):
+        provider = request.form['provider']
+
+        return render_template('profile.html', object = provider, isUser = 0)
+    return search()
 
 @app.route('/search', methods = ['GET', 'POST'])
 def search():
+    currUser = user()
     centreList = []
     providerList = []
 
@@ -37,8 +56,7 @@ def search():
             centrePhone = row['phone']
             centreID = row['abn'] 
             centreSub = row['suburb']
-            centre = health_care_centre(centreName, centreSub, centrePhone,
-                     "","", type = centreType)
+            centre = health_care_centre(centreName, centreSub, centrePhone, type = centreType)
             centreList.append(centre)
             
 
@@ -67,12 +85,12 @@ def search():
        
     if (request.method == 'POST'): #redirect to the search screen
         search = request.form['search']
-        print(search)
+
         results = [] #for centres
         results2 = [] #for providers
+    
         for centres in centreList:
             if (matchC(centres, search)):        
-
                 results.append(centres)
                 for p in centres._providerList:
                     results2.append(p)
@@ -87,7 +105,7 @@ def search():
         results2 = list(set(results2))
 
         if (len(results) > 0 or len(results2) > 0):
-            return render_template('results.html', display = results, display2 = results2)
+            return render_template('results.html', display = results, display2 = results2, user = currUser)
    
         return render_template('results.html', display = ["EMPTY"],display2 = ["EMPTY"])
 
