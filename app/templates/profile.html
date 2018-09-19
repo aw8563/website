@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {#
 profile.html
 
@@ -14,87 +13,9 @@ This template generates the HTML for the profile page.
 
 {% block content %}
     <h1>TEST9</h1>
-    <center><h1>Profile Display</h1></center>
-    {% if isUser == 0 %}
-    <center><h2> Health centre Information </h2> </center>
-    <center><table border = "1"></center>
-        <tr>
-        <td>Name<td>
-        <td>{{object._name}}<td>
-        </tr>
-        <tr>
-        <td>Abn<td>
-        <td>placeholder<td>
-        </tr>
-        <tr>    
-        <td>suburb<td>
-        <td>{{object._suburb}}<td>
-        </tr>
-        <tr>    
-        <td>phone<td>
-        <td>{{object._name}}<td>
-        </tr>
-        <tr>    
-        <td>services<td>
-        <td>{{object._service}}<td>
-        </tr>
-        <tr>    
-        <td>ratings<td>
-        <td>{{object._rating}}<td>
-        </tr>
-        <tr>    
-        <td>type<td>
-        <td>{{object._type}}<td>
-        </tr>
-    </table>
-    {% endif %}
-    {% if object._isuser == 1  %}
-    <center><h2> Health provider Information </h2> </center>
-    <center><table border = "1"></center>
-        <tr>    
-        <td>email<td>
-        <td>{{object._email_address}}<td>
-        </tr>
-        <tr>    
-        <td>name<td>
-        <td>{{object._full_name}}<td>
-        </tr>
-        <tr>    
-        <td>phone<td>
-        <td>{{object._phone_number}}<td>
-        </tr>
-        <tr>    
-        <td>ratings<td>
-        <td>{{object._rating}}<td>
-        </tr>
-        <tr>    
-        <td>type<td>
-        <td>{{object._type}}<td>
-        </tr>          
-    </table>
-    {% endif %}
-<a href="{{url_for('search')}}">Back to search</a>
-{% endblock %}
-
-{% block scripts %}
-    {# >> INSERT SCRIPTS HERE << #}
-{% endblock %}
-=======
-{#
-profile.html
-
-This template generates the HTML for the profile page.
-#}
-
-{% extends "base.html" %}
-
-{% block stylesheets %}
-    {# >> INSERT CSS HERE << #}
-
-{% endblock %}
-
-{% block content %}
-    <h1>TEST9</h1>
+<form method="POST" action="/search">
+    <button type="submit" name = search value = {{object._full_name}}>Return to results</button>
+</form>
     <center><h1>Profile Display</h1></center>
     {% if object._isuser == 0 %}
     <center><h2> Health centre Information </h2> </center>
@@ -154,10 +75,8 @@ This template generates the HTML for the profile page.
         </tr>          
     </table>
     {% endif %}
-
 {% endblock %}
 
 {% block scripts %}
     {# >> INSERT SCRIPTS HERE << #}
 {% endblock %}
->>>>>>> 229eb64e5ae7ce9fd8213cf3109f2b4aaf530836

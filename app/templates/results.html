@@ -9,10 +9,10 @@
 {% for a in display2 %}
 <p1> {{a}} </p1>
 <form method="POST" action="/booking">
-    <button type="submit" name = provider value = {{a}}>Book</button>
+    <button type="submit" name = provider value = {{a._email_address}}>Book</button>
 </form>
 <form method="POST" action="/profile">
-    <button type="submit" name = provider value = {{a}}>View Profile</button>
+    <button type="submit" name = provider value = {{a._email_address}}>View Profile</button>
 </form>
 
 {% endfor %}

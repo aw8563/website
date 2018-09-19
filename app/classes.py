@@ -67,14 +67,14 @@ class health_care_provider(user):
         self._working_centre = list(set(self._working_centre))
 
     def __str__(self):
-        return str("name: " + self._full_name + " | centres: " + str(self._working_centre))
+        return str("name: " + self._full_name + " | type: " + self._type)
 
 
 
 
 class health_care_centre:
     """docstring for health_care_centre"""
-    def __init__(self, name = "", suburb = "", phone = "", service = "", rating = "", type = "", providerList = []):
+    def __init__(self, name = "", suburb = "", phone = "", service = "", rating = "", type = "", providerList = [], abn = ""):
         self._name = name
         self._suburb = suburb
         self._phone = phone
@@ -83,6 +83,7 @@ class health_care_centre:
         self._type = type
         self._providerList = providerList
         self._isuser = 0
+        self._abn = abn
 
     #getters
     def get_name(self):
@@ -119,7 +120,7 @@ class health_care_centre:
         self._providerList = cpy
 
     def __str__(self):
-        string = "Name: " + self._name + " | Type: " + self._type + " | Suburb: " + self._suburb + " | Providers: " + str(self._providerList)
+        string = "Name: " + self._name + " | Type: " + self._type + " | Suburb: " + self._suburb
 
                 
         return str(string)

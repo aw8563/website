@@ -13,42 +13,10 @@ from werkzeug.urls import url_parse
 from app.classes import *
 import csv
 
-@app.route('/')
-#@login_required
-def index():
-    """
-    This view represents the handler for the root 'index' or 'home' screen of
-    the application.
-
-    This is loaded when no route is specified in the URL, or when redirected to
-    as a 'safety net'.
-    """
-    
-    return render_template('index.html', title='home')
-
-
-@app.route('/booking', methods = ['GET', 'POST'])
-def booking():
-    if (request.method == "POST"):
-        provider = request.form['provider']
-
-    return render_template('booking.html')
-
-@app.route('/profile', methods = ['POST', 'GET'])
-def profile():
-    
-    if (request.method == "POST"):
-        provider = request.form['provider']
-
-        return render_template('profile.html', object = provider, isUser = 0)
-    return search()
-
-@app.route('/search', methods = ['GET', 'POST'])
-def search():
-    currUser = user()
-    centreList = []
-    providerList = []
-
+# This contains temp info from .csv files
+centreList = []
+providerList = []
+if (1):
     with open('health_centres.csv') as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -76,14 +44,69 @@ def search():
         for row in reader:
             email = row['provider_email']
             centre = row['health_centre_name']
+            #assign the class centre rather than the string
+            for c in centreList:
+                if (centre == c._name): 
+                    centreClass = c
+            #similarly assign the class provider rather than the email
+            for p in providerList:
+                if (email == p._email_address):
+                    providerClass = p
+
             for provider in providerList:    
                 if (provider._email_address == email):
-                    provider.addCentre(centre)     #add centre to provider
+                    provider.addCentre(centreClass)     #add centre to provider
 
             for c in centreList: # add provider to centre
                 if (c._name == centre):
-                    c.addProvider(email[0:email.find('@')])
-       
+                    c.addProvider(providerClass)
+                    #c.addProvider(email[0:email.find('@')])
+
+@app.route('/')
+#@login_required
+def index():
+    """
+    This view represents the handler for the root 'index' or 'home' screen of
+    the application.
+
+    This is loaded when no route is specified in the URL, or when redirected to
+    as a 'safety net'.
+    """
+    
+    return render_template('index.html', title='home')
+
+
+@app.route('/booking', methods = ['GET', 'POST'])
+
+
+
+def booking():
+    if (request.method == "POST"):
+        provider = request.form['provider']
+
+    return render_template('booking.html')
+
+
+@app.route('/profile', methods = ['POST', 'GET'])
+def profile():
+    if (request.method == "POST"):
+        
+        text = request.form['provider']
+
+        for a in centreList:
+            if (a._name == text):
+                objectClass = a      
+        
+
+        apple = health_care_provider("andy", "andy@gmail.com", 1, 1, "GP", rating = 5)
+
+
+        return render_template('profile.html', object = objectClass)
+
+    return render_template('profile.html')
+
+@app.route('/search', methods = ['GET', 'POST'])
+def search():
     if (request.method == 'POST'): #redirect to the search screen
         search = request.form['search']
 
@@ -106,7 +129,7 @@ def search():
         results2 = list(set(results2))
 
         if (len(results) > 0 or len(results2) > 0):
-            return render_template('results.html', display = results, display2 = results2, user = currUser)
+            return render_template('results.html', display = results, display2 = results2, s = search)
    
         return render_template('results.html', display = ["EMPTY"],display2 = ["EMPTY"])
 
@@ -191,10 +214,3 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/profile', methods=['GET', 'POST'])
-def profile():
-    apple = health_care_provider("andy", "andy@gmail.com", 1, 1, "GP", rating = 5)
-    orange = health_care_centre("kevin", "kevinsinton", 000, "eloboost", 2, "medicalcentre")
-
-    #altnerate between orange/apple
-    return render_template('profile.html', title='Profile', object = orange)    
