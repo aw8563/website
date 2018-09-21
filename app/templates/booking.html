@@ -1,5 +1,13 @@
 <h1> BOOKING PAGE </h1>
 <br>
-<p5> BOOKING SUCCESSFUL </p5>
+
+
+
+
+<p5> BOOKING SUCCESSFUL </p5><br><br>
+<p1> current bookings are:</p1><br>
+{% for a in user._appointment_list %}
+<p1> - {{a}}</p1><br>
+{% endfor %}
 <br><br>
 <a href="{{url_for('search')}}">Back to search</a> 

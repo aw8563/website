@@ -17,7 +17,7 @@ This template generates the HTML for the profile page.
     <button type="submit" name = search value = {{object._full_name}}>Return to results</button>
 </form>
     <center><h1>Profile Display</h1></center>
-    {% if object._isuser == 0 %}
+    {% if object._isprovider == 0 %}
     <center><h2> Health centre Information </h2> </center>
     <center><table border = "1"></center>
         <tr>
@@ -50,7 +50,7 @@ This template generates the HTML for the profile page.
         </tr>
     </table>
     {% endif %}
-    {% if object._isuser == 1  %}
+    {% if object._isprovider == 1  %}
     <center><h2> Health provider Information </h2> </center>
     <center><table border = "1"></center>
         <tr>    

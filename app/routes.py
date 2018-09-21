@@ -13,11 +13,18 @@ from werkzeug.urls import url_parse
 from app.classes import *
 import csv
 
-# This contains temp info from .csv files
+#This contains temp info from .csv files
 centreList = []
 providerList = []
+user1 = patient(full_name = "andy", email_address = "andy@gmail.com")
+user2 = patient(full_name = "james", email_address = "james@gmail.com")
+user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gmail.com", isprovider = 1)
+
+
+currUser = user1
+
 if (1):
-    with open('health_centres.csv') as f:
+    with open('app/static/data/health_centres.csv') as f:
         reader = csv.DictReader(f)
         for row in reader:
             centreType = row['centre_type']
@@ -29,7 +36,7 @@ if (1):
             centreList.append(centre)
             
 
-    with open('provider.csv') as g:
+    with open('app/static/data/provider.csv') as g:
         reader = csv.DictReader(g)
         for row in reader:
             email = row['provider_email']
@@ -38,7 +45,7 @@ if (1):
             provider = health_care_provider(email_address = email,type = type)
             providerList.append(provider)  
 
-    with open('provider_health_centre.csv') as g:
+    with open('app/static/data/provider_health_centre.csv') as g:
         reader = csv.DictReader(g)
         n = 0
         for row in reader:
@@ -63,7 +70,7 @@ if (1):
                     #c.addProvider(email[0:email.find('@')])
 
 @app.route('/')
-#@login_required
+@login_required
 def index():
     """
     This view represents the handler for the root 'index' or 'home' screen of
@@ -73,18 +80,16 @@ def index():
     as a 'safety net'.
     """
     
-    return render_template('index.html', title='home')
+    return render_template('index.html', title='home', user = currUser)
 
 
 @app.route('/booking', methods = ['GET', 'POST'])
-
-
-
 def booking():
     if (request.method == "POST"):
         provider = request.form['provider']
+        currUser.add_appointment(provider)
 
-    return render_template('booking.html')
+    return render_template('booking.html', user = currUser)
 
 
 @app.route('/profile', methods = ['POST', 'GET'])
@@ -93,13 +98,12 @@ def profile():
         
         text = request.form['provider']
 
-        for a in centreList:
-            if (a._name == text):
+        for a in providerList:
+            if (a._email_address == text):
                 objectClass = a      
         
 
         apple = health_care_provider("andy", "andy@gmail.com", 1, 1, "GP", rating = 5)
-
 
         return render_template('profile.html', object = objectClass)
 
@@ -213,4 +217,13 @@ def logout():
 
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/appointments')
+def appointments():
+    return render_template('appointments.html')
+
+
+@app.route('/currBooking')
+def currBooking():
+    return render_template('currBooking.html', user = currUser)
 

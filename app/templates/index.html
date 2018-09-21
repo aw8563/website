@@ -28,5 +28,10 @@ that good stuff.
 
 {% block scripts %}
     {#----- index.html specific javascript -----#}
-<a href="{{url_for('search')}}">CLICK HERE TO SEARCH</a>
+<a href="{{url_for('search')}}">CLICK HERE TO SEARCH</a><br><br>
+    {% if user._isprovider == 1 %}
+<a href="{{url_for('appointments')}}">CLICK HERE TO SEE BOOKINGS (PROVIDER)</a><br><br>
+    {% else %}
+<a href="{{url_for('currBooking')}}">CLICK HERE TO SEE BOOKINGS (PATIENT)</a><br><br>        
+    {% endif %}
 {% endblock %}

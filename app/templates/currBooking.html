@@ -1,0 +1,8 @@
+<h1> CURRENT BOOKINGS </h1>
+<br>
+<p1> current bookings are with: </p1><br><br>
+{% for app in user._appointment_list %}
+<p1> - {{app}}</p1><br>
+{% endfor %}
+<br><br>
+<a href="{{url_for('index')}}">Back to home</a> 

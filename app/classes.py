@@ -1,13 +1,13 @@
 class user:
-    def __init__(self, full_name = "", email_address = "", phone_number = "", password = ""):
+    def __init__(self, full_name = "", email_address = "", phone_number = "", password = "", isprovider = 0):
 
         name = email_address[0:email_address.find('@')] # temp fix for no given name
         self._full_name = name
         self._email_address = email_address
         self._phone_number = phone_number
         self._password = password
-        self._isuser = 1
-        self._ispatient = 1
+        self._ispatient = 0
+        self._isprovider = isprovider
         def get_ispatient(self):
             return self._ispatient
 
@@ -18,11 +18,12 @@ class user:
             return self._isuser
             
 class patient(user):
-    def __init__(self, full_name = "", email_address = "", phone_number = "", medicare_number = ""):
-        super().__init__(full_name, email_address, phone_number)
+    def __init__(self, full_name = "", email_address = "", phone_number = "", medicare_number = "", isprovider = 0):
+        super().__init__(full_name, email_address, phone_number, isprovider)
         self._medicare_number = medicare_number
         self._appointment_list = []
         self._ispatient = 1
+        self._isprovider = 0
 
     def get_medicare_number(self):
         return self._medicare_number
@@ -37,9 +38,10 @@ class patient(user):
 
 class health_care_provider(user):
     """docstring for ClassName"""
-    def __init__(self, full_name = "", email_address = "", phone_number = "", provider_number = "", type = "", working_centre = [], rating = ""):
-        super().__init__(full_name, email_address, phone_number)
+    def __init__(self, full_name = "", email_address = "", phone_number = "", provider_number = "", type = "", working_centre = [], rating = "", isprovider = 1):
+        super().__init__(full_name, email_address, phone_number, isprovider)
         #removed password
+        self._isprovider = 1
         self._provider_number = provider_number
         self._type = type
         self._working_centre = working_centre
