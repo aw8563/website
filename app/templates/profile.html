@@ -14,7 +14,10 @@ This template generates the HTML for the profile page.
 {% block content %}
     <h1>TEST9</h1>
 <form method="POST" action="/search">
-    <button type="submit" name = search value = {{object._full_name}}>Return to results</button>
+    <input type = hidden name = c value = {{c}}>
+    <input type = hidden name = p value = {{p}}>
+    <input type = hidden name = result value = 1>
+    <button type="submit" name = search value = {{search}}>Return to results</button>
 </form>
     <center><h1>Profile Display</h1></center>
     {% if object._isprovider == 0 %}

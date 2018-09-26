@@ -86,37 +86,46 @@ def index():
 @app.route('/booking', methods = ['GET', 'POST'])
 def booking():
     if (request.method == "POST"):
+        c = request.form["c"]
+        p = request.form["p"]
+        search = request.form["search"]
         provider = request.form['provider']
         currUser.add_appointment(provider)
 
-    return render_template('booking.html', user = currUser)
+    return render_template('booking.html', user = currUser, c = c, p = p, search = search)
 
 
-@app.route('/profile', methods = ['POST', 'GET'])
-def profile():
+@app.route('/profile/<c>', methods = ['POST', 'GET'])
+def profile(c):
+
     if (request.method == "POST"):
-        
+        c = request.form["c"]
+        p = request.form["p"]
+        search = request.form["search"]
+
         text = request.form['provider']
 
         for a in providerList:
             if (a._email_address == text):
-                objectClass = a      
+                print("search is: " + search)
+                return render_template('profile.html', object = a, c = c, p = p, search = search)
         
 
         apple = health_care_provider("andy", "andy@gmail.com", 1, 1, "GP", rating = 5)
-
-        return render_template('profile.html', object = objectClass)
-
-    return render_template('profile.html')
+        return render_template('profile.html', object = apple, c = c, p = p, search = search)
 
 @app.route('/search', methods = ['GET', 'POST'])
 def search():
     if (request.method == 'POST'): #redirect to the search screen
         search = request.form['search']
-
+        if (search == ""):
+            return render_template('search.html', empty = 1)
+        searchC= int(request.form['c'])
+        searchP = int(request.form['p'])
         results = [] #for centres
         results2 = [] #for providers
-    
+
+
         for centres in centreList:
             if (matchC(centres, search)):        
                 results.append(centres)
@@ -132,11 +141,17 @@ def search():
         results = list(set(results))
         results2 = list(set(results2))
 
-        if (len(results) > 0 or len(results2) > 0):
-            return render_template('results.html', display = results, display2 = results2, s = search)
-   
-        return render_template('results.html', display = ["EMPTY"],display2 = ["EMPTY"])
 
+        if (not searchC):
+            results = []
+        if (not searchP):
+            results2 = []
+        if (len(results) > 0 or len(results2) > 0):
+            return render_template('search.html', display = results, display2 = results2, s = search, c = searchC, p = searchP, results = 1)
+
+        else:
+            return render_template('search.html', results = 1, noDisplay = 1)
+   
     return render_template('search.html', title = 'search')
 
 

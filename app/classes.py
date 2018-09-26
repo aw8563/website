@@ -69,8 +69,8 @@ class health_care_provider(user):
         self._working_centre = list(set(self._working_centre))
 
     def __str__(self):
-        return str("name: " + self._full_name + " | type: " + self._type)
-
+        #return str("name: " + self._full_name + " | type: " + self._type)
+        return str(self._full_name + ", " + self._type)
 
 
 
@@ -122,8 +122,8 @@ class health_care_centre:
         self._providerList = cpy
 
     def __str__(self):
-        string = "Name: " + self._name + " | Type: " + self._type + " | Suburb: " + self._suburb
-
+        #string = "Name: " + self._name + " | Type: " + self._type + " | Suburb: " + self._suburb
+        string = self._name
                 
         return str(string)
 class appointment:

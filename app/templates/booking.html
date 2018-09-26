@@ -10,4 +10,9 @@
 <p1> - {{a}}</p1><br>
 {% endfor %}
 <br><br>
-<a href="{{url_for('search')}}">Back to search</a> 
+<form method="POST" action="/search">
+    <input type = hidden name = c value = {{c}}>
+    <input type = hidden name = p value = {{p}}>
+    <input type = hidden name = result value = 1>
+    <button type="submit" name = search value = {{search}}>Return to results</button>
+</form>
