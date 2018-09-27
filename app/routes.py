@@ -148,7 +148,6 @@ def search():
         searchP = int(request.form['p'])
         results = [] #for centres
         results2 = [] #for providers
-        print("kys: " + search)
 
         if (search == ""):
             return render_template('search.html', empty = 1, c = searchC, p = searchP)
@@ -293,4 +292,5 @@ def currBooking():
         #currUser.removeAppointment(app)
     length = len(currUser._appointment_list)
     return render_template('currBooking.html', user = currUser, cancel = cancel, l = length)
+
 
