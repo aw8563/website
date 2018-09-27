@@ -1,8 +1,42 @@
 <h1> CURRENT BOOKINGS </h1>
-<br>
-<p1> current bookings are with: </p1><br><br>
-{% for app in user._appointment_list %}
-<p1> - {{app}}</p1><br>
+{%if cancel%}Booking cancelled!{% endif %}
+
+{% if l == 0 %}
+    <p1> You have no bookings currently <p1><br><br>
+{% else %}
+<h4> {{user._numAppointments}} bookings: </h4>
+
+{% for p in user._appointment_list %}
+<p1> with {{p._health_care_provider._full_name}}, ({{p._health_care_provider._type}})<br>
+on {{p._date}}, {{p._start_time}}<br> at {{p._centre}}</p1>
+
+<form method = "POST" action = "/currBooking">
+    <input type = hidden name = time value = "{{p._start_time}}">
+    <input type = hidden name = name value = "{{p._health_care_provider._full_name}}">
+    <input type = hidden name = date value = "{{p._date}}">
+    <input type = hidden name = centre value = "{{p._centre}}">    
+    <input type = hidden name = view value = 0>
+    {% if view != 1%}<button type = 'submit'> cancel </button> {%endif%}
+</form> <br>
 {% endfor %}
-<br><br>
+{% if view%}
+    <form action = "/currBooking">
+        <button>Cancel bookings</button>
+    </form>
+{% endif %}
+{% endif %}
+
+{% if view %}
+<form method = "POST" action = "/booking">
+    <input type = hidden name = c value = {{c}}>
+    <input type = hidden name = p value = {{p}}>
+    <input type = hidden name = result value = 1>
+    <input type = hidden name = book value = 0>
+    <input type = hidden name = search value = "{{search}}">
+    <input type = hidden name = provider value = {{provider}}><br>
+
+    <button type = 'submit'> Back to booking </button>
+</form> <br>
+{% else %}
 <a href="{{url_for('index')}}">Back to home</a> 
+{% endif %}

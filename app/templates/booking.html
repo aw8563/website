@@ -2,17 +2,44 @@
 <br>
 
 
+<form method = "POST" action = "/booking"> 
+    When: <input type = 'date' name = date required value = {{d}}>
+    {% if noDate %} <p1> Please enter valid date </p1> {% endif %}<br><br>
+    Time: <input type = time name = time min = 9:00 max = 18:00 required value = {{t}}><br><br>
+    Where:
+    <div>
+        {% for h in provider._working_centre %}
+            <input id = {{h._name}} type = radio name = centre value = "{{h._name}}" required> 
+            <label for = "{{h._name}}">{{h._name}} </label><br>
+        {% endfor %}
+    </div>
+    <input type = hidden name = c value = {{c}}>
+    <input type = hidden name = p value = {{p}}>
+    <input type = hidden name = result value = 1>
+    <input type = hidden name = search value = {{search}}>
+    <input type = hidden name = provider value = {{provider._full_name}}><br>
+    <button type="submit" name = book value = 1>Book</button>
+    {%if book%} <p5>  Succesfully booked with {{provider._full_name}} at 
+    {{app._centre}} on {{app._date}}, {{app._start_time}}</p5> {%endif%}
+    
+</form>
+<p1> You currently have {{user._numAppointments}} bookings </p1>
+<form method = "POST" action = "/currBooking"> 
+    <input type = hidden name = c value = {{c}}>
+    <input type = hidden name = p value = {{p}}>
+    <input type = hidden name = result value = 1>
+    <input type = hidden name = search value = {{search}}>
+    <input type = hidden name = provider value = {{provider._full_name}}><br>
+    <input type = hidden name = view value = 1>
+
+    <button type="submit" name = book value = 1> View Bookings</button>
+</form>
 
 
-<p5> BOOKING SUCCESSFUL </p5><br><br>
-<p1> current bookings are:</p1><br>
-{% for a in user._appointment_list %}
-<p1> - {{a}}</p1><br>
-{% endfor %}
 <br><br>
 <form method="POST" action="/search">
     <input type = hidden name = c value = {{c}}>
     <input type = hidden name = p value = {{p}}>
     <input type = hidden name = result value = 1>
-    <button type="submit" name = search value = {{search}}>Return to results</button>
+    <button type="submit" name = search value = "{{search}}" >Return to results</button>
 </form>

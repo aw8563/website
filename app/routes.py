@@ -12,6 +12,7 @@ from werkzeug.urls import url_parse
 
 from app.classes import *
 import csv
+import datetime
 
 #This contains temp info from .csv files
 centreList = []
@@ -85,14 +86,37 @@ def index():
 
 @app.route('/booking', methods = ['GET', 'POST'])
 def booking():
+    doneBooking = 0
+    now = str(datetime.datetime.now())
+    date = now[0:now.find(" ")]
+    time = now [now.find(" ") + 1:now.find(".") - 3]
+    app = ""
     if (request.method == "POST"):
+        book = int(request.form["book"])
         c = request.form["c"]
         p = request.form["p"]
         search = request.form["search"]
         provider = request.form['provider']
-        currUser.add_appointment(provider)
 
-    return render_template('booking.html', user = currUser, c = c, p = p, search = search)
+        for prov in providerList:
+            if (prov._full_name == provider):
+                providerClass = prov
+
+        if (book):
+            date = request.form["date"]
+            centre = request.form["centre"]
+            time = request.form["time"]
+            #print(">>>>  " + centre)
+
+
+            if (date == ""):  #just for testing, this should never happen
+                return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, noDate = 1)
+            
+            app = appointment(start_time = time, date = date, patient = currUser,health_care_provider = providerClass, centre = centre)
+            currUser.add_appointment(app)
+            doneBooking = 1
+
+    return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, book = doneBooking, t = time, d = date, app = app)
 
 
 @app.route('/profile/<c>', methods = ['POST', 'GET'])
@@ -116,14 +140,18 @@ def profile(c):
 
 @app.route('/search', methods = ['GET', 'POST'])
 def search():
+
+    print("DSJKFLKJLDSF")
     if (request.method == 'POST'): #redirect to the search screen
         search = request.form['search']
-        if (search == ""):
-            return render_template('search.html', empty = 1)
         searchC= int(request.form['c'])
         searchP = int(request.form['p'])
         results = [] #for centres
         results2 = [] #for providers
+        print("kys: " + search)
+
+        if (search == ""):
+            return render_template('search.html', empty = 1, c = searchC, p = searchP)
 
 
         for centres in centreList:
@@ -150,9 +178,9 @@ def search():
             return render_template('search.html', display = results, display2 = results2, s = search, c = searchC, p = searchP, results = 1)
 
         else:
-            return render_template('search.html', results = 1, noDisplay = 1)
+            return render_template('search.html', s = search, results = 1, noDisplay = 1, c = searchC, p = searchP)
    
-    return render_template('search.html', title = 'search')
+    return render_template('search.html', title = 'search', c = 1, p = 1)
 
 
 
@@ -238,7 +266,31 @@ def appointments():
     return render_template('appointments.html')
 
 
-@app.route('/currBooking')
+@app.route('/currBooking', methods = ["GET", "POST"])
 def currBooking():
-    return render_template('currBooking.html', user = currUser)
+    cancel = 0
+    if (request.method == 'POST'):
+        view = int(request.form['view'])
+        if (view):
+            c = request.form['c']
+            p = request.form['p']
+            s = request.form['search']
+            result = request.form['result']
+            provider = request.form['provider']
+        
+            return render_template('currBooking.html', user = currUser, cancel = cancel, l = len(currUser._appointment_list), view = view, c = c, p = p, search = s, result = result, provider = provider)
+
+        name = request.form['name']
+        time = request.form['time']
+        date = request.form['date']
+        centre = request.form['centre']
+        print(name + time + date + centre)
+        for a in currUser._appointment_list:
+            if (time == a._start_time and date == a._date and centre == a._centre and name == a._health_care_provider._full_name):
+            
+                currUser.removeAppointment(a)
+                cancel = 1        
+        #currUser.removeAppointment(app)
+    length = len(currUser._appointment_list)
+    return render_template('currBooking.html', user = currUser, cancel = cancel, l = length)
 

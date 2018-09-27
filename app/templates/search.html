@@ -2,19 +2,20 @@
     
 	<form method = "POST">
         <div>
-            <input type="checkbox" id="centre" name="c" value = 1>  
+            <input type="checkbox" id="centre" name="c" value = 1 {% if c%} checked {% endif %}>  
             <label for="centre">Search for centres</label>
         </div>
         <div>
-            <input type="checkbox" id="provider" name="p" value = 1>  
+            <input type="checkbox" id="provider" name="p" value = 1  {% if p %}checked {% endif %}>  
             <label for="provider">Search for providers</label>
         </div>
 	    <div style="margin: 10px 0px">
             <label>Please enter search</label>            
-			<input name = "search" placeholder = "search">: </input>
+			<input name = "search" placeholder = "search here" {% if results%}value = {{s}} {% endif %}>: </input>
             {% if empty %} 
-                <p1>enter search</p1>
+                <p1> <- enter search </p1>
             {% endif %}
+
             <br/>
 		</div>
         <input type = "hidden" name = "c" value = 0>
@@ -26,36 +27,39 @@
 {% if results %}
 <h1 style = "color:red;"> RESULTS </h1>
 {% if noDisplay %}
-    <p1> No matching results please search again </p1>
+    <p1> No matching results for "{{s}}" please search again </p1>
 {% endif %} 
 
-{% if c%}
+{% if noDisplay != 1 %}
+    {% if c %}
 
-<h3 style = "color:blue;"> CENTRES </h3>
-{% for a in display %}
-<h4> {{a}} </h4><br>
+    <h3 style = "color:blue;"> CENTRES </h3>
+    {% for a in display %}
+    <h4> {{a}} </h4><br>
 
-{% endfor %}
-{% endif %}
-
-
-{% if p %}
-    <h3  style = "color:blue;"> PROVIDERS </h3>
-    {% for a in display2 %}
-        <p1> {{a}} </p1>
-        <form method="POST" action="/booking">
-            <input type = hidden name = search value = {{s}}>
-            <input type = hidden name = c value = {{c}}>
-            <input type = hidden name = p value = {{p}}>
-            <button type="submit" name = provider value = {{a._full_name}}>Book</button>
-        </form>
-        <form method="POST" action="/profile/{{a._full_name}}">
-            <input type = hidden name = search value = {{s}}>
-            <input type = hidden name = c value = {{c}}>
-            <input type = hidden name = p value = {{p}}>
-            <button type="submit" name = provider value = {{a._email_address}}>View Profile</button>
-        </form>
     {% endfor %}
     {% endif %}
-{% endif %}
 
+
+    {% if p %}
+        <h3  style = "color:blue;"> PROVIDERS </h3>
+        {% for a in display2 %}
+            <p1> {{a}} </p1>
+            <form method="POST" action="/booking">
+                <input type = hidden name = search value = {{s}}>
+                <input type = hidden name = c value = {{c}}>
+                <input type = hidden name = p value = {{p}}>
+                <input type = hidden name = book value = 0>
+                <button type="submit" name = provider value = {{a._full_name}}>Book</button>
+            </form>
+            <form method="POST" action="/profile/{{a._full_name}}">
+                <input type = hidden name = search value = {{s}}>
+                <input type = hidden name = c value = {{c}}>
+                <input type = hidden name = p value = {{p}}>
+                <button type="submit" name = provider
+                 value = {{a._email_address}}>View Profile</button>
+            </form>
+        {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endif %}
