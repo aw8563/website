@@ -115,7 +115,7 @@ def booking():
                 return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, noDate = 1)
             
             app = appointment(start_time = time, date = date, patient = currUser,health_care_provider = providerClass, centre = centre)
-            currUser.add_appointment(app)
+            #currUser.add_appointment(app)
             doneBooking = 1
 
     return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, book = doneBooking, t = time, d = date, app = app)
