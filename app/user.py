@@ -9,6 +9,7 @@ class user(ABC):
         self._password = password
         self._ispatient = 0
         self._isprovider = 0
+        self._isuser = 1
         self._appointment_list = []
         self._numAppointments = 0
             

@@ -123,21 +123,24 @@ def booking():
 
 @app.route('/profile/<c>', methods = ['POST', 'GET'])
 def profile(c):
-
+    print("HEREHREHREHRHERHEH")
     if (request.method == "POST"):
         c = request.form["c"]
         p = request.form["p"]
         search = request.form["search"]
-
         text = request.form['provider']
 
         for a in providerList:
             if (a._email_address == text):
-                print("search is: " + search)
                 return render_template('profile.html', object = a, c = c, p = p, search = search)
         
+        print("search is " + search)
+        for c in centreList:
+            if (text == c._name):
+                return render_template('profile.html', object = c, c = c, p = p, search = search)
 
-        apple = health_care_provider("andy", "andy@gmail.com", 1, 1, "GP", rating = 5)
+
+        apple = health_care_centre("asdf","asdf")
         return render_template('profile.html', object = apple, c = c, p = p, search = search)
 
 @app.route('/search', methods = ['GET', 'POST'])
@@ -179,6 +182,8 @@ def search():
         if (not searchP):
             results2 = []
         if (len(results) > 0 or len(results2) > 0):
+            print(">>>>>" +str( isinstance(results[0], health_care_centre)))
+            print(str(results[0]._isuser))
             return render_template('search.html', display = results, display2 = results2, s = search, c = searchC, p = searchP, results = 1)
 
         else:
