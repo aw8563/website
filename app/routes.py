@@ -10,7 +10,9 @@ from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from werkzeug.urls import url_parse
 
-from app.classes import *
+from app.user import *
+from app.appointment import *
+from app.centre import *
 import csv
 import datetime
 
@@ -155,13 +157,15 @@ def search():
 
 
         for centres in centreList:
-            if (matchC(centres, search)):        
+            #if (matchC(centres, search)): 
+            if (centres.matchCentre(search)):       
                 results.append(centres)
                 for p in centres._providerList:
                     results2.append(p)
 
         for providers in providerList:
-            if (matchP(providers, search)):
+            #if (matchP(providers, search)):
+            if (providers.matchProvider(search)):
                 results2.append(providers)
                 for c in providers._working_centre:
                     results.append(c)

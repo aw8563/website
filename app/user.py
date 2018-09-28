@@ -1,4 +1,5 @@
-class user:
+from abc import ABC, abstractmethod
+class user(ABC):
     def __init__(self, full_name = "", email_address = "", phone_number = "", password = "", isprovider = 0):
 
         name = email_address[0:email_address.find('@')] # temp fix for no given name
@@ -7,39 +8,33 @@ class user:
         self._phone_number = phone_number
         self._password = password
         self._ispatient = 0
-        self._isprovider = isprovider
-        def get_ispatient(self):
-            return self._ispatient
-
-        def get_full_name(self):
-            return self._full_name
-
-        def get_isuser(self):
-            return self._isuser
+        self._isprovider = 0
+        self._appointment_list = []
+        self._numAppointments = 0
             
 class patient(user):
     def __init__(self, full_name = "", email_address = "", phone_number = "", medicare_number = "", isprovider = 0):
         super().__init__(full_name, email_address, phone_number, isprovider)
         self._medicare_number = medicare_number
-        self._appointment_list = []
         self._ispatient = 1
-        self._isprovider = 0
-        self._numAppointments = 0
 
     def get_medicare_number(self):
         return self._medicare_number
+    def get_appointment_list(self):
+        return self._appointment_list
+    def get_full_name(self):
+        return self._full_name
     def set_medicare_number(self, new_medicare_number):
         self._medicare_number = new_medicare_number
 
     def add_appointment(self, appointment):
-        #this will be an appointment class
         self._appointment_list.append(appointment)
         self._numAppointments += 1
-    def __str__(self):
-            return str("name: " + self._full_name)
     def removeAppointment(self, appointment):
         self._appointment_list.remove(appointment)
         self._numAppointments -= 1
+    def __str__(self):
+            return str("name: " + self._full_name)
     
 class health_care_provider(user):
     """docstring for ClassName"""
@@ -59,6 +54,12 @@ class health_care_provider(user):
         return self._type
     def get_working_centre(self):
         return self._working_centre
+    def get_full_name(self):
+        return self._full_name
+    def get_appointment_list(self):
+        return self._appointment_list
+    def get_email_address(self):
+        return self._email_address   
     #setters
     def set_provider_number(self, new_provider_number):
         self._provider_number = new_provider_number 
@@ -72,15 +73,21 @@ class health_care_provider(user):
         current.append(centre)
         self._working_centre = current
         self._working_centre = list(set(self._working_centre))
-
+    def add_appointment(self, appointment):
+        self._appointment_list.append(appointment)
+    def removeAppointment(self, appointment):
+        self._appointment_list.remove(appointment)
+        self._numAppointments -= 1
+    def matchProvider(self, search):
+        if (search == self.get_full_name() or search == self.get_email_address() or search == self.get_type()):
+            return 1
+        return 0
     def __str__(self):
         #return str("name: " + self._full_name + " | type: " + self._type)
         return str(self._full_name + ", " + self._type)
 
-
-
+"""
 class health_care_centre:
-    """docstring for health_care_centre"""
     def __init__(self, name = "", suburb = "", phone = "", service = "", rating = "", type = "", providerList = [], abn = ""):
         self._name = name
         self._suburb = suburb
@@ -105,7 +112,7 @@ class health_care_centre:
         return self._rating        
     def get_type(self):
         return self._type
-    def get_provider(self):
+    def get_providerList(self):
         return self._providerList
     #setters
     def set_name(self, new_name):
@@ -119,20 +126,24 @@ class health_care_centre:
     def set_rating(self, new_rating):
         self._rating = new_rating
     def set_type(self, new_type):
-        self._type = new_type 
+        self._type = new_type
+    def set_providerList(self, new_providerList):
+        self._providerList = new_providerList
 
     def addProvider(self, newProvider):
-        cpy = self._providerList.copy()
+        cpy = self.get_providerList().copy()
         cpy.append(newProvider)
-        self._providerList = cpy
-
+        self.set_providerList(cpy)
+    def matchCentre(self, search):
+        if (search == self.get_name() or search == self.get_suburb() or search == self.get_type()):
+            return 1
+        return 0
     def __str__(self):
         #string = "Name: " + self._name + " | Type: " + self._type + " | Suburb: " + self._suburb
         string = self._name
-                
         return str(string)
+        
 class appointment:
-    """docstring for appointment"""
     def __init__(self, start_time = "", end_time = "", date = "", patient = "", health_care_provider = "", fee = "", centre = ""):
         self._start_time = start_time
         self._end_time = end_time
@@ -141,14 +152,17 @@ class appointment:
         self._health_care_provider = health_care_provider
         self._fee = fee
         self._centre = centre
+        patient.add_appointment(self)
+        health_care_provider.add_appointment(self)        
     def __str__(self):
         return self
-
+"""
 
 #andy = patient("ANDY WANG", "andy@gmail.com", 000, 111)
 #print(andy.get_medicare_number())
 #andy.set_medicare_number(1234)
 #print(andy.get_medicare_number())
+"""
 def matchC(centre, search):
     if (search == centre._name or search == centre._suburb or search == centre._type):
         return 1
@@ -158,4 +172,4 @@ def matchP(provider, search):
     if (search == provider._full_name or search == provider._email_address or search == provider._type):
         return 1
     return 0
-
+"""
