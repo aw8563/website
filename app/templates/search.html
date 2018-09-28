@@ -35,7 +35,14 @@
 
     <h3 style = "color:blue;"> CENTRES </h3>
     {% for a in display %}
-    <h4> {{a}} </h4><br>
+    <h4> {{a}} </h4>
+        <form method="POST" action="/profile/{{a._name}}">
+            <input type = hidden name = search value = {{s}}>
+            <input type = hidden name = c value = {{c}}>
+            <input type = hidden name = p value = {{p}}>
+            <button type="submit" name = provider
+             value = {{a._name}}>View Profile</button>
+        </form><br>
 
     {% endfor %}
     {% endif %}
