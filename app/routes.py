@@ -135,9 +135,9 @@ def profile(c):
                 return render_template('profile.html', object = a, c = c, p = p, search = search)
         
         print("search is " + search)
-        for c in centreList:
-            if (text == c._name):
-                return render_template('profile.html', object = c, c = c, p = p, search = search)
+        for centre in centreList:
+            if (text == centre._name):
+                return render_template('profile.html', object = centre, c = c, p = p, search = search)
 
 
         apple = health_care_centre("asdf","asdf")
