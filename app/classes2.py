@@ -1,4 +1,5 @@
-class user:
+from abc import ABC, abstractmethod
+class user(ABC):
     def __init__(self, full_name = "", email_address = "", phone_number = "", password = "", isprovider = 0):
 
         name = email_address[0:email_address.find('@')] # temp fix for no given name
@@ -7,40 +8,35 @@ class user:
         self._phone_number = phone_number
         self._password = password
         self._ispatient = 0
-        self._isprovider = isprovider
-        def get_ispatient(self):
-            return self._ispatient
+        self._isprovider = 0
+        self._appointment_list = []
 
-        def get_full_name(self):
-            return self._full_name
-
-        def get_isuser(self):
-            return self._isuser
-            
 class patient(user):
     def __init__(self, full_name = "", email_address = "", phone_number = "", medicare_number = "", isprovider = 0):
         super().__init__(full_name, email_address, phone_number, isprovider)
         self._medicare_number = medicare_number
-        self._appointment_list = []
         self._ispatient = 1
-        self._isprovider = 0
-        self._numAppointments = 0
 
     def get_medicare_number(self):
         return self._medicare_number
+    def get_appointment_list(self):
+        return self._appointment_list
+    def get_full_name(self):
+        return self._full_name
     def set_medicare_number(self, new_medicare_number):
         self._medicare_number = new_medicare_number
 
     def add_appointment(self, appointment):
-        #this will be an appointment class
         self._appointment_list.append(appointment)
-        self._numAppointments += 1
+    def remove_appointment(self, appointment):
+        if appointment in self._appointment_list:
+            self._appointment_list.remove(appointment)
+        else:
+            print("Appointment does not exist in the appointmentlist")
+
     def __str__(self):
-            return str("name: " + self._full_name)
-    def removeAppointment(self, appointment):
-        self._appointment_list.remove(appointment)
-        self._numAppointments -= 1
-    
+            return str("patient name: " + self._full_name)
+
 class health_care_provider(user):
     """docstring for ClassName"""
     def __init__(self, full_name = "", email_address = "", phone_number = "", provider_number = "", type = "", working_centre = [], rating = "", isprovider = 1):
@@ -59,6 +55,14 @@ class health_care_provider(user):
         return self._type
     def get_working_centre(self):
         return self._working_centre
+    def get_full_name(self):
+        return self._full_name
+    def get_appointment_list(self):
+        return self._appointment_list
+    def add_appointment(self, appointment):
+        self._appointment_list.append(appointment)
+    def set_working_centre(self, new_working_centre):
+        self._working_centre = new_working_centre   
     #setters
     def set_provider_number(self, new_provider_number):
         self._provider_number = new_provider_number 
@@ -72,10 +76,16 @@ class health_care_provider(user):
         current.append(centre)
         self._working_centre = current
         self._working_centre = list(set(self._working_centre))
+        
+    def remove_appointment(self, appointment):
+        if appointment in self._appointment_list:
+            self._appointment_list.remove(appointment)
+        else:
+            print("Appointment does not exist in the appointmentlist")
 
     def __str__(self):
         #return str("name: " + self._full_name + " | type: " + self._type)
-        return str(self._full_name + ", " + self._type)
+        return str("provider name: " + self._full_name + " | type: " + self._type)
 
 
 
@@ -133,22 +143,38 @@ class health_care_centre:
         return str(string)
 class appointment:
     """docstring for appointment"""
-    def __init__(self, start_time = "", end_time = "", date = "", patient = "", health_care_provider = "", fee = "", centre = ""):
+    def __init__(self, start_time, end_time, date, patient, health_care_provider, fee=""):
         self._start_time = start_time
         self._end_time = end_time
         self._date = date
         self._patient = patient
         self._health_care_provider = health_care_provider
         self._fee = fee
-        self._centre = centre
+        patient.add_appointment(self)
+        health_care_provider.add_appointment(self)
     def __str__(self):
-        return self
+        return str("appointment| \n patientname: " + self._patient._full_name + "\n providername: " + self._health_care_provider._full_name)
 
 
 #andy = patient("ANDY WANG", "andy@gmail.com", 000, 111)
 #print(andy.get_medicare_number())
 #andy.set_medicare_number(1234)
 #print(andy.get_medicare_number())
+"""
+andy = patient("ANDY WANG", "andy@gmail.com", 000, 111)
+print(andy)
+james = health_care_provider("JAMES FENG", "james@gmail.com", 222, 333)
+print(james)
+print("andy's appointment list " + str(andy.get_appointment_list()))
+app1 = appointment(1, 2, 3, andy, james)
+for i in andy.get_appointment_list():
+    print(i)
+
+for i in james.get_appointment_list():
+    print(i)
+andy.remove_appointment(app1)
+print(andy.get_appointment_list())
+"""
 def matchC(centre, search):
     if (search == centre._name or search == centre._suburb or search == centre._type):
         return 1

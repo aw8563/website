@@ -10,7 +10,9 @@ from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from werkzeug.urls import url_parse
 
-from app.classes import *
+from app.user import *
+from app.appointment import *
+from app.centre import *
 import csv
 import datetime
 
@@ -113,7 +115,7 @@ def booking():
                 return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, noDate = 1)
             
             app = appointment(start_time = time, date = date, patient = currUser,health_care_provider = providerClass, centre = centre)
-            currUser.add_appointment(app)
+            #currUser.add_appointment(app)
             doneBooking = 1
 
     return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, book = doneBooking, t = time, d = date, app = app)
@@ -154,13 +156,15 @@ def search():
 
 
         for centres in centreList:
-            if (matchC(centres, search)):        
+            #if (matchC(centres, search)): 
+            if (centres.matchCentre(search)):       
                 results.append(centres)
                 for p in centres._providerList:
                     results2.append(p)
 
         for providers in providerList:
-            if (matchP(providers, search)):
+            #if (matchP(providers, search)):
+            if (providers.matchProvider(search)):
                 results2.append(providers)
                 for c in providers._working_centre:
                     results.append(c)
