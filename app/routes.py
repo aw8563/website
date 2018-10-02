@@ -26,51 +26,51 @@ user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gma
 
 currUser = user1
 
-if (1):
-    with open('app/static/data/health_centres.csv') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            centreType = row['centre_type']
-            centreName = row['name'] 
-            centrePhone = row['phone']
-            centreID = row['abn'] 
-            centreSub = row['suburb']
-            centre = health_care_centre(centreName, centreSub, centrePhone, type = centreType)
-            centreList.append(centre)
-            
 
-    with open('app/static/data/provider.csv') as g:
-        reader = csv.DictReader(g)
-        for row in reader:
-            email = row['provider_email']
-            type = row['provider_type']
-            pw = row['password']  
-            provider = health_care_provider(email_address = email,type = type)
-            providerList.append(provider)  
+with open('app/static/data/health_centres.csv') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        centreType = row['centre_type']
+        centreName = row['name'] 
+        centrePhone = row['phone']
+        centreID = row['abn'] 
+        centreSub = row['suburb']
+        centre = health_care_centre(centreName, centreSub, centrePhone, type = centreType)
+        centreList.append(centre)
+        
 
-    with open('app/static/data/provider_health_centre.csv') as g:
-        reader = csv.DictReader(g)
-        n = 0
-        for row in reader:
-            email = row['provider_email']
-            centre = row['health_centre_name']
-            #assign the class centre rather than the string
-            for c in centreList:
-                if (centre == c._name): 
-                    centreClass = c
-            #similarly assign the class provider rather than the email
-            for p in providerList:
-                if (email == p._email_address):
-                    providerClass = p
+with open('app/static/data/provider.csv') as g:
+    reader = csv.DictReader(g)
+    for row in reader:
+        email = row['provider_email']
+        type = row['provider_type']
+        pw = row['password']  
+        provider = health_care_provider(email_address = email,type = type)
+        providerList.append(provider)  
 
-            for provider in providerList:    
-                if (provider._email_address == email):
-                    provider.addCentre(centreClass)     #add centre to provider
+with open('app/static/data/provider_health_centre.csv') as g:
+    reader = csv.DictReader(g)
+    n = 0
+    for row in reader:
+        email = row['provider_email']
+        centre = row['health_centre_name']
+        #assign the class centre rather than the string
+        for c in centreList:
+            if (centre == c._name): 
+                centreClass = c
+        #similarly assign the class provider rather than the email
+        for p in providerList:
+            if (email == p._email_address):
+                providerClass = p
 
-            for c in centreList: # add provider to centre
-                if (c._name == centre):
-                    c.addProvider(providerClass)
-                    #c.addProvider(email[0:email.find('@')])
+        for provider in providerList:    
+            if (provider._email_address == email):
+                provider.addCentre(centreClass)     #add centre to provider
+
+        for c in centreList: # add provider to centre
+            if (c._name == centre):
+                c.addProvider(providerClass)
+                #c.addProvider(email[0:email.find('@')])
 
 @app.route('/')
 @login_required
@@ -95,27 +95,41 @@ def booking():
     app = ""
     if (request.method == "POST"):
         book = int(request.form["book"])
-        c = request.form["c"]
-        p = request.form["p"]
-        search = request.form["search"]
-        provider = request.form['provider']
+        # parameters for search
+        c = request.form["c"] # search for centres 
+        p = request.form["p"] # search for providers
+        search = request.form["search"] # search input
+        provider = request.form['provider'] # provider currently being booked for
 
         for prov in providerList:
             if (prov._full_name == provider):
-                providerClass = prov
+                providerClass = prov # returns the instance of provider
 
-        if (book):
+        if (book): # if we are booking
+
+            # set date/time/centre
+
             date = request.form["date"]
             centre = request.form["centre"]
-            time = request.form["time"]
-            #print(">>>>  " + centre)
+            time = str(request.form["time"])
+            length = int(request.form["length"])
+        
+            # convert time to minutes then add on the legnth of appointment and convert back to time
+            totalLen = timeToMin(time) + length       
+            timeEnd = minToTime(totalLen)
 
-
+            print("curent appointment starts:" + time + " ends:" + timeEnd)
+            # checking the times and dates are valid
+            for app in providerClass._appointment_list:
+                clash = timeClash(time, app._start_time, timeEnd, app._end_time)
+                if (clash):
+                    return render_template('booking.html', user = currUser, c = c, p = p, search = search, \
+                           provider = providerClass, book = -1, t = time, d = date, app = app)
+                
             if (date == ""):  #just for testing, this should never happen
                 return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, noDate = 1)
             
-            app = appointment(start_time = time, date = date, patient = currUser,health_care_provider = providerClass, centre = centre)
-            #currUser.add_appointment(app)
+            app = appointment(start_time = time,end_time = timeEnd, date = date, patient = currUser,health_care_provider = providerClass, centre = centre)
             doneBooking = 1
 
     return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, book = doneBooking, t = time, d = date, app = app)
@@ -181,8 +195,6 @@ def search():
         if (not searchP):
             results2 = []
         if (len(results) > 0 or len(results2) > 0):
-            print(">>>>>" +str( isinstance(results[0], health_care_centre)))
-            print(str(results[0]._isuser))
             return render_template('search.html', display = results, display2 = results2, s = search, c = searchC, p = searchP, results = 1)
 
         else:
@@ -301,5 +313,6 @@ def currBooking():
         #currUser.removeAppointment(app)
     length = len(currUser._appointment_list)
     return render_template('currBooking.html', user = currUser, cancel = cancel, l = length)
+
 
 
