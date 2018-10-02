@@ -48,3 +48,34 @@ class appointment:
 
     def __str__(self):
         return self
+
+# converts given time format to minutes
+def timeToMin(time):
+
+    minutes = int(time[-2:])
+    hours = int(time[:-3])
+    return int(hours*60 + minutes)
+
+# converts given minutes into 24hr time format
+def minToTime(num):
+    minutes = num%60
+    hours = int((num - minutes)/60)
+        
+    return str(hours) + ":0" + str(minutes) if minutes <= 9 else str(hours) + ":" + str(minutes);
+
+# returns True if there is a clash between time1 range and time2 range
+def timeClash(start1, start2, end1, end2):
+
+    start1 = timeToMin(start1)
+    start2 = timeToMin(start2)
+    end1 = timeToMin(end1)
+    end2 = timeToMin(end2)
+
+    if (end1 >= start2 and start1 <= end2 or \
+        end2 >= start1 and start2 <= end1 or \
+        start1 <= start2 and end2 <= end1 or \
+        start2 <= start1 and end1 <= end2):
+
+        return True
+    
+    return False

@@ -8,7 +8,7 @@
 
 {% for p in user._appointment_list %}
 <p1> with {{p._health_care_provider._full_name}}, ({{p._health_care_provider._type}})<br>
-on {{p._date}}, {{p._start_time}}<br> at {{p._centre}}</p1>
+on {{p._date}}, {{p._start_time}} - {{p._end_time}}<br> at {{p._centre}}</p1>
 
 <form method = "POST" action = "/currBooking">
     <input type = hidden name = time value = "{{p._start_time}}">
