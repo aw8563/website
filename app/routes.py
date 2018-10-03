@@ -27,6 +27,13 @@ user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gma
 currUser = user1
 
 
+name = User.query.filter_by(username = 'test').first()
+#name.test = "asdf"
+print(name.email)
+
+db.session.commit()
+
+
 with open('app/static/data/health_centres.csv') as f:
     reader = csv.DictReader(f)
     for row in reader:
@@ -290,6 +297,10 @@ def appointments():
 def currBooking():
     cancel = 0
     if (request.method == 'POST'):
+        if (request.form['view'] == "cancelAll"):
+            currUser._appointment_list = []
+            currUser._numAppointment = 0
+            return render_template('currBooking.html', user = currUser, cancel = cancel, l = 0)  #cancel all
         view = int(request.form['view'])
         if (view):
             c = request.form['c']
@@ -313,6 +324,7 @@ def currBooking():
         #currUser.removeAppointment(app)
     length = len(currUser._appointment_list)
     return render_template('currBooking.html', user = currUser, cancel = cancel, l = length)
-
-
+@app.route('/test')
+def test():
+    return render_template('test.html')
 

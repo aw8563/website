@@ -17,7 +17,8 @@ This template generates the HTML for the profile page.
     <input type = hidden name = c value = {{c}}>
     <input type = hidden name = p value = {{p}}>
     <input type = hidden name = result value = 1>
-    <button type="submit" name = search value = {{search}}>Return to results</button>
+    <button class = "waves-effect waves-light btn" type= "submit"
+            name = search value = {{search}}>Return to results</button>
 </form>
     <center><h1>Profile Display</h1></center>
     {% if object._isuser == 0 %}

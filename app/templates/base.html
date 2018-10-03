@@ -21,7 +21,6 @@ header and footer.
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/static/css/materialize.min.css"/>
         <link rel="stylesheet" type="text/css" href="/static/css/general.css"/>
-
         {# Page specific CSS injection point #}
         {% block stylesheets %}{% endblock %}     
     </head>
@@ -36,10 +35,12 @@ header and footer.
                 </a>
                 
                 <ul id="nav-main" class="right">
+
                     {% if current_user.is_anonymous %}
                         <li><a href="{{ url_for('login') }}" id="nav-login-btn">Login</a></li>
                         <li><a href="{{ url_for('register') }}" id="nav-register-btn">Register</a></li>
                     {% else %}
+                        <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>
                         <li><a href="{{ url_for('logout') }}" id="nav-logout-btn">Logout</a></li>
                     {% endif %}
                 </ul>
