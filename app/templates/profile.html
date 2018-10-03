@@ -17,6 +17,7 @@ This template generates the HTML for the profile page.
     <input type = hidden name = c value = {{c}}>
     <input type = hidden name = p value = {{p}}>
     <input type = hidden name = result value = 1>
+    <input type = hidden name = israting value = 0>
     <button class = "waves-effect waves-light btn" type= "submit"
             name = search value = {{search}}>Return to results</button>
 </form>
@@ -53,6 +54,30 @@ This template generates the HTML for the profile page.
         <td>{{object._type}}<td>
         </tr>
     </table>
+    <center><h2>Give rating</h2></center>
+    <form method = "POST">
+
+        <!--<label>Browser Select</label> -->
+        <select class="browser-default" name = rating>
+        <option value="" disabled >Choose a rating</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        </select>
+        <input type = hidden name = c value = {{c}}>
+        <input type = hidden name = p value = {{p}}>
+        <input type = hidden name = result value = 1>
+        <input type = hidden name = "israting" value = 1>
+        <input type = hidden name = provider value = "{{object._name}}">
+        <button type="submit" name = search value = "{{search}}">Submit</button>
+    </form>
     {% endif %}
     {% if object._isuser == 1 %}
     <center><h2> Health provider Information </h2> </center>
@@ -78,6 +103,30 @@ This template generates the HTML for the profile page.
         <td>{{object._type}}<td>
         </tr>          
     </table>
+    <center><h2>Give rating</h2></center>
+    <form method = "POST">
+
+        <!--<label>Browser Select</label> -->
+        <select class="browser-default" name = rating>
+        <option value="" disabled >Choose a rating</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        </select>
+        <input type = hidden name = c value = {{c}}>
+        <input type = hidden name = p value = {{p}}>
+        <input type = hidden name = result value = 1>
+        <input type = hidden name = "israting" value = 1>
+        <input type = hidden name = provider value = "{{object._email_address}}">
+        <button type="submit" name = search value = "{{search}}">Submit</button>
+    </form>
     {% endif %}
 {% endblock %}
 
