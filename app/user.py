@@ -60,7 +60,9 @@ class health_care_provider(user):
     def get_appointment_list(self):
         return self._appointment_list
     def get_email_address(self):
-        return self._email_address   
+        return self._email_address
+    def get_rating(self):
+        return self._rating
     #setters
     def set_provider_number(self, new_provider_number):
         self._provider_number = new_provider_number 
@@ -68,7 +70,9 @@ class health_care_provider(user):
         self._type = new_type
     def set_working_centre(self, new_working_centre):
         self._working_centre = new_working_centre   
-
+    def set_rating(self, new_rating):
+        self._rating = new_rating  
+        
     def addCentre(self, centre):
         current = self._working_centre.copy()
         current.append(centre)

@@ -27,12 +27,6 @@ user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gma
 currUser = user1
 
 
-name = User.query.filter_by(username = 'test').first()
-#name.test = "asdf"
-print(name.email)
-
-db.session.commit()
-
 
 with open('app/static/data/health_centres.csv') as f:
     reader = csv.DictReader(f)
@@ -146,6 +140,7 @@ def booking():
 def profile(c):
     print("HEREHREHREHRHERHEH")
     if (request.method == "POST"):
+        israting = int(request.form["israting"])
         c = request.form["c"]
         p = request.form["p"]
         search = request.form["search"]
@@ -153,11 +148,17 @@ def profile(c):
 
         for a in providerList:
             if (a._email_address == text):
+                if israting:
+                    rating = request.form["rating"]
+                    a.set_rating(rating)
                 return render_template('profile.html', object = a, c = c, p = p, search = search)
         
         print("search is " + search)
         for centre in centreList:
             if (text == centre._name):
+                if israting:
+                    rating = request.form["rating"]
+                    centre.set_rating(rating)                
                 return render_template('profile.html', object = centre, c = c, p = p, search = search)
 
 
