@@ -1,23 +1,40 @@
- <h1> BOOKING PAGE </h1>
-<br>
+{% extends 'base.html' %}
 
+{% block content %}
+
+<h1> BOOKING PAGE </h1>
+<form method="POST" action="/search">
+    <input type = hidden name = c value = {{c}}>
+    <input type = hidden name = p value = {{p}}>
+    <input type = hidden name = result value = 1>
+    <button class = "btn waves-effect waves-light" type="submit" 
+            name = search value = "{{search}}" >Return to results</button>
+</form>
 
 <form method = "POST" action = "/booking"> 
     When: <input type = 'date' name = date value = {{d}} min = {{d}} re quired>
     {% if noDate %} <p1> Please enter valid date </p1> {% endif %}<br><br>
-    Time: <input type = time name = time min = 9:00 max = 18:00 required value = {{t}}>
-        <select name = length>
-            <option value = 30>30min</option>          
-            <option value = 60>1hr </option>          
-            <option value = 90>1hr 30min</option>          
-            <option value = 120>2hrs</option>          
-        </select>
+    Time: 
+        <input type = time name = time max = 18:00 required value = {{t}}>
+
+        <div class = "input-field col s12">
+        </div>
+
+  <label style = "color:black">Select appointment length</label>
+      <select class="browser-default" name = length>
+        <option value = 30>30min</option>          
+        <option value = 60>1hr </option>          
+        <option value = 90>1hr 30min</option>          
+        <option value = 120>2hrs</option>   
+      </select>
 <br><br>
     Where:
     <div>
         {% for h in provider._working_centre %}
-            <input id = {{h._name}} type = radio name = centre value = "{{h._name}}" required> 
-            <label for = "{{h._name}}">{{h._name}} </label><br>
+            <label style = "color:black">
+            <input type = radio name = centre value = "{{h._name}}" required> 
+            <span>{{h._name}}</span>
+            </label><br>
         {% endfor %}
     </div>
     <input type = hidden name = c value = {{c}}>
@@ -25,10 +42,17 @@
     <input type = hidden name = result value = 1>
     <input type = hidden name = search value = {{search}}>
     <input type = hidden name = provider value = {{provider._full_name}}><br>
-    <button type="submit" name = book value = 1>Book</button>
-    {%if book == 1%} <p5>  Succesfully booked with {{provider._full_name}} at 
-    {{app._centre}} on {{app._date}}, {{app._start_time}}</p5> {%endif%}
-    {% if book == -1 %} <p5> Failed to book. Selected time is unavaliable. </p5>{% endif %}
+    <button class = "btn waves-effect waves-light" type="submit" name = book value = 1>Book</button>
+    
+    {%if book == 1%}<font color = 'green'><p1 style = "font-size:80%" style = "color:green">
+        Succesfully booked with {{provider._full_name}} at 
+        {{app._centre}} on {{app._date}}, {{app._start_time}} - {{app._end_time}}</p1></font>
+    {%endif%}
+    {% if book == -1 %}
+        <font color = 'red'>
+        <p1 style = "font-size:80%"> Failed to book. Selected time is unavaliable. </p1>
+        </font>        
+    {% endif %}
     
 </form>
 <p1> You currently have {{user._numAppointments}} bookings </p1>
@@ -40,14 +64,8 @@
     <input type = hidden name = provider value = {{provider._full_name}}><br>
     <input type = hidden name = view value = 1>
 
-    <button type="submit" name = book value = 1> View Bookings</button>
+    <button class = "btn waves-effect waves-light" type="submit" name = book value = 1> View Bookings</button>
 </form>
 
 
-<br><br>
-<form method="POST" action="/search">
-    <input type = hidden name = c value = {{c}}>
-    <input type = hidden name = p value = {{p}}>
-    <input type = hidden name = result value = 1>
-    <button type="submit" name = search value = "{{search}}" >Return to results</button>
-</form>
+{% endblock %}
