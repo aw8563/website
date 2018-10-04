@@ -11,6 +11,7 @@ import logging
 
 from termcolor import colored
 
+from app.centre_manager import CentreManager
 from app.models import *
 from app.user_manager import UserManager
 
@@ -33,7 +34,7 @@ class HealthCareSystem:
         # Initialise HCS attributes.
         self._logger = logging.getLogger(__name__)
 
-        self.centre_manager = []
+        self.centre_manager = CentreManager()
         self.user_manager = UserManager()
 
         self._logger.debug("Initialised new HealthCareSystem.")
@@ -72,11 +73,7 @@ class HealthCareSystem:
             reader = csv.DictReader(f)
             for r in reader:
                 self._logger.debug(str(r))
-                c = Centre(type=r['centre_type'], abn=int(r['abn']), name=r['name'], phone=r['phone'],
-                           suburb=r['suburb'])
-
-                db.session.add(c)
-                db.session.commit()
+                self.centre_manager.add_centre(r['centre_type'], r['abn'], r['name'], r['phone'], r['suburb'])
 
             self._logger.info(colored("Centres initialised", "green"))
 
@@ -86,7 +83,7 @@ class HealthCareSystem:
             reader = csv.DictReader(f)
             for r in reader:
                 self._logger.debug(str(r))
-                wa = WorksAt(email=r['provider_email'], centre=r['health_centre_name'])
+                wa = WorksAt(provider=r['provider_email'], place=r['health_centre_name'])
 
                 db.session.add(wa)
                 db.session.commit()
