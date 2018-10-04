@@ -49,21 +49,6 @@ class UserManager:
 
         return users
 
-    def works_at(self, username):
-        """
-
-        :param username: Given a username, returns a list of all the places they work.
-        :return: A list of all the places a user works. If they work at none, return an empty list.
-        """
-
-        # If exists, get the user specified by username
-        user = self._users.filter_by(username=username)
-        if user:
-            print(str(user.centres))
-            return user.centres
-
-        # print(self._users.filter_by())
-
     def add_user(self, username, email, password, role='Patient'):
         """
         Creates a new user and adds it to the user database. If successful, also appends new user to current users list.
