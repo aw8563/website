@@ -19,15 +19,17 @@ class User(UserMixin, db.Model):
     Each user can work at none or many centres, and a centre and have none or many users working in it.
     """
 
+    __tablename__ = "Users"
+
     # Columns
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(128), index=True, unique=True)
+    username = db.Column(db.String(64), unique=True)
+    email = db.Column(db.String(128), unique=True)
     password_hash = db.Column(db.String(128))
-    role = db.Column(db.String(64), index=True)
+    role = db.Column(db.String(64))
 
     # Relationships
-    provider = db.relationship('WorksAt', backref='provider', lazy='dynamic')
+    centres = db.relationship('Centre', secondary='Works_At')
 
     def __repr__(self):
         """
@@ -60,6 +62,15 @@ class User(UserMixin, db.Model):
 
         return check_password_hash(self.password_hash, password)
 
+    def works_at(self):
+        """
+        Ayy lmao
+        TODO: Write me
+        :return:
+        """
+
+        return
+
 
 class Centre(db.Model):
     """
@@ -67,16 +78,19 @@ class Centre(db.Model):
 
     Each centre can have none or many providers working at it. Each provider can work for none or many centres.
     """
+
+    __tablename__ = "Centres"
+
     # Columns
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(64))
-    abn = db.Column(db.Integer, index=True, unique=True)
-    name = db.Column(db.String(128), index=True, unique=True)
-    phone = db.Column(db.String(24), index=True)
-    suburb = db.Column(db.String(64), index=True)
+    abn = db.Column(db.Integer, unique=True)
+    name = db.Column(db.String(128), unique=True)
+    phone = db.Column(db.String(24))
+    suburb = db.Column(db.String(64))
 
     # Relationships
-    hospital = db.relationship('WorksAt', backref='hospital', lazy='dynamic')
+    providers = db.relationship('User', secondary='Works_At')
 
     def __repr__(self):
         """
@@ -95,12 +109,17 @@ class WorksAt(db.Model):
 
     The two foreign key entries link to the primary keys of their respective tables. (email and centre name).
     """
+
+    __tablename__ = "Works_At"
+
     # Columns
     id = db.Column(db.Integer, primary_key=True)
+    place = db.Column(db.String(128), db.ForeignKey('Centres.name'))
+    provider = db.Column(db.String(128), db.ForeignKey('Users.email'))
 
     # Relationships
-    email = db.Column(db.String(128), db.ForeignKey('user.email'))  # Links to provider
-    centre = db.Column(db.String(128), db.ForeignKey('centre.name'))  # Links to centre
+    user = db.relationship(User, backref=db.backref("Works_At", cascade="all, delete-orphan"))
+    centre = db.relationship(Centre, backref=db.backref("Works_At", cascade="all, delete-orphan"))
 
     def __repr__(self):
         """
