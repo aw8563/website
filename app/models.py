@@ -4,16 +4,19 @@
 # allows us to migrate changes to the database schema without having to
 # regenerate the database from scratch.
 
-from app import db, login
-from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from app import db, login
 
 
 class User(UserMixin, db.Model):
     """
     Model representing a User and the information associated with them. This is
     used for user management.
+
+    This user represents both patients and other types of doctors.
+    Each user can work at none or many centres, and a centre and have none or many users working in it.
     """
 
     # Columns
@@ -59,7 +62,11 @@ class User(UserMixin, db.Model):
 
 
 class Centre(db.Model):
+    """
+    Model representing a Centre and the information associated with it.
 
+    Each centre can have none or many providers working at it. Each provider can work for none or many centres.
+    """
     # Columns
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(64))
@@ -83,12 +90,16 @@ class Centre(db.Model):
 
 
 class WorksAt(db.Model):
+    """
+    Represents the relationship between the Centre and User table.
 
+    The two foreign key entries link to the primary keys of their respective tables. (email and centre name).
+    """
     # Columns
     id = db.Column(db.Integer, primary_key=True)
 
     # Relationships
-    email = db.Column(db.String(128), db.ForeignKey('user.email'))    # Links to provider
+    email = db.Column(db.String(128), db.ForeignKey('user.email'))  # Links to provider
     centre = db.Column(db.String(128), db.ForeignKey('centre.name'))  # Links to centre
 
     def __repr__(self):
