@@ -5,10 +5,12 @@
 #     1). For separation and abstraction of web forms.
 #     2). To allow us to easily instantiate new forms as we require them.
 
-from app.models import User
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+
+from app.models import User
+
 
 class LoginForm(FlaskForm):
     """
@@ -21,6 +23,7 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign in')
 
+
 class RegistrationForm(FlaskForm):
     """
     Form used to register a new account. Collects and validates the information
@@ -31,19 +34,19 @@ class RegistrationForm(FlaskForm):
         DataRequired(),
         Email(),
         Length(max=128)
-        ])
+    ])
     username = StringField('Username', validators=[
         DataRequired(),
-        Length(min=3,max=64)
-        ])
+        Length(min=3, max=64)
+    ])
     password = PasswordField('Password', validators=[
         DataRequired(),
-        Length(min=3,max=64)
-        ])
+        Length(min=3, max=64)
+    ])
     confirm_password = PasswordField('Confirm Password', validators=[
         DataRequired(),
         EqualTo('password')
-        ])
+    ])
 
     submit = SubmitField('Sign up!')
 
@@ -65,7 +68,7 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError(
-            'This email address is already in-use, please choose another.')
+                'This email address is already in-use, please choose another.')
 
     def validate_username(self, username):
         """
@@ -85,4 +88,4 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError(
-            'This username is already in-use, please choose another.')
+                'This username is already in-use, please choose another.')
