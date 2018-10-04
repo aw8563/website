@@ -31,12 +31,10 @@ Prior to running this application, you'll need to do a couple things:
 	
 		pip install -r requirements.txt
 		
-	3). Create database and perform migrations
-	
-	   flask db init
-	   flask db migrate
-	   flask db upgrade
-	   
+	3). Create database, perform migrations, upgrade, then add CSV data
+
+	    flask init_db
+
 	4). You're good to go, run flask
 	   
 	   flask run
@@ -47,10 +45,9 @@ Prior to running this application, you'll need to do a couple things:
 			export FLASK_DEBUG=1
 			
 			flask run
-			
+
 Tada!
 
-If you get operational errors on when trying to migrate or sqlite3 cant find
-certain tables / columns / whatever, try deleting your migrations folder and
-app.db and peforming step 3 again. <3
+If you get operational errors on when trying to migrate or sqlite3 cant find certain tables / columns / whatever,
+run 'flask rm_db' and attempt steps 3-4 again.
 
