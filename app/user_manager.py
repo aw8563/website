@@ -49,6 +49,21 @@ class UserManager:
 
         return users
 
+    def works_at(self, username):
+        """
+
+        :param username: Given a username, returns a list of all the places they work.
+        :return: A list of all the places a user works. If they work at none, return an empty list.
+        """
+
+        # If exists, get the user specified by username
+        user = self._users.filter_by(username=username)
+        if user:
+            print(str(user.centres))
+            return user.centres
+
+        # print(self._users.filter_by())
+
     def add_user(self, username, email, password, role='Patient'):
         """
         Creates a new user and adds it to the user database. If successful, also appends new user to current users list.
@@ -79,6 +94,24 @@ class UserManager:
 
         return None
 
+    def get_user(self, username):
+        """
+        Given a username, attempts to return a User object with that username.
+        :param username: The username of the user to fetch.
+        :return: The user with the specified username, if they exist. Otherwise, None.
+        """
+
+        return User.query.filter_by(username=username).first()
+
+    def get_users(self):
+        """
+        Returns a list of all User records.
+
+        :return: A list of User records.
+        """
+
+        return self._users
+
     def login_user(self, username, password, remember=True):
         """
         Given a username and password, attempts to log a user in. If successful, logs in the user and returns true.
@@ -91,13 +124,14 @@ class UserManager:
         """
 
         # If the user doesn't exist, or the password is incorrect, fail the login.
-        user = User.query.filter_by(username=username).first()
+        user = self.get_user(username)
         if user is None or not user.check_password(password):
+            self._logger.warn("Login attempt for '%s' failed." % username)
             return False
         else:
             login_user(user, remember=remember)
-
-        pass
+            self._logger.info("Login attempt for '%s' succeeded." % username)
+            return True
 
     def logout_user(self):
         """
@@ -105,12 +139,5 @@ class UserManager:
 
         :return: None
         """
+
         logout_user()
-
-    def get_users(self):
-        """
-        Public accessor to get get all user records.
-
-        :return: A list of User records.
-        """
-        return self._users
