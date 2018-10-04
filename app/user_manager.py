@@ -4,10 +4,11 @@
 
 import logging
 
+from flask_login import login_user, logout_user
+from termcolor import colored
+
 from app import db
 from app.models import User
-
-from termcolor import colored
 
 
 class UserManager:
@@ -77,6 +78,34 @@ class UserManager:
             self._logger.error(str(e))
 
         return None
+
+    def login_user(self, username, password, remember=True):
+        """
+        Given a username and password, attempts to log a user in. If successful, logs in the user and returns true.
+        Otherwise, returns False
+
+        :param username: The username to attempt to log in with.
+        :param password: The password to attempt to log in with.
+        :param remember: User's "remember me" preference. Defaults to True.
+        :return: True, if login was completed successfully, False otherwise.
+        """
+
+        # If the user doesn't exist, or the password is incorrect, fail the login.
+        user = User.query.filter_by(username=username).first()
+        if user is None or not user.check_password(password):
+            return False
+        else:
+            login_user(user, remember=remember)
+
+        pass
+
+    def logout_user(self):
+        """
+        Logs out the user calling this function. If the user is not logged in, this method does nothing.
+
+        :return: None
+        """
+        logout_user()
 
     def get_users(self):
         """
