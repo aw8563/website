@@ -35,18 +35,17 @@ class User(UserMixin, db.Model):
         """
         Specifies the interpreter representation of the object.
 
-        Returns:
-            A string representation of the User instance.
+        :return: A string representation of the User instance.
         """
 
         return '<User {}>'.format(self.username)
 
     def set_password(self, password):
         """
-        Generates and stores a hash of a user password. (Using SHA 256).
+        Generates and stores a salted hash of a user password. (Using SHA 256).
 
-        Args:
-            password (str): The password we're storing a SHA 256 hash of.
+        :param password: The password we're setting for a user.
+        :return: None
         """
 
         self.password_hash = generate_password_hash(password)
@@ -56,20 +55,20 @@ class User(UserMixin, db.Model):
         Checks to see whether see whether a provided plaintext password string
         hashs to our stored password hash.
 
-        Args:
-            password (str): The password attempt we're checking with.
+        :param password: The password attempt we're checking with.
+        :return: True, if the password matches, False otherwise.
         """
 
         return check_password_hash(self.password_hash, password)
 
     def works_at(self):
         """
-        Ayy lmao
-        TODO: Write me
-        :return:
+        Gets a list of Centres a particular User instance works at.
+
+        :return: A list of Centres this User works at, if None, returns and empty list.
         """
 
-        return
+        return self.centres
 
 
 class Centre(db.Model):
@@ -96,11 +95,19 @@ class Centre(db.Model):
         """
         Specifies the interpreter representation of the object.
 
-        Returns:
-            A string representation of the Centre instance.
+        :return: A string representation of the Centre instance.
         """
 
         return '<Centre {}>'.format(self.name)
+
+    def has_providers(self):
+        """
+        Gets a list of Users that work for this particular Centre instance.
+
+        :return: Returns the providers working for a particular Centre instance.
+        """
+
+        return self.providers
 
 
 class WorksAt(db.Model):
@@ -125,8 +132,7 @@ class WorksAt(db.Model):
         """
         Specifies the interpreter representation of the object.
 
-        Returns:
-            A string representation of the WorksAt instance.
+        :return: A string representation of the WorksAt instance.
         """
 
         return '<WorksAt {}, {}>'.format(self.email, self.centre)
@@ -138,10 +144,8 @@ def load_user(id):
     Returns a User as specified by their User ID. This function is required by
     flask-login.
 
-    Args:
-        id (int): The UID used to specify a particular User.
-    Returns:
-        A User matching a specific UID. If no matches are found, returns None.
+    :param id: The UID used to specify a particular User.
+    :return: A User matching a specific UID. If no matches are found, returns None.
     """
 
     return User.query.get(int(id))
