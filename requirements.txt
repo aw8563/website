@@ -4,3 +4,4 @@ flask-migrate
 flask-sqlalchemy
 flask-wtf
 python-dotenv
+termcolor

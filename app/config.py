@@ -4,6 +4,11 @@
 # For more information, see http://flask.pocoo.org/docs/1.0/config/
 
 import os
+import logging
+from app.pretty_logging import ColoredLogger
+
+logging.setLoggerClass(ColoredLogger)
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 #--------------------------------------------------------------------#
