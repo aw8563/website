@@ -1,4 +1,4 @@
-# HealthCareSystem.py
+# health_care_system.py
 #
 # The 'main' class which is responsible for orchestrating all of the health system. Largely, it consists of:
 #   - A user manager, which stores and provides an interface to users of the Medi-soft system. EG.

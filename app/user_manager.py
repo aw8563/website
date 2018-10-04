@@ -1,4 +1,4 @@
-# UserManager.py
+# user_manager.py
 #
 # This file is responsible for user management and interacting with users.
 
