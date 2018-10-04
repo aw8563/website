@@ -9,16 +9,22 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
 class User(UserMixin, db.Model):
     """
     Model representing a User and the information associated with them. This is
     used for user management.
     """
 
+    # Columns
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    role = db.Column(db.String(64), index=True)
+
+    # Relationships
+    provider = db.relationship('WorksAt', backref='provider', lazy='dynamic')
 
     def __repr__(self):
         """
@@ -50,6 +56,51 @@ class User(UserMixin, db.Model):
         """
 
         return check_password_hash(self.password_hash, password)
+
+
+class Centre(db.Model):
+
+    # Columns
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(64))
+    abn = db.Column(db.Integer, index=True, unique=True)
+    name = db.Column(db.String(128), index=True, unique=True)
+    phone = db.Column(db.String(24), index=True)
+    suburb = db.Column(db.String(64), index=True)
+
+    # Relationships
+    hospital = db.relationship('WorksAt', backref='hospital', lazy='dynamic')
+
+    def __repr__(self):
+        """
+        Specifies the interpreter representation of the object.
+
+        Returns:
+            A string representation of the Centre instance.
+        """
+
+        return '<Centre {}>'.format(self.name)
+
+
+class WorksAt(db.Model):
+
+    # Columns
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Relationships
+    email = db.Column(db.String(128), db.ForeignKey('user.email'))    # Links to provider
+    centre = db.Column(db.String(128), db.ForeignKey('centre.name'))  # Links to centre
+
+    def __repr__(self):
+        """
+        Specifies the interpreter representation of the object.
+
+        Returns:
+            A string representation of the WorksAt instance.
+        """
+
+        return '<WorksAt {}, {}>'.format(self.email, self.centre)
+
 
 @login.user_loader
 def load_user(id):
