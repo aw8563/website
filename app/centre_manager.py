@@ -77,6 +77,15 @@ class CentreManager:
 
         return None
 
+    def get_centre(self, name):
+        """
+        Given a nane, attempts to return a Centre object with that name.
+        :param name: The name of the Centre to fetch.
+        :return: The Centre with the specified name, if they exist. Otherwise, None.
+        """
+
+        return Centre.query.filter_by(name=name).first()
+
     def get_centres(self):
         """
         Public accessor to get get all user records.
