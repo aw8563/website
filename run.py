@@ -10,7 +10,8 @@
 # which contains the actual instantiation and configuration. :)
 
 import logging
-from os import remove, makedirs
+from os import remove,  makedirs
+from os.path import isfile
 from shutil import rmtree
 from subprocess import call
 
@@ -63,6 +64,11 @@ def init_database_command():
     """
     logger.debug(colored("Initialising database.", "yellow"))
     call('flask db init', shell=True)
+
+    # As we mess around with this directory, we need to ensure it exists so
+    # the migration can complete successfully.
+    if not isfile('./migrations/versions/'):
+        call('mkdir ./migrations/versions/', shell=True)
 
     logger.debug(colored("Applying database migrations.", "yellow"))
     call('flask db migrate', shell=True)
