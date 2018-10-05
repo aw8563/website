@@ -9,7 +9,7 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
-from app.models import User
+from app.user_manager import UserManager
 
 
 class LoginForm(FlaskForm):
@@ -50,7 +50,8 @@ class RegistrationForm(FlaskForm):
 
     submit = SubmitField('Sign up!')
 
-    def validate_email(self, email):
+    @staticmethod
+    def validate_email(email):
         """
         This method checks to see whether the provided email is already taken
         by another user.
@@ -65,12 +66,13 @@ class RegistrationForm(FlaskForm):
             ValidationError: If the email address is already in use.
         """
 
-        user = User.query.filter_by(email=email.data).first()
+        user = UserManager.get_user(email.data)
         if user is not None:
             raise ValidationError(
                 'This email address is already in-use, please choose another.')
 
-    def validate_username(self, username):
+    @staticmethod
+    def validate_username(username):
         """
         This method checks to see whether the provided username is already
         taken by another user.
@@ -85,7 +87,7 @@ class RegistrationForm(FlaskForm):
             ValidationError: If the username is already in use.
         """
 
-        user = User.query.filter_by(username=username.data).first()
+        user = UserManager.get_user(username.data)
         if user is not None:
             raise ValidationError(
                 'This username is already in-use, please choose another.')

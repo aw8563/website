@@ -32,7 +32,7 @@ that good stuff.
     {% if user._isprovider == 1 %}
 <a href="{{url_for('appointments')}}">CLICK HERE TO SEE BOOKINGS (PROVIDER)</a><br><br>
     {% else %}
-<a href="{{url_for('currBooking')}}">CLICK HERE TO SEE BOOKINGS (PATIENT)</a><br><br>        
+<a href="{{url_for('curr_booking')}}">CLICK HERE TO SEE BOOKINGS (PATIENT)</a><br><br>
     {% endif %}
 {% endblock %}
 

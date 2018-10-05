@@ -11,8 +11,9 @@ import logging
 
 from termcolor import colored
 
+from app import db
 from app.centre_manager import CentreManager
-from app.models import *
+from app.models.works_at import WorksAt
 from app.user_manager import UserManager
 
 

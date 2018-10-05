@@ -1,8 +1,3 @@
-# models.py
-#
-# Defines the schema used in our application. We apply a model here as it
-# allows us to migrate changes to the database schema without having to
-# regenerate the database from scratch.
 
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -69,73 +64,6 @@ class User(UserMixin, db.Model):
         """
 
         return self.centres
-
-
-class Centre(db.Model):
-    """
-    Model representing a Centre and the information associated with it.
-
-    Each centre can have none or many providers working at it. Each provider can work for none or many centres.
-    """
-
-    __tablename__ = "Centres"
-
-    # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(64))
-    abn = db.Column(db.Integer, unique=True)
-    name = db.Column(db.String(128), unique=True)
-    phone = db.Column(db.String(24))
-    suburb = db.Column(db.String(64))
-
-    # Relationships
-    providers = db.relationship('User', secondary='Works_At')
-
-    def __repr__(self):
-        """
-        Specifies the interpreter representation of the object.
-
-        :return: A string representation of the Centre instance.
-        """
-
-        return '<Centre {}>'.format(self.name)
-
-    def has_providers(self):
-        """
-        Gets a list of Users that work for this particular Centre instance.
-
-        :return: Returns the providers working for a particular Centre instance.
-        """
-
-        return self.providers
-
-
-class WorksAt(db.Model):
-    """
-    Represents the relationship between the Centre and User table.
-
-    The two foreign key entries link to the primary keys of their respective tables. (email and centre name).
-    """
-
-    __tablename__ = "Works_At"
-
-    # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    place = db.Column(db.String(128), db.ForeignKey('Centres.name'))
-    provider = db.Column(db.String(128), db.ForeignKey('Users.email'))
-
-    # Relationships
-    user = db.relationship(User, backref=db.backref("Works_At", cascade="all, delete-orphan"))
-    centre = db.relationship(Centre, backref=db.backref("Works_At", cascade="all, delete-orphan"))
-
-    def __repr__(self):
-        """
-        Specifies the interpreter representation of the object.
-
-        :return: A string representation of the WorksAt instance.
-        """
-
-        return '<WorksAt {}, {}>'.format(self.email, self.centre)
 
 
 @login.user_loader

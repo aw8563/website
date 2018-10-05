@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user
 from termcolor import colored
 
 from app import db
-from app.models import User
+from app.models.user import User
 
 
 class UserManager:
@@ -79,7 +79,8 @@ class UserManager:
 
         return None
 
-    def get_user(self, username):
+    @staticmethod
+    def get_user(username):
         """
         Given a username, attempts to return a User object with that username.
         :param username: The username of the user to fetch.

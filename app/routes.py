@@ -29,24 +29,24 @@ if os.path.isfile('./migrations/versions/applied'):
     hsc = HealthCareSystem()
 
 # This contains temp info from .csv files
-centreList = []
-providerList = []
-user1 = patient(full_name="andy", email_address="andy@gmail.com")
-user2 = patient(full_name="james", email_address="james@gmail.com")
-user3 = health_care_provider(full_name="jessica", email_address="jessica@gmail.com", isprovider=1)
+centre_list = []
+provider_list = []
+user1 = Patient(full_name="andy", email_address="andy@gmail.com")
+user2 = Patient(full_name="james", email_address="james@gmail.com")
+user3 = HealthCareProvider(full_name="jessica", email_address="jessica@gmail.com", is_provider=1)
 
-currUser = user1
+curr_user = user1
 
 with open('app/static/data/health_centres.csv') as f:
     reader = csv.DictReader(f)
     for row in reader:
-        centreType = row['centre_type']
-        centreName = row['name']
-        centrePhone = row['phone']
-        centreID = row['abn']
-        centreSub = row['suburb']
-        centre = health_care_centre(centreName, centreSub, centrePhone, type=centreType)
-        centreList.append(centre)
+        centre_type = row['centre_type']
+        centre_name = row['name']
+        centre_phone = row['phone']
+        centre_id = row['abn']
+        centre_sub = row['suburb']
+        centre = HealthCareCentre(centre_name, centre_sub, centre_phone, type=centre_type)
+        centre_list.append(centre)
 
 with open('app/static/data/provider.csv') as g:
     reader = csv.DictReader(g)
@@ -54,8 +54,8 @@ with open('app/static/data/provider.csv') as g:
         email = row['provider_email']
         type = row['provider_type']
         pw = row['password']
-        provider = health_care_provider(email_address=email, type=type)
-        providerList.append(provider)
+        provider = HealthCareProvider(email_address=email, type=type)
+        provider_list.append(provider)
 
 with open('app/static/data/provider_health_centre.csv') as g:
     reader = csv.DictReader(g)
@@ -64,21 +64,21 @@ with open('app/static/data/provider_health_centre.csv') as g:
         email = row['provider_email']
         centre = row['health_centre_name']
         # assign the class centre rather than the string
-        for c in centreList:
-            if (centre == c._name):
-                centreClass = c
+        for c in centre_list:
+            if centre == c._name:
+                centre_class = c
         # similarly assign the class provider rather than the email
-        for p in providerList:
-            if (email == p._email_address):
-                providerClass = p
+        for p in provider_list:
+            if email == p._email_address:
+                provider_class = p
 
-        for provider in providerList:
-            if (provider._email_address == email):
-                provider.addCentre(centreClass)  # add centre to provider
+        for provider in provider_list:
+            if provider._email_address == email:
+                provider.add_centre(centre_class)  # add centre to provider
 
-        for c in centreList:  # add provider to centre
+        for c in centre_list:  # add provider to centre
             if (c._name == centre):
-                c.addProvider(providerClass)
+                c.add_provider(provider_class)
                 # c.addProvider(email[0:email.find('@')])
 
 
@@ -93,17 +93,17 @@ def index():
     as a 'safety net'.
     """
 
-    return render_template('index.html', title='home', user=currUser)
+    return render_template('index.html', title='home', user=curr_user)
 
 
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
-    doneBooking = 0
+    done_booking = 0
     now = str(datetime.datetime.now())
     date = now[0:now.find(" ")]
     time = now[now.find(" ") + 1:now.find(".") - 3]
     app = ""
-    if (request.method == "POST"):
+    if request.method == "POST":
         book = int(request.form["book"])
         # parameters for search
         c = request.form["c"]  # search for centres
@@ -111,9 +111,9 @@ def booking():
         search = request.form["search"]  # search input
         provider = request.form['provider']  # provider currently being booked for
 
-        for prov in providerList:
-            if (prov._full_name == provider):
-                providerClass = prov  # returns the instance of provider
+        for prov in provider_list:
+            if prov._full_name == provider:
+                provider_class = prov  # returns the instance of provider
 
         if (book):  # if we are booking
 
@@ -125,27 +125,27 @@ def booking():
             length = int(request.form["length"])
 
             # convert time to minutes then add on the legnth of appointment and convert back to time
-            totalLen = timeToMin(time) + length
-            timeEnd = minToTime(totalLen)
+            total_len = time_to_min(time) + length
+            time_end = min_to_time(total_len)
 
-            print("curent appointment starts:" + time + " ends:" + timeEnd)
+            print("curent appointment starts:" + time + " ends:" + time_end)
             # checking the times and dates are valid
-            for app in providerClass._appointment_list:
-                clash = timeClash(time, app._start_time, timeEnd, app._end_time)
+            for app in provider_class._appointment_list:
+                clash = time_clash(time, app._start_time, time_end, app._end_time)
                 if (clash):
-                    return render_template('booking.html', user=currUser, c=c, p=p, search=search, \
-                                           provider=providerClass, book=-1, t=time, d=date, app=app)
+                    return render_template('booking.html', user=curr_user, c=c, p=p, search=search, \
+                                           provider=provider_class, book=-1, t=time, d=date, app=app)
 
             if (date == ""):  # just for testing, this should never happen
-                return render_template('booking.html', user=currUser, c=c, p=p, search=search, provider=providerClass,
+                return render_template('booking.html', user=curr_user, c=c, p=p, search=search, provider=provider_class,
                                        noDate=1)
 
-            app = appointment(start_time=time, end_time=timeEnd, date=date, patient=currUser,
-                              health_care_provider=providerClass, centre=centre)
-            doneBooking = 1
+            app = Appointment(start_time=time, end_time=time_end, date=date, patient=curr_user,
+                              health_care_provider=provider_class, centre=centre)
+            done_booking = 1
 
-    return render_template('booking.html', user=currUser, c=c, p=p, search=search, provider=providerClass,
-                           book=doneBooking, t=time, d=date, app=app)
+    return render_template('booking.html', user=curr_user, c=c, p=p, search=search, provider=provider_class,
+                           book=done_booking, t=time, d=date, app=app)
 
 
 @app.route('/profile/<c>', methods=['POST', 'GET'])
@@ -157,16 +157,16 @@ def profile(c):
         search = request.form["search"]
         text = request.form['provider']
 
-        for a in providerList:
+        for a in provider_list:
             if (a._email_address == text):
                 return render_template('profile.html', object=a, c=c, p=p, search=search)
 
         print("search is " + search)
-        for centre in centreList:
+        for centre in centre_list:
             if (text == centre._name):
                 return render_template('profile.html', object=centre, c=c, p=p, search=search)
 
-        apple = health_care_centre("asdf", "asdf")
+        apple = HealthCareCentre("asdf", "asdf")
         return render_template('profile.html', object=apple, c=c, p=p, search=search)
 
 
@@ -175,24 +175,24 @@ def search():
     print("DSJKFLKJLDSF")
     if (request.method == 'POST'):  # redirect to the search screen
         search = request.form['search']
-        searchC = int(request.form['c'])
-        searchP = int(request.form['p'])
+        search_c = int(request.form['c'])
+        search_p = int(request.form['p'])
         results = []  # for centres
         results2 = []  # for providers
 
         if (search == ""):
-            return render_template('search.html', empty=1, c=searchC, p=searchP)
+            return render_template('search.html', empty=1, c=search_c, p=search_p)
 
-        for centres in centreList:
+        for centres in centre_list:
             # if (matchC(centres, search)):
-            if (centres.matchCentre(search)):
+            if (centres.match_centre(search)):
                 results.append(centres)
-                for p in centres._providerList:
+                for p in centres._provider_list:
                     results2.append(p)
 
-        for providers in providerList:
+        for providers in provider_list:
             # if (matchP(providers, search)):
-            if (providers.matchProvider(search)):
+            if (providers.match_provider(search)):
                 results2.append(providers)
                 for c in providers._working_centre:
                     results.append(c)
@@ -200,16 +200,16 @@ def search():
         results = list(set(results))
         results2 = list(set(results2))
 
-        if (not searchC):
+        if (not search_c):
             results = []
-        if (not searchP):
+        if (not search_p):
             results2 = []
         if (len(results) > 0 or len(results2) > 0):
-            return render_template('search.html', display=results, display2=results2, s=search, c=searchC, p=searchP,
+            return render_template('search.html', display=results, display2=results2, s=search, c=search_c, p=search_p,
                                    results=1)
 
         else:
-            return render_template('search.html', s=search, results=1, noDisplay=1, c=searchC, p=searchP)
+            return render_template('search.html', s=search, results=1, noDisplay=1, c=search_c, p=search_p)
 
     return render_template('search.html', title='search', c=1, p=1)
 
@@ -294,7 +294,7 @@ def appointments():
 
 
 @app.route('/currBooking', methods=["GET", "POST"])
-def currBooking():
+def curr_booking():
     cancel = 0
     if (request.method == 'POST'):
         view = int(request.form['view'])
@@ -305,7 +305,7 @@ def currBooking():
             result = request.form['result']
             provider = request.form['provider']
 
-            return render_template('currBooking.html', user=currUser, cancel=cancel, l=len(currUser._appointment_list),
+            return render_template('currBooking.html', user=curr_user, cancel=cancel, l=len(curr_user._appointment_list),
                                    view=view, c=c, p=p, search=s, result=result, provider=provider)
 
         name = request.form['name']
@@ -313,11 +313,11 @@ def currBooking():
         date = request.form['date']
         centre = request.form['centre']
         print(name + time + date + centre)
-        for a in currUser._appointment_list:
+        for a in curr_user._appointment_list:
             if (
                                     time == a._start_time and date == a._date and centre == a._centre and name == a._health_care_provider._full_name):
-                currUser.removeAppointment(a)
+                curr_user.remove_appointment(a)
                 cancel = 1
-                # currUser.removeAppointment(app)
-    length = len(currUser._appointment_list)
-    return render_template('currBooking.html', user=currUser, cancel=cancel, l=length)
+                # curr_user.removeAppointment(app)
+    length = len(curr_user._appointment_list)
+    return render_template('currBooking.html', user=curr_user, cancel=cancel, l=length)

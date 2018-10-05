@@ -7,7 +7,7 @@ import logging
 from termcolor import colored
 
 from app import db
-from app.models import Centre
+from app.models.centre import Centre
 
 
 class CentreManager:
@@ -77,7 +77,8 @@ class CentreManager:
 
         return None
 
-    def get_centre(self, name):
+    @staticmethod
+    def get_centre(name):
         """
         Given a nane, attempts to return a Centre object with that name.
         :param name: The name of the Centre to fetch.
