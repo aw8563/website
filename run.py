@@ -16,9 +16,12 @@ from subprocess import call
 
 from termcolor import colored
 
-from app import app
+from app import app, db
 from app.health_care_system import HealthCareSystem
-from app.models import *
+
+from app.models.centre import Centre
+from app.models.user import User
+from app.models.works_at import WorksAt
 
 logger = logging.getLogger(__name__)
 
