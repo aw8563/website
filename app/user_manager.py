@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user
 from termcolor import colored
 
 from app import db
-from app.models.user import User
+from app.models import User
 
 
 class UserManager:

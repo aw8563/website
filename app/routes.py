@@ -19,13 +19,11 @@ from app.forms import LoginForm, RegistrationForm
 from app.health_care_system import HealthCareSystem
 from app.user import *
 
-# Dirty dirty hacky yucky smucky - basically makes sure database has been upgraded once.
-# If we don't do this, when Flask is in debug mode, performing flask db init will make flask import routes.py, which
-# will initialise a HealthCareSystem, which attempts to load data from the database when being initialised.
-#
-# As we have obviously not finished initalising the database, it'll error out from trying to use the database it's in
-# the process of setting up.
-if os.path.isfile('./migrations/versions/applied'):
+import sys
+
+# Dirty hack - basically makes sure we don't try to use the database unless we're sure it's ready.
+# Otherwise Flask will try to use the database - even if we are using 'flask init_db' or 'flask rm_db'
+if sys.argv[1] == 'run':
     hsc = HealthCareSystem()
 
 # This contains temp info from .csv files

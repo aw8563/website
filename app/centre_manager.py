@@ -7,8 +7,7 @@ import logging
 from termcolor import colored
 
 from app import db
-from app.models.centre import Centre
-
+from app.models import Centre
 
 class CentreManager:
     """

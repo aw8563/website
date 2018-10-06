@@ -73,7 +73,7 @@ def init_database_command():
     logger.debug(colored("Loading data from CSV files.", "yellow"))
     call('flask load_from_csv', shell=True)
 
-    logger.debug(colored("Database initalised.", "green"))
+    logger.debug(colored("Database initialised.", "green"))
 
 
 @app.cli.command('rm_db')

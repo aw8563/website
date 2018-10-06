@@ -16,16 +16,19 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 # Initialise the Flask application using settings in app/config.py
+import sys
+
 app = Flask(__name__)
 app.config.from_object('app.config')
+
+# Initialise our SQL toolkit and ORM so we can interface easily with our db.
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Initialise login manager and set view handling logins to our 'login' view.
 login = LoginManager(app)
 login.login_view = 'login'
 
-# Initialise our SQL toolkit and ORM so we can interface easily with our db.
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
 # Finally, we're ready to load our views and models.
 from app import routes, models
