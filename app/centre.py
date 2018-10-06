@@ -1,11 +1,11 @@
 class health_care_centre:
     """docstring for health_care_centre"""
-    def __init__(self, name = "", suburb = "", phone = "", service = "", rating = "", type = "", providerList = [], abn = ""):
+    def __init__(self, name = "", suburb = "", phone = "", service = "", ratings = [], type = "", providerList = [], abn = ""):
         self._name = name
         self._suburb = suburb
         self._phone = phone
         self._service = service
-        self._rating = rating
+        self._ratings = []
         self._type = type
         self._providerList = providerList
         self._isuser = 0
@@ -21,7 +21,12 @@ class health_care_centre:
     def get_service(self):
         return self._service
     def get_rating(self):
-        return self._rating        
+        total = 0
+        if len(self._ratings) == 0:
+            return 0
+        for rating in self._ratings:
+            total += rating
+        return total/len(self._ratings)       
     def get_type(self):
         return self._type
     def get_providerList(self):
@@ -36,12 +41,14 @@ class health_care_centre:
     def set_service(self, new_service):
         self._service = new_service 
     def set_rating(self, new_rating):
-        self._rating = new_rating
+        self._ratings.clear()
+        self.add_rating(new_rating)
     def set_type(self, new_type):
         self._type = new_type
     def set_providerList(self, new_providerList):
         self._providerList = new_providerList
-
+    def add_rating(self, rating):
+        self._ratings.append(rating)
     def addProvider(self, newProvider):
         cpy = self.get_providerList().copy()
         cpy.append(newProvider)
