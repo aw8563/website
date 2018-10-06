@@ -20,9 +20,7 @@ from termcolor import colored
 from app import app, db
 from app.health_care_system import HealthCareSystem
 
-from app.models.centre import Centre
-from app.models.user import User
-from app.models.works_at import WorksAt
+from app.models import *
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +74,8 @@ def init_database_command():
     logger.debug(colored("Upgrading database.", "yellow"))
     call('flask db upgrade', shell=True)
 
-    # logger.debug(colored("Flagging upgrades complete.", "yellow"))
-    # call('touch migrations/versions/applied', shell=True)
+    logger.debug(colored("Flagging upgrades complete.", "yellow"))
+    call('touch migrations/versions/applied', shell=True)
 
     logger.debug(colored("Loading data from CSV files.", "yellow"))
     call('flask load_from_csv', shell=True)
