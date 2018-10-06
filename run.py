@@ -67,8 +67,8 @@ def init_database_command():
     logger.debug(colored("Upgrading database.", "yellow"))
     call('flask db upgrade', shell=True)
 
-    logger.debug(colored("Flagging upgrades complete.", "yellow"))
-    call('touch migrations/versions/applied', shell=True)
+    # logger.debug(colored("Flagging upgrades complete.", "yellow"))
+    # call('touch migrations/versions/applied', shell=True)
 
     logger.debug(colored("Loading data from CSV files.", "yellow"))
     call('flask load_from_csv', shell=True)
