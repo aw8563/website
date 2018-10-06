@@ -39,14 +39,14 @@ class patient(user):
     
 class health_care_provider(user):
     """docstring for ClassName"""
-    def __init__(self, full_name = "", email_address = "", phone_number = "", provider_number = "", type = "", working_centre = [], rating = "", isprovider = 1):
+    def __init__(self, full_name = "", email_address = "", phone_number = "", provider_number = "", type = "", working_centre = [], rating = [], isprovider = 1):
         super().__init__(full_name, email_address, phone_number, isprovider)
         #removed password
         self._isprovider = 1
         self._provider_number = provider_number
         self._type = type
         self._working_centre = working_centre
-        self._rating = rating
+        self._ratings = []
 
     #getters
     def get_provider_number(self):
@@ -62,7 +62,12 @@ class health_care_provider(user):
     def get_email_address(self):
         return self._email_address
     def get_rating(self):
-        return self._rating
+        total = 0
+        if len(self._ratings) == 0:
+            return 0
+        for rating in self._ratings:
+            total += rating
+        return total/len(self._ratings)
     #setters
     def set_provider_number(self, new_provider_number):
         self._provider_number = new_provider_number 
@@ -71,8 +76,8 @@ class health_care_provider(user):
     def set_working_centre(self, new_working_centre):
         self._working_centre = new_working_centre   
     def set_rating(self, new_rating):
-        self._rating = new_rating  
-        
+        self._ratings.clear()
+        self.add_rating(new_rating)
     def addCentre(self, centre):
         current = self._working_centre.copy()
         current.append(centre)
@@ -80,6 +85,8 @@ class health_care_provider(user):
         self._working_centre = list(set(self._working_centre))
     def add_appointment(self, appointment):
         self._appointment_list.append(appointment)
+    def add_rating(self, rating):
+        self._ratings.append(rating)
     def removeAppointment(self, appointment):
         self._appointment_list.remove(appointment)
         self._numAppointments -= 1
@@ -90,7 +97,17 @@ class health_care_provider(user):
     def __str__(self):
         #return str("name: " + self._full_name + " | type: " + self._type)
         return str(self._full_name + ", " + self._type)
-
+"""
+james = health_care_provider("james", "james@gmail.com", 000,123, "GP")
+james.add_rating(4)
+print(james.get_rating())
+james.add_rating(10)
+print(james.get_rating())
+james.set_rating(8)
+print(james.get_rating())
+james.add_rating(10)
+print(james.get_rating())
+"""
 """
 class health_care_centre:
     def __init__(self, name = "", suburb = "", phone = "", service = "", rating = "", type = "", providerList = [], abn = ""):

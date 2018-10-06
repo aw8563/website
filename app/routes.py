@@ -149,19 +149,20 @@ def profile(c):
         for a in providerList:
             if (a._email_address == text):
                 if israting:
-                    rating = request.form["rating"]
-                    a.set_rating(rating)
+                    rating = int(request.form["rating"])
+                    a.add_rating(rating)
                 return render_template('profile.html', object = a, c = c, p = p, search = search)
         
         print("search is " + search)
         for centre in centreList:
             if (text == centre._name):
                 if israting:
-                    rating = request.form["rating"]
-                    centre.set_rating(rating)                
+                    rating = int(request.form["rating"])
+                    centre.add_rating(rating)
+                #print(centre._providerList)                
                 return render_template('profile.html', object = centre, c = c, p = p, search = search)
 
-
+        print(text)
         apple = health_care_centre("asdf","asdf")
         return render_template('profile.html', object = apple, c = c, p = p, search = search)
 

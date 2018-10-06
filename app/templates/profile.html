@@ -47,14 +47,27 @@ This template generates the HTML for the profile page.
         </tr>
         <tr>    
         <td>ratings<td>
-        <td>{{object._rating}}<td>
+        <td>{{object.get_rating()}}<td>
         </tr>
         <tr>    
         <td>type<td>
         <td>{{object._type}}<td>
         </tr>
     </table>
-    <center><h2>Give rating</h2></center>
+
+    <h4> Providers currently working here </h4>
+    {% for provider in object._providerList %}
+        <h6>{{provider}}</h6>
+        <form method="POST" action="/profile/{{provider._full_name}}">
+            <input type = hidden name = search value = {{s}}>
+            <input type = hidden name = c value = {{c}}>
+            <input type = hidden name = p value = {{p}}>
+            <input type = hidden name = israting value = 0>            
+            <button type="submit" name = provider class = "btn waves-effect waves-light"
+             value = "{{provider._email_address}}">View Profile</button>
+        </form><br>   
+        {% endfor %}
+    <center><h5>Give rating</h5></center>
     <form method = "POST">
 
         <!--<label>Browser Select</label> -->
@@ -96,7 +109,7 @@ This template generates the HTML for the profile page.
         </tr>
         <tr>    
         <td>ratings<td>
-        <td>{{object._rating}}<td>
+        <td>{{object.get_rating()}}<td>
         </tr>
         <tr>    
         <td>type<td>
