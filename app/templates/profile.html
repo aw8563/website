@@ -66,7 +66,7 @@ This template generates the HTML for the profile page.
             <button type="submit" name = provider class = "btn waves-effect waves-light"
              value = "{{provider._email_address}}">View Profile</button>
         </form><br>   
-        {% endfor %}
+    {% endfor %}
     <center><h5>Give rating</h5></center>
     <form method = "POST">
 
@@ -116,6 +116,18 @@ This template generates the HTML for the profile page.
         <td>{{object._type}}<td>
         </tr>          
     </table>
+    <h4> {{object._full_name}} is currently working at </h4>
+    {% for centre in object._working_centre %}
+        <h6>{{centre}}</h6>
+        <form method="POST" action="/profile/{{centre._name}}">
+            <input type = hidden name = search value = {{s}}>
+            <input type = hidden name = c value = {{c}}>
+            <input type = hidden name = p value = {{p}}>
+            <input type = hidden name = israting value = 0>            
+            <button type="submit" name = provider class = "btn waves-effect waves-light"
+             value = "{{centre._name}}">View Profile</button>
+        </form><br>   
+    {% endfor %}
     <center><h2>Give rating</h2></center>
     <form method = "POST">
 
