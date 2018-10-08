@@ -153,8 +153,8 @@ class WorksAt(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier
     place = db.Column(db.String(128), db.ForeignKey('Centres.name'))    # Links to centre
     provider = db.Column(db.String(128), db.ForeignKey('Users.email'))  # Links to provider
-    hours_start = db.Column(db.DateTime())  # Starting hours for provider
-    hours_end = db.Column(db.DateTime())  # Ending hours for provider
+    hours_start = db.Column(db.Time())  # Starting hours for provider
+    hours_end = db.Column(db.Time())  # Ending hours for provider
 
     # Relationships
     user = db.relationship(User, backref=db.backref("Works_At", cascade="all, delete-orphan"))
@@ -235,7 +235,7 @@ class Rating(db.Model):
     Model representing a Rating given by a Patient about either a Centre or Provider.
     """
 
-    __tablename__ = "Prescriptions"
+    __tablename__ = "Ratings"
 
     # --- Columns ---
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier

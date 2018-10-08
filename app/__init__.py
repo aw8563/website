@@ -31,4 +31,4 @@ login.login_view = 'login'
 
 
 # Finally, we're ready to load our views and models.
-from app import routes, models
+from app import models, routes

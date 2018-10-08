@@ -53,40 +53,43 @@ class HealthCareSystem:
             reader = csv.DictReader(f)
             for r in reader:
                 self._logger.debug(str(r))
-                self.user_manager.add_user(r['patient_email'], r['patient_email'], r['password'])
+                self.user_manager.add_user(r['patient_email'], r['patient_email'], r['password'], r['phone_number'],
+                                           r['medicare_number'])
 
             self._logger.info(colored("Patients initialised", "green"))
 
-        # Load providers from provider.csv
-        self._logger.info(colored("Initialising providers", "yellow"))
-        with open('app/static/data/provider.csv') as f:
-            reader = csv.DictReader(f)
-            for r in reader:
-                self._logger.debug(str(r))
-                self.user_manager.add_user(r['provider_email'], r['provider_email'], r['password'],
-                                           role=r['provider_type'])
+            # Load providers from provider.csv
+            self._logger.info(colored("Initialising providers", "yellow"))
+            with open('app/static/data/provider.csv') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    self._logger.debug(str(r))
+                    self.user_manager.add_user(r['provider_email'], r['provider_email'], r['password'], r['phone_number'],
+                                           None, r['provider_number'], role=r['provider_type'])
 
-            self._logger.info(colored("Providers initialised", "green"))
+                self._logger.info(colored("Providers initialised", "green"))
 
-        # Load centres from health_centres.csv
-        self._logger.info(colored("Initialising centres", "yellow"))
-        with open('app/static/data/health_centres.csv') as f:
-            reader = csv.DictReader(f)
-            for r in reader:
-                self._logger.debug(str(r))
-                self.centre_manager.add_centre(r['centre_type'], r['abn'], r['name'], r['phone'], r['suburb'])
+            # Load centres from health_centres.csv
+            self._logger.info(colored("Initialising centres", "yellow"))
+            with open('app/static/data/health_centres.csv') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    self._logger.debug(str(r))
+                    self.centre_manager.add_centre(r['centre_type'], r['abn'], r['name'], r['phone'], r['suburb'])
 
-            self._logger.info(colored("Centres initialised", "green"))
+                self._logger.info(colored("Centres initialised", "green"))
 
-        # Load centres from provider_health_centre.csv
-        self._logger.info(colored("Initialising works_at relations", "yellow"))
-        with open('app/static/data/provider_health_centre.csv') as f:
-            reader = csv.DictReader(f)
-            for r in reader:
-                self._logger.debug(str(r))
-                wa = WorksAt(provider=r['provider_email'], place=r['health_centre_name'])
+            # Load centres from provider_health_centre.csv
+            self._logger.info(colored("Initialising works_at relations", "yellow"))
+            with open('app/static/data/provider_health_centre.csv') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    self._logger.debug(str(r))
 
-                db.session.add(wa)
-                db.session.commit()
+                    # TODO: Maybe should be part of user_manager?
+                    wa = WorksAt(provider=r['provider_email'], place=r['health_centre_name'], hours_start=r['hours_start'], hours_end=r['hours_end'])
 
-            self._logger.info(colored("Works_at relations initialised", "green"))
+                    db.session.add(wa)
+                    db.session.commit()
+
+                self._logger.info(colored("Works_at relations initialised", "green"))

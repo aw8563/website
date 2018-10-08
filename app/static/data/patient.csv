@@ -1,5 +1,5 @@
-patient_email,password
-jack@gmail.com,cs1531
-tom@gmail.com,cs1531
-isaac@gmail.com,cs1531
-hao@gmail.com,cs1531
+patient_email,patient_username,password,phone_number,medicare_number
+jack@gmail.com,jack@gmail.com,cs1531,555-555-555,MED-111
+tom@gmail.com,tom@gmail.com,cs1531,123-456-789,MED-222
+isaac@gmail.com,isaac@gmail.com,cs1531,321-654-987,MED-333
+hao@gmail.com,hao@gmail.com,cs1531,123-321-123,MED-444

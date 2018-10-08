@@ -49,7 +49,7 @@ class UserManager:
 
         return users
 
-    def add_user(self, username, email, password, role='Patient'):
+    def add_user(self, username, email, password, phone_number=None, medicare_number=None, provider_number=None, role='Patient'):
         """
         Creates a new user and adds it to the user database. If successful, also appends new user to current users list.
 
@@ -61,7 +61,8 @@ class UserManager:
         """
 
         # Initialise new user - always remember to season your passwords to taste.
-        user = User(username=username, email=email, role=role)
+        user = User(username=username, email=email, role=role, phone_number=phone_number,
+                    medicare_number=medicare_number, provider_number=provider_number)
         user.set_password(password)
 
         # Below will throw exception if email is already registered.

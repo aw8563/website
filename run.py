@@ -10,17 +10,17 @@
 # which contains the actual instantiation and configuration. :)
 
 import logging
-from os import remove,  makedirs
+from os import remove, makedirs
 from os.path import isfile
 from shutil import rmtree
 from subprocess import call
 
 from termcolor import colored
 
-from app import app, db
+from app.models import *
 from app.health_care_system import HealthCareSystem
 
-from app.models import *
+from app import app, db
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,8 @@ def make_shell_context():
 
     :return: None
     """
-    return {'db': db, 'User': User, 'WorksAt': WorksAt, 'Centre': Centre}
+    return {'db': db, 'User': User, 'WorksAt': WorksAt, 'Centre': Centre, 'Rating': Rating,
+            'Prescription': Prescription, 'Appointment': Appointment}
 
 
 @app.cli.command('load_from_csv')
@@ -80,7 +81,7 @@ def init_database_command():
     logger.debug(colored("Loading data from CSV files.", "yellow"))
     call('flask load_from_csv', shell=True)
 
-    logger.debug(colored("Database initialised.", "green"))
+    logger.debug(colored("Database initalised.", "green"))
 
 
 @app.cli.command('rm_db')
