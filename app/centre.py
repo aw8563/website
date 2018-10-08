@@ -13,13 +13,13 @@ class health_care_centre:
 
     #getters
     def get_name(self):
-        return self._name
+        return str(self._name)
     def get_suburb(self):
-        return self._suburb
+        return str(self._suburb)
     def get_phone(self):
         return self._phone
     def get_service(self):
-        return self._service
+        return str(self._service)
     def get_rating(self):
         total = 0
         if len(self._ratings) == 0:
@@ -28,7 +28,7 @@ class health_care_centre:
             total += rating
         return total/len(self._ratings)       
     def get_type(self):
-        return self._type
+        return str(self._type)
     def get_providerList(self):
         return self._providerList
     #setters
