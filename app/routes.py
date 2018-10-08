@@ -15,6 +15,7 @@ from app.appointment import *
 from app.centre import *
 import csv
 import datetime
+from app.searchParam import *
 
 #This contains temp info from .csv files
 centreList = []
@@ -23,10 +24,9 @@ user1 = patient(full_name = "andy", email_address = "andy@gmail.com")
 user2 = patient(full_name = "james", email_address = "james@gmail.com")
 user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gmail.com", isprovider = 1)
 
-
 currUser = user1
 
-
+# "foo bar\t".replace(" ", "").replace("\t", "")
 
 with open('app/static/data/health_centres.csv') as f:
     reader = csv.DictReader(f)
@@ -85,6 +85,38 @@ def index():
     """
     
     return render_template('index.html', title='home', user = currUser)
+
+@app.route('/search2', methods = ["POST", "GET"])
+def search2():
+    if (request.method == "POST"):
+
+        suburb = request.form["suburb"]
+        providerName = request.form["providerName"]
+        providerType = request.form["providerType"]
+        viewProvider = request.form["viewProvider"]
+        centreType = request.form["centreType"]
+        centreName = (request.form["centreName"])
+        viewCentre = (request.form["viewCentre"])
+
+        search = SearchParam(centreName, providerName, suburb, centreType, providerType, \
+                             int(viewProvider), int(viewCentre))
+
+        results = search.results(centreList, providerList)
+        if (len(results[0]) == 0 and len(results[1]) == 0):
+            return render_template('search2.html', search = search, results = 1, noDisplay = 1)
+        
+        return render_template('search2.html', results = 1, search = search, \
+                               display = results[0], display2 = results[1], \
+                               viewCentre = search._view_centre, nCentre = len(results[0]),\
+                               viewProvider = search._view_provider, nProvider = len(results[1]))
+
+    return render_template('search2.html', viewCentre = 1, viewProvider = 1)
+
+
+
+
+
+
 
 
 @app.route('/booking', methods = ['GET', 'POST'])
@@ -326,7 +358,7 @@ def currBooking():
         #currUser.removeAppointment(app)
     length = len(currUser._appointment_list)
     return render_template('currBooking.html', user = currUser, cancel = cancel, l = length)
-@app.route('/test')
-def test():
-    return render_template('test.html')
+
+
+
 
