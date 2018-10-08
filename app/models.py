@@ -176,7 +176,7 @@ class WorksAt(db.Model):
         :return: A string representation of the WorksAt instance.
         """
 
-        return '<WorksAt {}, {}>'.format(self.email, self.centre)
+        return '<WorksAt {}, {}>'.format(self.provider, self.place)
 
 
 class Appointment(db.Model):
@@ -231,9 +231,9 @@ class Prescription(db.Model):
     medicine = db.Column(db.String(128))  # Prescribed medicine
 
     # --- Relationships ---
-    patient = db.relationship("User", foreign_keys=[patient_email], backref='patient_medication')
-    provider = db.relationship("User", foreign_keys=[provider_email], backref='provider_prescriptions')
-    appointment = db.relationship("Appointment", foreign_keys=[appointment_id], backref='all_appointments')
+    patient = db.relationship("User", foreign_keys=[patient_email], backref='is_prescribed')
+    provider = db.relationship("User", foreign_keys=[provider_email], backref='has_prescribed')
+    appointment = db.relationship("Appointment", foreign_keys=[appointment_id], backref='prescription')
 
     def __repr__(self):
         """
@@ -260,8 +260,8 @@ class Rating(db.Model):
     centre_name = db.Column(db.Integer(), db.ForeignKey('Centres.name'))  # Appointment identifier
 
     # --- Relationships ---
-    patient = db.relationship("User", foreign_keys=[patient_email], backref='prov_ratings_given')
-    provider = db.relationship("User", foreign_keys=[provider_email], backref='prov_ratings_received')
+    patient = db.relationship("User", foreign_keys=[patient_email], backref='ratings_given')
+    provider = db.relationship("User", foreign_keys=[provider_email], backref='ratings_received')
     centre = db.relationship("Centre", foreign_keys=[centre_name], backref='all_ratings')
 
     def __repr__(self):

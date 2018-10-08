@@ -136,3 +136,21 @@ class HealthCareSystem:
                     db.session.commit()
 
                 self._logger.info(colored("Ratings initialised", "green"))
+
+            # Loads prescriptions from prescription.csv
+            self._logger.info(colored("Initialising prescriptions", "yellow"))
+            with open('app/static/data/prescription.csv') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    self._logger.debug(str(r))
+
+                    # TODO: Maybe should be part of user_manager?
+                    # TODO: Do we need to handle the 'usual' format?
+                    rating = Prescription(patient_email=r['patient'], provider_email=r['provider'],
+                                          appointment_id=r['appointment'],
+                                          medicine=r['medicine'])
+
+                    db.session.add(rating)
+                    db.session.commit()
+
+                self._logger.info(colored("Prescriptions initialised", "green"))
