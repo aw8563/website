@@ -31,6 +31,15 @@ class User(UserMixin, db.Model):
     medicare_number = db.Column(db.String(28), unique=True)  # Patient medicare number: 12345678
     provider_number = db.Column(db.String(28), unique=True)  # Provider number: 12345678
 
+    #     child_id = Column(Integer, ForeignKey('child.id'))
+    #     child = relationship("Child", back_populates="parent")
+    # appointment_id = db.Column(db.Integer, db.ForeignKey('Appointments.id'))
+    # appointment.csv = db.relationship('Appointment', back_populates="users")
+
+    # appointments = db.relationship('Appointment', backref='user', lazy='dynamic')
+
+    # company = db.relationship("Company", foreign_keys=[company_id], backref="holders")
+    # stakeholder = db.relationship("Company", foreign_keys=[stakeholder_id], backref="holdings")
     # --- Relationships ---
     centres = db.relationship('Centre', secondary='Works_At')  # Link to centres via intermediary table (many-many)
 
@@ -181,16 +190,19 @@ class Appointment(db.Model):
 
     # --- Columns ---
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier
-    patient = db.Column(db.String(128))  # Patient email ( or medicare card? )
-    provider = db.Column(db.String(128))  # Provider email ( or provider number? )
-    centre = db.Column(db.String(128))  # Centre name
-    start_time = db.Column(db.DateTime())  # Start time of appointment
-    end_time = db.Column(db.DateTime())  # End time of appointment
-    is_confirmed = db.Column(db.Boolean())  # Whether appointment is confirmed or not.
+    patient_email = db.Column(db.String(128), db.ForeignKey('Users.email'))
+    provider_email = db.Column(db.String(128), db.ForeignKey('Users.email'))
+    centre_name = db.Column(db.String(128), db.ForeignKey('Centres.name'))
+
+    start_time = db.Column(db.Time())  # Start time of appointment.csv
+    end_time = db.Column(db.Time())  # End time of appointment.csv
+    is_confirmed = db.Column(db.Boolean())  # Whether appointment.csv is confirmed or not.
     notes = db.Column(db.String(128))  # Notes from provider
 
     # --- Relationships ---
-    # providers = db.relationship('User', secondary='Works_At')  # Link to providers via intermediary table (many-many)
+    patient = db.relationship("User", foreign_keys=[patient_email], backref='provider_bookings')
+    provider = db.relationship("User", foreign_keys=[provider_email], backref='patient_bookings')
+    centre = db.relationship("Centre", foreign_keys=[centre_name], backref='all_appointments')
 
     def __repr__(self):
         """
@@ -199,12 +211,12 @@ class Appointment(db.Model):
         :return: A string representation of the Centre instance.
         """
 
-        return '<Appointment {}, {}>'.format(self.patient, self.provider)
+        return "<Appointment: Patient '{}', Provider '{}'>".format(self.patient, self.provider)
 
 
 class Prescription(db.Model):
     """
-    Model representing a Prescription given during an appointment.
+    Model representing a Prescription given during an appointment.csv.
 
     Many prescriptions can be given by many appointments.
     """
@@ -213,13 +225,15 @@ class Prescription(db.Model):
 
     # --- Columns ---
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier
-    patient = db.Column(db.String(128))  # Patient email ( or medicare card? )
-    provider = db.Column(db.String(128))  # Provider email ( or provider number? )
-    appointment = db.Column(db.Integer())  # Appointment identifier
+    patient_email = db.Column(db.String(128), db.ForeignKey('Users.email'))  # Patient email ( or medicare card? )
+    provider_email = db.Column(db.String(128), db.ForeignKey('Users.email'))  # Provider email ( or provider number? )
+    appointment_id = db.Column(db.Integer(), db.ForeignKey('Appointments.id'))  # Appointment identifier
     medicine = db.Column(db.String(128))  # Prescribed medicine
 
     # --- Relationships ---
-    # providers = db.relationship('User', secondary='Works_At')  # Link to providers via intermediary table (many-many)
+    patient = db.relationship("User", foreign_keys=[patient_email], backref='patient_medication')
+    provider = db.relationship("User", foreign_keys=[provider_email], backref='provider_prescriptions')
+    appointment = db.relationship("Appointment", foreign_keys=[appointment_id], backref='all_appointments')
 
     def __repr__(self):
         """
@@ -240,12 +254,15 @@ class Rating(db.Model):
     # --- Columns ---
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier
     type = db.Column(db.String(28))  # Type of rating 'centre' or 'provider'
-    patient = db.Column(db.String(128))  # Patient giving the rating
-    provider = db.Column(db.String(128))  # Provider email ( or provider number? )
-    centre = db.Column(db.String(128))  # Centre name
+    rating = db.Column(db.Integer())  # Prescribed medicine
+    patient_email = db.Column(db.String(128), db.ForeignKey('Users.email'))  # Patient email ( or medicare card? )
+    provider_email = db.Column(db.String(128), db.ForeignKey('Users.email'))  # Provider email ( or provider number? )
+    centre_name = db.Column(db.Integer(), db.ForeignKey('Centres.name'))  # Appointment identifier
 
     # --- Relationships ---
-    # providers = db.relationship('User', secondary='Works_At')  # Link to providers via intermediary table (many-many)
+    patient = db.relationship("User", foreign_keys=[patient_email], backref='prov_ratings_given')
+    provider = db.relationship("User", foreign_keys=[provider_email], backref='prov_ratings_received')
+    centre = db.relationship("Centre", foreign_keys=[centre_name], backref='all_ratings')
 
     def __repr__(self):
         """
@@ -254,4 +271,4 @@ class Rating(db.Model):
         :return: A string representation of the Centre instance.
         """
 
-        return '<Prescription {}, {}, {}>'.format(self.patient, self.provider, self.medicine)
+        return '<Rating {}, {}, {}, {}>'.format(self.type, self.rating, self.provider_email, self.centre_name)

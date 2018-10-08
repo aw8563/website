@@ -1,5 +1,5 @@
 class Appointment:
-    """docstring for appointment"""
+    """docstring for appointment.csv"""
 
     def __init__(self, start_time="", end_time="", date="", patient="", health_care_provider="", fee="", centre=""):
         self._start_time = start_time

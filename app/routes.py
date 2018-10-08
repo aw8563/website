@@ -122,11 +122,11 @@ def booking():
             time = str(request.form["time"])
             length = int(request.form["length"])
 
-            # convert time to minutes then add on the legnth of appointment and convert back to time
+            # convert time to minutes then add on the legnth of appointment.csv and convert back to time
             total_len = time_to_min(time) + length
             time_end = min_to_time(total_len)
 
-            print("curent appointment starts:" + time + " ends:" + time_end)
+            print("curent appointment.csv starts:" + time + " ends:" + time_end)
             # checking the times and dates are valid
             for app in provider_class._appointment_list:
                 clash = time_clash(time, app._start_time, time_end, app._end_time)

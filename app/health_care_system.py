@@ -8,12 +8,12 @@
 
 import csv
 import logging
+from datetime import datetime
 
 from termcolor import colored
 
-from app import db
 from app.centre_manager import CentreManager
-from app.models import WorksAt
+from app.models import *
 from app.user_manager import UserManager
 
 
@@ -53,6 +53,7 @@ class HealthCareSystem:
             reader = csv.DictReader(f)
             for r in reader:
                 self._logger.debug(str(r))
+                # TODO: Do we need to handle the 'usual' format?
                 self.user_manager.add_user(r['patient_email'], r['patient_email'], r['password'], r['phone_number'],
                                            r['medicare_number'])
 
@@ -64,8 +65,10 @@ class HealthCareSystem:
                 reader = csv.DictReader(f)
                 for r in reader:
                     self._logger.debug(str(r))
-                    self.user_manager.add_user(r['provider_email'], r['provider_email'], r['password'], r['phone_number'],
-                                           None, r['provider_number'], role=r['provider_type'])
+                    # TODO: Do we need to handle the 'usual' format?
+                    self.user_manager.add_user(r['provider_email'], r['provider_email'], r['password'],
+                                               r['phone_number'],
+                                               None, r['provider_number'], role=r['provider_type'])
 
                 self._logger.info(colored("Providers initialised", "green"))
 
@@ -79,7 +82,7 @@ class HealthCareSystem:
 
                 self._logger.info(colored("Centres initialised", "green"))
 
-            # Load centres from provider_health_centre.csv
+            # Load 'works at' relations from provider_health_centre.csv
             self._logger.info(colored("Initialising works_at relations", "yellow"))
             with open('app/static/data/provider_health_centre.csv') as f:
                 reader = csv.DictReader(f)
@@ -87,9 +90,49 @@ class HealthCareSystem:
                     self._logger.debug(str(r))
 
                     # TODO: Maybe should be part of user_manager?
-                    wa = WorksAt(provider=r['provider_email'], place=r['health_centre_name'], hours_start=r['hours_start'], hours_end=r['hours_end'])
+                    # TODO: Do we need to handle the 'usual' format?
+                    hours_start = datetime.strptime(r['hours_start'], '%H:%M:%S').time()
+                    hours_end = datetime.strptime(r['hours_end'], '%H:%M:%S').time()
+                    wa = WorksAt(provider=r['provider_email'], place=r['health_centre_name'], hours_start=hours_start,
+                                 hours_end=hours_end)
 
                     db.session.add(wa)
                     db.session.commit()
 
-                self._logger.info(colored("Works_at relations initialised", "green"))
+                self._logger.info(colored("Works_At relations initialised", "green"))
+
+            # Loads appointments from appointment.csv
+            self._logger.info(colored("Initialising appointments", "yellow"))
+            with open('app/static/data/appointment.csv') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    self._logger.debug(str(r))
+
+                    # TODO: Maybe should be part of user_manager?
+                    # TODO: Do we need to handle the 'usual' format?
+                    start_time = datetime.strptime(r['start_time'], '%H:%M:%S').time()
+                    end_time = datetime.strptime(r['end_time'], '%H:%M:%S').time()
+
+                    a = Appointment(patient_email=r['patient'], provider_email=r['provider'], centre_name=r['centre'],
+                                    start_time=start_time, end_time=end_time, is_confirmed=int(r['is_confirmed']),
+                                    notes=r['notes'])
+
+                    db.session.add(a)
+                    db.session.commit()
+
+            # Loads ratings from rating.csv
+            self._logger.info(colored("Initialising ratings", "yellow"))
+            with open('app/static/data/rating.csv') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    self._logger.debug(str(r))
+
+                    # TODO: Maybe should be part of user_manager?
+                    # TODO: Do we need to handle the 'usual' format?
+                    rating = Rating(type=r['type'], rating=r['rating'], patient_email=r['patient_email'],
+                                    provider_email=r['provider_email'], centre_name=r['centre_name'])
+
+                    db.session.add(rating)
+                    db.session.commit()
+
+                self._logger.info(colored("Ratings initialised", "green"))
