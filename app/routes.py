@@ -18,6 +18,7 @@ import datetime
 from app.searchParam import *
 
 #This contains temp info from .csv files
+
 centreList = []
 providerList = []
 user1 = patient(full_name = "andy", email_address = "andy@gmail.com")
@@ -25,8 +26,6 @@ user2 = patient(full_name = "james", email_address = "james@gmail.com")
 user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gmail.com", isprovider = 1)
 
 currUser = user1
-
-# "foo bar\t".replace(" ", "").replace("\t", "")
 
 with open('app/static/data/health_centres.csv') as f:
     reader = csv.DictReader(f)
@@ -89,28 +88,61 @@ def index():
 @app.route('/search2', methods = ["POST", "GET"])
 def search2():
     if (request.method == "POST"):
+        redir = request.form['redir']
+        search = request.form['search']
 
-        suburb = request.form["suburb"]
-        providerName = request.form["providerName"]
-        providerType = request.form["providerType"]
-        viewProvider = request.form["viewProvider"]
-        centreType = request.form["centreType"]
-        centreName = (request.form["centreName"])
-        viewCentre = (request.form["viewCentre"])
+        if (int(redir) == 0): # if not redirected from a 'return to search' 
 
-        search = SearchParam(centreName, providerName, suburb, centreType, providerType, \
-                             int(viewProvider), int(viewCentre))
+            # get values and make the class
+            suburb = request.form["suburb"]
+            providerName = request.form["providerName"]
+            providerType = request.form["providerType"]
+            centreType = request.form["centreType"]
+            centreName = (request.form["centreName"])
+            viewCentre = request.form["viewCentre"]
+            viewProvider = request.form["viewProvider"]
+    
+            print("C: " + viewCentre + "P: " + viewProvider)
 
-        results = search.results(centreList, providerList)
+            search = SearchParam(centreName, providerName, suburb, centreType, providerType, \
+                                 int(viewProvider), int(viewCentre))
+           
+        else: # if it is redirected from 'return to search' then use the old parameters
+            search = makeSearchObject(search)
+
+        results = search.results(centreList, providerList) # get search results
+        print ("asdf" + str(search))
+        c = False
+        p = False
+
+        if (search._view_centre): 
+            c = True
+            print(search._view_centre)
+        if (search._view_provider):
+
+            print(search._view_provider)
+            p = True
+
+        if (not c and not p):
+            return render_template('search2.html', search = search, noView = 1, redir = 0)
+
+        if (search._suburb == "" and search._provider_name == "" and \
+            search._provider_type == "" and search._centre_type == "" \
+            and search._centre_name == ""):
+            return render_template('search2.html', search = search, empty = 1, redir = 0)
+
+        # if there are no results
         if (len(results[0]) == 0 and len(results[1]) == 0):
-            return render_template('search2.html', search = search, results = 1, noDisplay = 1)
+            return render_template('search2.html', redir = 0, search = search, \
+                                    results = 1, noDisplay = 1)
         
-        return render_template('search2.html', results = 1, search = search, \
+        # return results page
+        return render_template('search2.html', results = 1, search = search, redir = 0, \
                                display = results[0], display2 = results[1], \
-                               viewCentre = search._view_centre, nCentre = len(results[0]),\
-                               viewProvider = search._view_provider, nProvider = len(results[1]))
+                               viewCentre = c, nCentre = len(results[0]),\
+                               viewProvider = p, nProvider = len(results[1]))
 
-    return render_template('search2.html', viewCentre = 1, viewProvider = 1)
+    return render_template('search2.html', viewCentre = 1, viewProvider = 1, redir = 0, search = 0)
 
 
 
@@ -172,20 +204,18 @@ def booking():
 def profile(c):
     print("HEREHREHREHRHERHEH")
     if (request.method == "POST"):
-        israting = int(request.form["israting"])
-        c = request.form["c"]
-        p = request.form["p"]
-        search = request.form["search"]
+        israting = int(request.form["israting"])        
+        search = makeSearchObject(request.form["search"])        
         text = request.form['provider']
+        print(search)
 
         for a in providerList:
             if (a._email_address == text):
                 if israting:
                     rating = int(request.form["rating"])
                     a.add_rating(rating)
-                return render_template('profile.html', object = a, c = c, p = p, search = search)
+                return render_template('profile.html', object = a, search = search)
         
-        print("search is " + search)
         for centre in centreList:
             if (text == centre._name):
                 if israting:
