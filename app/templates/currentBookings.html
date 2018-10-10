@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1> CURRENT BOOKINGS </h1>
+<h1> CURRENT BOOKINGS TEST 1 </h1>
+
+<form method = "POST" action = "/booking">
+    <input type = hidden name = search value = '{{search}}'>
+    <input type = hidden name = provider value = '{{provider}}'>   
+    <input type = hidden name = book value = 0>
+    <button type = 'submit' class = "btn waves-effect waves-light" > Back to Bookings </button>
+</form>
 {%if remove%}Booking cancelled!{% endif %}
 {% if removeAll %} All bookings cancelled! {% endif %}
 {% if l == 0 %}
@@ -12,7 +19,9 @@
         <p1> with {{p._health_care_provider._full_name}}, ({{p._health_care_provider._type}})<br>
         on {{p._date}}, {{p._start_time}} - {{p._end_time}}<br> at {{p._centre}}</p1>
 
-            <form method = "POST" action = "/currBooking">
+            <form method = "POST" action = "/currentBookings">
+                <input type = hidden name = search value = '{{search}}'>
+                <input type = hidden name = provider value = '{{provider}}'>
                 <input type = hidden name = time value = "{{p._start_time}}">
                 <input type = hidden name = name value = "{{p._health_care_provider._full_name}}">
                 <input type = hidden name = date value = "{{p._date}}">
@@ -21,16 +30,13 @@
                         class = "btn waves-effect waves-light" > cancel </button>
             </form> <br>
     {% endfor %}
-    <form method = 'POST' action = "/currBooking">
-    <button class = "btn waves-effect waves-light" type = submit
+    <form method = 'POST' action = "/currentBookings">
+        <input type = hidden name = search value = '{{search}}'>
+        <input type = hidden name = provider value = '{{provider}}'>
+        <button class = "btn waves-effect waves-light" type = submit
             name = remove value = "2"> Cancel all bookings 
-    </button><br>
+        </button><br>
     </form>
 {% endif %}
-
-
-
-
-
 
 {% endblock %}

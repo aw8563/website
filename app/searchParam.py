@@ -25,12 +25,18 @@ class SearchParam:
     def results(self, centres, providers):
         centreResults = []
         providerResults = []
-        pName = self._provider_name
-        cName = self._centre_name
-        suburb = self._suburb
-        cType = self._centre_type
-        pType = self._provider_type
-        
+        pName = normalise(self._provider_name)
+        cName = normalise(self._centre_name)
+        suburb = normalise(self._suburb)
+        cType = normalise(self._centre_type)
+        pType = normalise(self._provider_type)
+
+        centresCopy = centres.copy()
+        providersCopy = providers.copy()
+
+                
+
+
         c = 0
         p = 0
 
@@ -39,32 +45,35 @@ class SearchParam:
 
         if (c):
             print("made it here")
-            for c in centres:
+            for c in centresCopy:
+
                 # dealing with empty inputs
                 if self._centre_name == "":
-                    cName = str(c._name)
+                    cName = normalise(str(c._name))
                 if self._centre_type == "":
-                    cType = str(c._type)
+                    cType = normalise(str(c._type))
                 if self._suburb == "":
-                    suburb = str(c._suburb)            
+                    suburb = normalise(str(c._suburb))          
                 # matching the search criteria
-                if cName == c._name and cType == c._type and suburb == c._suburb:
+                if cName in normalise(c._name) and cType in normalise(c._type) \
+                   and suburb in normalise(c._suburb) and cName[0] == c._name[0].lower() \
+                   and cType[0] == c._type[0].lower() and suburb[0] == c._suburb[0].lower():
                     centreResults.append(c)
-
         
 
         if (pName != "" or pType != ""):
             p = 1
         if (p):
-            for p in providers:
+            for p in providersCopy:
                 # dealing with empty inputs
                 if self._provider_name == "":
-                    pName = p._full_name
+                    pName = normalise(p._full_name)
                 if self._provider_type == "":
-                    pType = p._type
+                    pType = normalise(p._type)
                 
                 # matching the search criteria
-                if pName == p._full_name and pType == p._type:
+                if pName in normalise(p._full_name) and pType in normalise(p._type) and \
+                   pName[0] == p._full_name[0].lower() and pType[0] == p._type[0].lower():
                     providerResults.append(p)
 
         # add all providers from matching hospitals
@@ -82,5 +91,24 @@ class SearchParam:
         return [centreResults,providerResults]
 
     def __str__(self):  
-        return "TRUE"
+        string = "|%s |%s |%s |%s |%s |%s |%s aa" % (self._centre_name, self._provider_name, \
+                                           self._suburb, self._centre_type, \
+                                           self._provider_type, self._view_provider, \
+                                           self._view_centre)
+        return string
 
+# takes the returned string from the SearchParam and converts it back into an object class
+def makeSearchObject(string):
+    split = string.split()
+    result = []
+    for words in split:
+        result.append(words[1:])
+    
+    return SearchParam(result[0], result[1], result[2], result[3], \
+                       result[4], int(result[5]), int(result[6]))
+# removes spaces and converts to lower case for comparison
+def normalise(string):
+    string = string.lower()
+    string = string.replace(" ", "")
+    string = string.replace("\t", "")
+    return string

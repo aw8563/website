@@ -13,14 +13,22 @@ This template generates the HTML for the profile page.
 
 {% block content %}
     <h1>TEST9</h1>
-<form method="POST" action="/search">
-    <input type = hidden name = c value = {{c}}>
-    <input type = hidden name = p value = {{p}}>
-    <input type = hidden name = result value = 1>
-    <input type = hidden name = israting value = 0>
+<form method="POST" action="/search2">
+
+    <input type = hidden name = search value = '{{search}}'>
+    <input type = hidden name = redir value = 1>
     <button class = "waves-effect waves-light btn" type= "submit"
             name = search value = {{search}}>Return to results</button>
 </form>
+{% if object._isuser == 1 %}
+    <form method="POST" action="/booking">
+
+        <input type = hidden name = search value = '{{search}}'>
+        <input type = hidden name = provider value = '{{object._full_name}}'>
+        <button class = "waves-effect waves-light btn" type= "submit"
+                name = book value = 0>Book with {{object._full_name}}</button>
+    </form>
+{% endif %}
     <center><h1>Profile Display</h1></center>
     {% if object._isuser == 0 %}
     <center><h2> Health centre Information </h2> </center>
@@ -59,7 +67,7 @@ This template generates the HTML for the profile page.
     {% for provider in object._providerList %}
         <h6>{{provider}}</h6>
         <form method="POST" action="/profile/{{provider._full_name}}">
-            <input type = hidden name = search value = {{s}}>
+            <input type = hidden name = search value = '{{search}}'>
             <input type = hidden name = c value = {{c}}>
             <input type = hidden name = p value = {{p}}>
             <input type = hidden name = israting value = 0>            

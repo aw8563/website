@@ -40,6 +40,7 @@ header and footer.
                         <li><a href="{{ url_for('login') }}" id="nav-login-btn">Login</a></li>
                         <li><a href="{{ url_for('register') }}" id="nav-register-btn">Register</a></li>
                     {% else %}
+                        <li><a href="{{ url_for('search2') }}" id="nav-logout-btn">Search</a></li>
                         <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>
                         <li><a href="{{ url_for('logout') }}" id="nav-logout-btn">Logout</a></li>
                     {% endif %}
