@@ -97,7 +97,7 @@
         {% for a in display2 %}
             <p1> {{a}} </p1>
             <form method="POST" action="/booking">
-                <input type = hidden name = search value = {{s}}>
+                <input type = hidden name = search value = '{{search}}'>
                 <input type = hidden name = c value = {{c}}>
                 <input type = hidden name = p value = {{p}}>
                 <input type = hidden name = book value = 0>
