@@ -20,19 +20,21 @@ that good stuff.
 {% block content %}
     {#----- Main content block for login page -----#}
 
-    <h1>Logged in as: {{ current_user.username }}</h1>
+    <h3>Welcome to Medi-soft, {{ current_user.username }}!</h3>
     <br><br><br>
-    <h2>Woo, go you!</h2>
-    <br><br><br>
+    <button class="btn-large waves-effect waves-light" type="button" onclick="window.location.href='{{url_for('search')}}';">Search Medi-soft database.</button>
+    <br><br>
+    {% if current_user.role == 'Patient' %}
+        <button class="btn-large waves-effect waves-light" type="button" onclick="window.location.href='{{url_for('manage_bookings')}}';">Manage my bookings (patient)</button>
+        <br><br>
+    {% else %}
+        <button class="btn-large waves-effect waves-light" type="button" onclick="window.location.href='{{url_for('manage_bookings')}}';">Manage my bookings (provider)</button>
+        <br><br>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
     {#----- index.html specific javascript -----#}
-<a href="{{url_for('search')}}">CLICK HERE TO SEARCH</a><br><br>
-    {% if user._isprovider == 1 %}
-<a href="{{url_for('appointments')}}">CLICK HERE TO SEE BOOKINGS (PROVIDER)</a><br><br>
-    {% else %}
-<a href="{{url_for('curr_booking')}}">CLICK HERE TO SEE BOOKINGS (PATIENT)</a><br><br>
-    {% endif %}
+
 {% endblock %}
 
