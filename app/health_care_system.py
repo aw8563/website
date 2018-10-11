@@ -41,6 +41,30 @@ class HealthCareSystem:
 
         self._logger.debug("Initialised new HealthCareSystem.")
 
+    def determine_type(self, name):
+        """
+        Given a name, determines the 'type' of an object.
+        EG. 'toby@gmail.com'           -> 'user'
+            'Sydney Children Hospital' -> 'centre
+        and so on.
+
+        :param name: The name of the object we're trying to determine.
+        :return: 'User' if the object is a User, 'Centre' if the object is a Centre, and so on.
+        """
+
+        if UserManager.get_user(name):
+            self._logger.warn(colored('Determined type to be user', 'yellow'))
+            profile_type = 'user'
+        else:
+            if CentreManager.get_centre(name):
+                self._logger.warn(colored('Determined type to be centre', 'yellow'))
+                profile_type = 'centre'
+            else:
+                self._logger.error('Unknown type for "%s"' % name)
+                profile_type = 'unknown'
+
+        return profile_type
+
     def load_from_csv(self):
         """
         Loads the Medi-soft database with data from the provided CSV files. This method can be called by "flask init_db"
@@ -92,8 +116,8 @@ class HealthCareSystem:
 
                     # TODO: Maybe should be part of user_manager?
                     # TODO: Do we need to handle the 'usual' format?
-                    hours_start = datetime.strptime(r['hours_start'], '%H:%M:%S').time()
-                    hours_end = datetime.strptime(r['hours_end'], '%H:%M:%S').time()
+                    hours_start = datetime.strptime(r['hours_start'], '%H:%M').time()
+                    hours_end = datetime.strptime(r['hours_end'], '%H:%M').time()
                     wa = WorksAt(provider=r['provider_email'], place=r['health_centre_name'], hours_start=hours_start,
                                  hours_end=hours_end)
 
@@ -111,8 +135,8 @@ class HealthCareSystem:
 
                     # TODO: Maybe should be part of user_manager?
                     # TODO: Do we need to handle the 'usual' format?
-                    start_time = datetime.strptime(r['start_time'], '%H:%M:%S').time()
-                    end_time = datetime.strptime(r['end_time'], '%H:%M:%S').time()
+                    start_time = datetime.strptime(r['start_time'], '%H:%M').time()
+                    end_time = datetime.strptime(r['end_time'], '%H:%M').time()
 
                     a = Appointment(patient_email=r['patient'], provider_email=r['provider'], centre_name=r['centre'],
                                     start_time=start_time, end_time=end_time, is_confirmed=int(r['is_confirmed']),
