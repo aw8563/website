@@ -27,6 +27,8 @@ user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gma
 
 currUser = user1
 
+
+#reading in values from csv files
 with open('app/static/data/health_centres.csv') as f:
     reader = csv.DictReader(f)
     for row in reader:
@@ -88,8 +90,10 @@ def index():
 @app.route('/search2', methods = ["POST", "GET"])
 def search2():
     if (request.method == "POST"):
-        redir = request.form['redir']
-        search = request.form['search']
+
+        
+        redir = request.form['redir'] # if the search page is redirected from anotehr page
+        search = request.form['search'] # search parameters
 
         if (int(redir) == 0): # if not redirected from a 'return to search' 
 
@@ -102,8 +106,6 @@ def search2():
             viewCentre = request.form["viewCentre"]
             viewProvider = request.form["viewProvider"]
     
-            print("C: " + viewCentre + "P: " + viewProvider)
-
             search = SearchParam(centreName, providerName, suburb, centreType, providerType, \
                                  int(viewProvider), int(viewCentre))
            
@@ -111,7 +113,7 @@ def search2():
             search = makeSearchObject(search)
 
         results = search.results(centreList, providerList) # get search results
-        print ("asdf" + str(search))
+
         c = False
         p = False
 
@@ -124,11 +126,13 @@ def search2():
             p = True
 
         if (not c and not p):
+            # if no selected display return error
             return render_template('search2.html', search = search, noView = 1, redir = 0)
 
         if (search._suburb == "" and search._provider_name == "" and \
             search._provider_type == "" and search._centre_type == "" \
             and search._centre_name == ""):
+            # if no searh criterias return error
             return render_template('search2.html', search = search, empty = 1, redir = 0)
 
         # if there are no results
@@ -145,25 +149,16 @@ def search2():
     return render_template('search2.html', viewCentre = 1, viewProvider = 1, redir = 0, search = 0)
 
 
-
-
-
-
-
-
 @app.route('/booking', methods = ['GET', 'POST'])
 def booking():
-    doneBooking = 0
+    doneBooking = 0 
     now = str(datetime.datetime.now())
     date = now[0:now.find(" ")]
     time = now [now.find(" ") + 1:now.find(".") - 3]
     app = ""
     if (request.method == "POST"):
-        book = int(request.form["book"])
-        # parameters for search
-        c = request.form["c"] # search for centres 
-        p = request.form["p"] # search for providers
-        search = request.form["search"] # search input
+        book = int(request.form["book"]) # if we are making a booking
+        search = request.form["search"] # current search parameters
         provider = request.form['provider'] # provider currently being booked for
 
         for prov in providerList:
@@ -173,65 +168,76 @@ def booking():
         if (book): # if we are booking
 
             # set date/time/centre
-
             date = request.form["date"]
             centre = request.form["centre"]
             time = str(request.form["time"])
             length = int(request.form["length"])
         
-            # convert time to minutes then add on the legnth of appointment and convert back to time
+            # convert time to minutes then add on the legnth of appointment
+            # and convert back to 24hr time format
             totalLen = timeToMin(time) + length       
             timeEnd = minToTime(totalLen)
 
-            print("curent appointment starts:" + time + " ends:" + timeEnd)
             # checking the times and dates are valid
             for app in providerClass._appointment_list:
                 clash = timeClash(time, app._start_time, timeEnd, app._end_time)
-                if (clash):
-                    return render_template('booking.html', user = currUser, c = c, p = p, search = search, \
+                if (clash): # if htere is clash return error
+                    return render_template('booking.html', user = currUser, search = search, \
                            provider = providerClass, book = -1, t = time, d = date, app = app)
+
+            for app in currUser._appointment_list:
+                clash = timeClash(time, app._start_time, timeEnd, app._end_time)
+                if (clash): # if htere is clash return error
+                    return render_template('booking.html', user = currUser, search = search, \
+                           provider = providerClass, book = -1, t = time, d = date, app = app)
+
                 
             if (date == ""):  #just for testing, this should never happen
-                return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, noDate = 1)
+                return render_template('booking.html', user = currUser, search = search, \
+                                        provider = providerClass, noDate = 1)
             
-            app = appointment(start_time = time,end_time = timeEnd, date = date, patient = currUser,health_care_provider = providerClass, centre = centre)
+            # make booking if it passes checks
+            app = appointment(start_time = time,end_time = timeEnd, date = date, patient = \
+                              currUser,health_care_provider = providerClass, centre = centre)
             doneBooking = 1
 
-    return render_template('booking.html', user = currUser, c = c, p = p, search = search, provider = providerClass, book = doneBooking, t = time, d = date, app = app)
+    return render_template('booking.html', user = currUser, search = search, provider = \
+                           providerClass, book = doneBooking, t = time, d = date, app = app)
 
 
+# profile page
 @app.route('/profile/<c>', methods = ['POST', 'GET'])
 def profile(c):
-    print("HEREHREHREHRHERHEH")
     if (request.method == "POST"):
-        israting = int(request.form["israting"])        
-        search = makeSearchObject(request.form["search"])        
-        text = request.form['provider']
-        print(search)
-
-        for a in providerList:
+        
+        israting = int(request.form["israting"]) # if we are makign a rating      
+        search = makeSearchObject(request.form["search"]) # current search parameters      
+        text = request.form['provider'] # email of te provider/centre
+        
+        for a in providerList: # check if it's a provider
             if (a._email_address == text):
-                if israting:
+                if israting: # if we are rating 
                     rating = int(request.form["rating"])
                     a.add_rating(rating)
                 return render_template('profile.html', object = a, search = search)
         
-        for centre in centreList:
+        for centre in centreList: # check for which centre if it is not a provider
             if (text == centre._name):
-                if israting:
+                if israting: # if we are rating 
                     rating = int(request.form["rating"])
                     centre.add_rating(rating)
-                #print(centre._providerList)                
-                return render_template('profile.html', object = centre, c = c, p = p, search = search)
 
-        print(text)
+                return render_template('profile.html', object = centre, search = search)
+
+        # deugging. This part should never happen
         apple = health_care_centre("asdf","asdf")
         return render_template('profile.html', object = apple, c = c, p = p, search = search)
 
+# old search.
 @app.route('/search', methods = ['GET', 'POST'])
 def search():
-
-    print("DSJKFLKJLDSF")
+    
+    
     if (request.method == 'POST'): #redirect to the search screen
         search = request.form['search']
         searchC= int(request.form['c'])
@@ -356,39 +362,53 @@ def logout():
 def appointments():
     return render_template('appointments.html')
 
+# view bookings 
+@app.route('/myProfile')
+def myProfile():
+    return render_template('myProfile.html')
+@app.route('/currentBookings', methods = ["GET", "POST"])
+def currentBookings():
 
-@app.route('/currBooking', methods = ["GET", "POST"])
-def currBooking():
-    cancel = 0
-    if (request.method == 'POST'):
-        if (request.form['view'] == "cancelAll"):
-            currUser._appointment_list = []
-            currUser._numAppointment = 0
-            return render_template('currBooking.html', user = currUser, cancel = cancel, l = 0)  #cancel all
-        view = int(request.form['view'])
-        if (view):
-            c = request.form['c']
-            p = request.form['p']
-            s = request.form['search']
-            result = request.form['result']
+    remove = 0 #remove a single booking
+    removeAll = 0 # remove all bookings
+    fromBooking = 0 # redirected from booking page
+    provider = ""
+    search = ""
+
+    if request.method == "POST":
+
+        fromBooking = int(request.form['fromBooking']) #redirected from booking page
+        if (fromBooking): #get provider and sesarch paramters
             provider = request.form['provider']
-        
-            return render_template('currBooking.html', user = currUser, cancel = cancel, l = len(currUser._appointment_list), view = view, c = c, p = p, search = s, result = result, provider = provider)
+            search = request.form['search']
 
-        name = request.form['name']
-        time = request.form['time']
-        date = request.form['date']
-        centre = request.form['centre']
-        print(name + time + date + centre)
-        for a in currUser._appointment_list:
-            if (time == a._start_time and date == a._date and centre == a._centre and name == a._health_care_provider._full_name):
+        remove = int(request.form['remove']) # if we are cancelling a booking
+
+        if (remove == 1):
             
-                currUser.removeAppointment(a)
-                cancel = 1        
-        #currUser.removeAppointment(app)
-    length = len(currUser._appointment_list)
-    return render_template('currBooking.html', user = currUser, cancel = cancel, l = length)
+            # get appointment info
+            name = request.form['name']
+            time = request.form['time']
+            date = request.form['date']
+            centre = request.form['centre']
 
 
+            # find the instance of that appointment and remove it form user and provider
+            for a in currUser._appointment_list:
+                if (time == a._start_time and date == a._date and centre == a._centre\
+                    and name == a._health_care_provider._full_name):
+                    print("HERE")
+                    a.removeAppointment()
 
+
+        if (remove == 2): # remove all    
+            for a in currUser._appointment_list:
+                a._health_care_provider.removeAppointment(a)
+                
+            currUser._appointment_list = []
+            currUser._numAppointments = 0  
+
+    return render_template('currentBookings.html', user = currUser, removeAll = removeAll, \
+                            remove = remove, l = len(currUser._appointment_list), \
+                            provider = provider, search = search, fromBooking = fromBooking)
 

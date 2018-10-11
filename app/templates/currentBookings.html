@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1> CURRENT BOOKINGS TEST 1 </h1>
-
-<form method = "POST" action = "/booking">
-    <input type = hidden name = search value = '{{search}}'>
-    <input type = hidden name = provider value = '{{provider}}'>   
-    <input type = hidden name = book value = 0>
-    <button type = 'submit' class = "btn waves-effect waves-light" > Back to Bookings </button>
-</form>
+<h1> CURRENT BOOKINGS </h1>
+{% if fromBooking %}
+    <form method = "POST" action = "/booking">
+        <input type = hidden name = search value = '{{search}}'>
+        <input type = hidden name = provider value = '{{provider}}'>   
+        <input type = hidden name = book value = 0>
+        <button type = 'submit' class = "btn waves-effect waves-light" > Back to Bookings </button>
+    </form>
+{% endif %}
 {%if remove%}Booking cancelled!{% endif %}
 {% if removeAll %} All bookings cancelled! {% endif %}
 {% if l == 0 %}
@@ -20,6 +21,7 @@
         on {{p._date}}, {{p._start_time}} - {{p._end_time}}<br> at {{p._centre}}</p1>
 
             <form method = "POST" action = "/currentBookings">
+                <input type = hidden name = fromBooking value = '{{fromBooking}}'>
                 <input type = hidden name = search value = '{{search}}'>
                 <input type = hidden name = provider value = '{{provider}}'>
                 <input type = hidden name = time value = "{{p._start_time}}">
@@ -31,6 +33,7 @@
             </form> <br>
     {% endfor %}
     <form method = 'POST' action = "/currentBookings">
+        <input type = hidden name = fromBooking value = '{{fromBooking}}'>
         <input type = hidden name = search value = '{{search}}'>
         <input type = hidden name = provider value = '{{provider}}'>
         <button class = "btn waves-effect waves-light" type = submit
