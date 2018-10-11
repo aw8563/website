@@ -41,8 +41,15 @@ header and footer.
                         <li><a href="{{ url_for('register') }}" id="nav-register-btn">Register</a></li>
                     {% else %}
                         <li><a href="{{ url_for('search2') }}" id="nav-logout-btn">Search</a></li>
+                        <li><a href="{{ url_for('myProfile') }}" id="nav-logout-btn">
+                            My Profile
+                        </a></li>
+                        <li><a href="{{ url_for('currentBookings') }}" id="nav-logout-btn">
+                            My Bookings
+                        </a></li>
                         <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>
                         <li><a href="{{ url_for('logout') }}" id="nav-logout-btn">Logout</a></li>
+                      
                     {% endif %}
                 </ul>
             </div>

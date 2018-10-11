@@ -54,6 +54,7 @@
 </form>
 <p1> You currently have {{user._numAppointments}} bookings </p1>
 <form method = "POST" action = "/currentBookings"> 
+    <input type = hidden name = fromBooking value = 1>
     <input type = hidden name = search value = "{{search}}">
     <input type = hidden name = provider value = {{provider._full_name}}><br>
     <input type = hidden name = remove value = 0>
