@@ -1,0 +1,7 @@
+type,rating,patient_email,provider_email,centre_name
+centre,5,jack@gmail.com,,Sydney Children Hospital
+provider,5,jack@gmail.com,toby@gmail.com,
+provider,1,jack@gmail.com,anna@gmail.com,
+provider,5,hao@gmail.com,anna@gmail.com,
+provider,4,isaac@gmail.com,sid@gmail.com,
+centre,4,hao@gmail.com,,Prince of Wales Hospital

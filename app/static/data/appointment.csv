@@ -1,0 +1,6 @@
+patient,provider,centre,start_time,end_time,is_confirmed,notes
+jack@gmail.com,toby@gmail.com,Sydney Children Hospital,09:00,09:30,1,Patient has abnormally large nose.
+isaac@gmail.com,samuel@gmail.com,Prince of Wales Hospital,09:30,10:00,1,Patient slept in.
+tom@gmail.com,samuel@gmail.com,Prince of Wales Hospital,10:30,11:00,1,Patient missed bus and needs certificate.
+hao@gmail.com,samuel@gmail.com,Prince of Wales Hospital,10:00,10:30,1,Patient slipped on banana and broke leg.
+hao@gmail.com,anna@gmail.com,Prince of Wales Hospital,11:00,11:30,0,Patient stabbed self.
