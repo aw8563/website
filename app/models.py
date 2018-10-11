@@ -41,7 +41,7 @@ class User(UserMixin, db.Model):
     # company = db.relationship("Company", foreign_keys=[company_id], backref="holders")
     # stakeholder = db.relationship("Company", foreign_keys=[stakeholder_id], backref="holdings")
     # --- Relationships ---
-    centres = db.relationship('Centre', secondary='Works_At')  # Link to centres via intermediary table (many-many)
+    centres = db.relationship('Centre', secondary='Works_At', lazy='dynamic')  # Link to centres via intermediary table (many-many)
 
     def __repr__(self):
         """
@@ -80,7 +80,53 @@ class User(UserMixin, db.Model):
         :return: A list of Centres this User works at, if None, returns and empty list.
         """
 
-        return self.centres
+        return self.centres.all()
+
+    def calc_rating(self):
+        """
+        Calculates the average rating for the centre.
+
+        :return: Returns the average rating for the centre.
+        """
+
+        num_ratings = 0
+        tot_rating = 0
+        for r in self.ratings_received:
+            num_ratings += 1
+            tot_rating += r.rating
+
+        if num_ratings > 0:
+            return tot_rating/num_ratings
+        else:
+            return 0
+
+    @staticmethod
+    def do_search(name=None, type=None):
+        """
+        Performs a sub-search using the provided parameters.
+        Returns a list containing each record satisfying given search criteria. (Case insensitive).
+
+        Examples:
+        In [1]: User.do_search(name="t")
+        Out[2]: [<User tom@gmail.com>, <User toby@gmail.com>, <User thomas@gmail.com>]
+
+        In [3]: User.do_search(name="t", type="path")
+        Out[4]: [<User toby@gmail.com>]
+
+        :param name: The username of the user to search for.
+        :param type: The 'type' or profession of the user to search for.
+        :return: A list of User records matching the given search criteria.
+        """
+
+        # Initialise empty list to store search criteria
+        criteria = []
+
+        # If search attribute is provided, add it as a search criterion.
+        if name: criteria.append(User.username.contains(name))
+        if type: criteria.append(User.role.contains(type))
+
+        # Perform search using criteria list and return list of results.
+        return User.query.filter(*criteria).all()
 
 
 @login.user_loader
@@ -114,7 +160,7 @@ class Centre(db.Model):
     suburb = db.Column(db.String(64))  # Centre suburb? 'Eastwood', 'Epping', etc
 
     # --- Relationships ---
-    providers = db.relationship('User', secondary='Works_At')  # Link to providers via intermediary table (many-many)
+    providers = db.relationship('User', secondary='Works_At', lazy='dynamic')  # Link to providers via intermediary table (many-many)
 
     def __repr__(self):
         """
@@ -132,7 +178,7 @@ class Centre(db.Model):
         :return: Returns the providers working for a particular Centre instance.
         """
 
-        return self.providers
+        return self.providers.all()
 
     def get_services(self):
         """
@@ -141,12 +187,64 @@ class Centre(db.Model):
         :return: A list of the services available at the Centre.
         """
 
-        # To do this:
-        #    - Get all of the providers working at the clinic.
-        #    - Query them for distinct roles and sort by ascending
-        #    - Return results.
+        # There is probably a far better way of doing this, but I couldn't figure it out. :'(
+        services = []
+        for r in self.providers.values('role'):
+            services.append(r.role)
 
-        pass
+        return set(services)
+
+    @staticmethod
+    def do_search(name=None, type=None, suburb=None):
+        """
+        Performs a sub-search using the provided parameters.
+        Returns a list containing each record satisfying given search criteria. (Case insensitive).
+
+        Examples:
+        In [1]: Centre.do_search(name="hosp")
+        Out[2]: [<Centre Sydney Children Hospital>,
+                 <Centre Prince of Wales Hospital>,
+                 <Centre Royal Prince Alfred Hospital>]
+
+        In [3]: Centre.do_search(type="MedicalCentre")
+        Out[4]: [<Centre UNSW Health Service>,
+                 <Centre USYD Health Service>,
+                 <Centre UTS Health Service>]
+
+        :param name: The name of the hospital to search for.
+        :param type: The 'type' of hospital.
+        :param suburb: The suburb of the hospital to search for.
+        :return: A list of Centre records matching the given search criteria.
+        """
+
+        # Initialise empty list to store search criteria
+        criteria = []
+
+        # If search attribute is provided, add it as a search criterion.
+        if name: criteria.append(Centre.name.contains(name))
+        if type: criteria.append(Centre.type.contains(type))
+        if suburb: criteria.append(Centre.suburb.contains(suburb))
+
+        # Perform search using criteria list and return list of results.
+        return Centre.query.filter(*criteria).all()
+
+    def calc_rating(self):
+        """
+        Calculates the average rating for the centre.
+
+        :return: Returns the average rating for the centre.
+        """
+
+        num_ratings = 0
+        tot_rating = 0
+        for r in self.all_ratings:
+            num_ratings += 1
+            tot_rating += r.rating
+
+        if num_ratings > 0:
+            return tot_rating/num_ratings
+        else:
+            return 0
 
 
 class WorksAt(db.Model):
