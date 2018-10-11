@@ -2,84 +2,103 @@
 
 {% block content %}
 
-<h1> SEARCH </h1>
+    {% set do_centre_search = form['do_centre_search']|default(0) %}
+    {% set do_user_search = form['do_user_search']|default(0) %}
 
-	<form method = "POST">
+    <h2> Search Medi-soft</h2>
+
+    <form method="POST">
+
+        {# Checkboxes for performing centre and provider searches #}
+        <div>
+            <label>
+                <input type="checkbox" id="do_centre_search" name="do_centre_search" value={{ do_centre_search }}
+                        {% if do_centre_search %} checked {% endif %}>
+                <span class="black-text">View Centres</span>
+            </label>
+        </div>
 
         <div>
             <label>
-            <input type="checkbox" id="centre" name="c" value = 1 {% if c%} checked {% endif %}>  
-            <span style = "color:black;">Search for centres</span>
-            <label/>
-
+                <input type="checkbox" id="do_user_search" name="do_user_search" value={{ do_user_search }}
+                       {% if do_user_search %} checked {% endif %}>
+                <span class="black-text">View Users</span>
+            </label>
         </div>
-        <div>
-            <label>           
-            <input type="checkbox" id="provider" name="p" value = 1  {% if p %}checked {% endif %}>  
-            <span style = "color:black;">Search for providers</span>            
-            <label>
-        </div>
-        </p>
-	    <div style="margin: 10px 0px">
-			<input name = "search" placeholder = "Please Enter Search" {% if results%}value = {{s}} {% endif %}> </input>
-            {% if empty %} 
-                <p1> <- enter search </p1>
-            {% endif %}
 
-            <br/>
-		</div>
-        <input type = "hidden" name = "c" value = 0>
-        <input type = "hidden" name = "p" value = 0>
-        <button class = "btn waves-effect waves-light" type="submit">Submit</button>
+        {# Search field input boxes #}
+        <input name="u_name" placeholder="User Name"
+                {% if form %} value="{{ form["u_name"] }}" {% endif %}>
+        </input>
+
+        <input name="u_type" placeholder="User Type"
+                {% if form %} value="{{ form["u_type"] }}" {% endif %}>
+        </input>
+
+        <input name="c_name" placeholder="Centre Name"
+                {% if form %} value="{{ form["c_name"] }}" {% endif %}>
+        </input>
+
+        <input name="c_suburb" placeholder="Suburb"
+                {% if form %} value="{{ form["c_suburb"] }}" {% endif %}>
+        </input>
+
+        <input name="c_type" placeholder="Centre Type"
+                {% if form %} value="{{ form["c_type"] }}" {% endif %}>
+        </input>
+
+        <br/>
+
+        {# Search submission button #}
+        <div style="margin: 10px 0px">
+            <button class="btn waves-effect waves-light" type="submit">Submit</button>
+        </div>
     </form>
 
-{% if results %}
-<h1 style = "color:red;"> RESULTS </h1>
-{% if noDisplay %}
-    <p1> No matching results for "{{s}}" please search again </p1>
-{% endif %} 
+    {# If any results of either centre or provider searches are found, display them #}
+    {% if results_found %}
+        <h2 class="red-text"> Results </h2>
 
-{% if noDisplay != 1 %}
-    {% if c %}
+        {# If there are any centres found, display them #}
+        {% if centre_results|length > 0 %}
+            <h5 class="blue-text"> Centres </h5>
+            {% for centre in centre_results %}
+                <h4> {{ centre.name }} </h4>
+                <form method="POST" action="/profile/{{ centre.name }}">
 
-    <h3 style = "color:blue;"> CENTRES </h3>
-    {% for a in display %}
-    <h4> {{a}} </h4>
-        <form method="POST" action="/profile/{{a._name}}">
-            <input type = hidden name = search value = {{s}}>
-            <input type = hidden name = c value = {{c}}>
-            <input type = hidden name = p value = {{p}}>
-            <input type = hidden name = israting value = 0>            
-            <button type="submit" name = provider class = "btn waves-effect waves-light"
-             value = "{{a._name}}">View Profile</button>
-        </form><br>
+                    <button type="submit" name=centre class="btn waves-effect waves-light"
+                            value="{{ centre.name }}">View Profile
+                    </button>
+                </form><br>
 
-    {% endfor %}
-    {% endif %}
-
-
-    {% if p %}
-        <h3  style = "color:blue;"> PROVIDERS </h3>
-        {% for a in display2 %}
-            <p1> {{a}} </p1>
-            <form method="POST" action="/booking">
-                <input type = hidden name = search value = {{s}}>
-                <input type = hidden name = c value = {{c}}>
-                <input type = hidden name = p value = {{p}}>
-                <input type = hidden name = book value = 0>
-                <button type="submit" name = provider value = {{a._full_name}}
-                        class = "btn waves-effect waves-light">Book</button>
-            </form>
-            <form method="POST" action="/profile/{{a._full_name}}">
-                <input type = hidden name = search value = {{s}}>
-                <input type = hidden name = c value = {{c}}>
-                <input type = hidden name = p value = {{p}}>
-                <input type = hidden name = israting value = 0>
-                <button type="submit" name = provider  value = {{a._email_address}}
-                        class = "btn waves-effect waves-light">View Profile</button>
-            </form>
-        {% endfor %}
+            {% endfor %}
         {% endif %}
+
+        {# If there are any users found, display them #}
+        {% if user_results|length > 0 %}
+                <h5 class="blue-text"> Users </h5>
+                {% for user in user_results %}
+                    <p1> {{ user.username }} </p1>
+                    <form method="POST" action="/booking">
+
+                        <input type=hidden name=book value=0>
+                        <button type="submit" name=provider value={{ user.email }}
+                                class="btn waves-effect waves-light">Book</button>
+                    </form>
+                    <form method="POST" action="/profile/{{ user.email }}">
+                        <input type=hidden name=search value= {{ s }}>
+                        <input type=hidden name=c value= {{ c }}>
+                        <input type=hidden name=p value= {{ p }}>
+                        <input type=hidden name=israting value=0>
+                        <button type="submit" name=user value={{ user }}
+                                class="btn waves-effect waves-light">View Profile</button>
+                    </form>
+                {% endfor %}
+        {% endif %}
+
+    {# Otherwise, indicate that no results were found #}
+    {% else %}
+        <h1 style="color:red;"> Results </h1>
+            <p1> No matching results. Please search again</p1>
     {% endif %}
-{% endif %}
 {% endblock %}
