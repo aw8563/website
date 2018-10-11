@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1> Update Information </h1>
+{% if object._ispatient == 1 %}
+
+    <form method = "POST">
+        <center><table border = "1"></center>
+            <tr>
+            <td><td>
+            <td>Current information<td>
+            <td>Update Information</td>
+            </tr>
+            <tr>
+            <td>Name<td>
+            <td>{{object._full_name}}<td>
+            <td>
+            <input name = "newName" placeholder = "{{object._full_name}}">
+            </input>
+            </td>
+            </tr>
+            <tr>
+            <td>Email Address<td>
+            <td>{{object._email_address}}<td>
+            <td>
+            <input name = "newEmail" placeholder = "{{object._email_address}}">
+            </input>    
+            </td>
+            </tr>
+            <tr>    
+            <td>phone<td>
+            <td>{{object._phone_number}}<td>
+            <td>
+            <input name = "newPhone" placeholder = "{{object._phone_number}}">
+            </input>    
+            </td>
+            </tr>
+            <tr>    
+            <td>Medicare Number<td>
+            <td>{{object._medicare_number}}<td>
+            <td>
+            <input name = "newMedicare" placeholder = "{{object._medicare_number}}">
+            </input>    
+            </td>
+            </tr>
+        </table>
+        <button class = "waves-effect waves-light btn" type= "submit">Update</button>
+    </form>     
+
+{% endif %}
+{% if object._isprovider == 1 %}
+
+    <form method = "POST">
+        <center><table border = "1"></center>
+            <tr>
+            <td><td>
+            <td>Current information<td>
+            <td>Update Information</td>
+            </tr>
+            <tr>
+            <td>Name<td>
+            <td>{{object._full_name}}<td>
+            <td>
+            <input name = "newName" placeholder = "{{object._full_name}}">
+            </input>
+            </td>
+            </tr>
+            <tr>
+            <td>Email Address<td>
+            <td>{{object._email_address}}<td>
+            <td>
+            <input name = "newEmail" placeholder = "{{object._email_address}}">
+            </input>    
+            </td>
+            </tr>
+            <tr>    
+            <td>phone<td>
+            <td>{{object._phone_number}}<td>
+            <td>
+            <input name = "newPhone" placeholder = "{{object._phone_number}}">
+            </input>    
+            </td>
+            </tr>
+            <tr>    
+            <td>Provider Number<td>
+            <td>{{object._provider_number}}<td>
+            <td>
+            <input name = "newProvider" placeholder = "{{object._provider_number}}">
+            </input>    
+            </td>
+            </tr>
+            <tr>    
+            <td>Type<td>
+            <td>{{object._type}}<td>
+            <td>
+            <input name = "newType" placeholder = "{{object._type}}">
+            </input>    
+            </td>
+            </tr>
+        </table>
+        <button class = "waves-effect waves-light btn" type= "submit">Update</button>
+    </form>     
+
+{% endif %}
+
+{% endblock %}

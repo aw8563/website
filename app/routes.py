@@ -21,11 +21,12 @@ from app.searchParam import *
 
 centreList = []
 providerList = []
+patientList = []
 user1 = patient(full_name = "andy", email_address = "andy@gmail.com")
 user2 = patient(full_name = "james", email_address = "james@gmail.com")
 user3 = health_care_provider(full_name = "jessica", email_address = "jessica@gmail.com", isprovider = 1)
 
-currUser = user1
+currUser = user3
 
 
 #reading in values from csv files
@@ -49,6 +50,15 @@ with open('app/static/data/provider.csv') as g:
         pw = row['password']  
         provider = health_care_provider(email_address = email,type = type)
         providerList.append(provider)  
+
+with open('app/static/data/patient.csv') as g:
+    reader = csv.DictReader(g)
+    for row in reader:
+        email = row['patient_email']
+        pw = row['password']  
+        cpatient = patient(full_name = email, email_address = email)
+        patientList.append(cpatient)  
+
 
 with open('app/static/data/provider_health_centre.csv') as g:
     reader = csv.DictReader(g)
@@ -362,10 +372,52 @@ def logout():
 def appointments():
     return render_template('appointments.html')
 
-# view bookings 
 @app.route('/myProfile')
 def myProfile():
-    return render_template('myProfile.html')
+    #print(current_user)
+    #andy = patient("ANDY WANG", "andy@gmail.com", 000, 111)
+    #james = health_care_provider("JAMES FENG", "james@gmail.com", 222, 333)
+    #print(andy)
+    #currentuser = patientList[0]
+    #print(currentuser)
+    return render_template('myProfile.html', object = currUser)
+
+@app.route('/updateInfo', methods = ['GET', 'POST'])
+def updateInfo():
+    #currentuser = patientList[0]
+    """
+    if (request.method == "POST"):
+        useremail = request.form['useremail']
+        #updating = int(request.form['updating'])
+        for user in patientList: 
+            if (user._email_address == useremail):
+                return render_template('updateInfo.html', object = user)
+        return  render_template('updateInfo.html', object = andy)
+    """
+    if (request.method == "POST"):
+        if (isinstance(currUser, patient) == True):
+            newName = request.form['newName']
+            newEmail = request.form['newEmail']
+            newPhone = request.form['newPhone']
+            newMedicare = request.form['newMedicare']
+            print(newName + newEmail + newPhone + newMedicare)
+            currUser.changeDetails(newName, newEmail, newPhone, newMedicare)
+            print(currUser)
+
+        else:
+            newName = request.form['newName']
+            newEmail = request.form['newEmail']
+            newPhone = request.form['newPhone']
+            newProvider = request.form['newProvider']
+            newType = request.form['newType']
+            currUser.changeDetails(newName, newEmail, newPhone, newProvider, newType)
+
+        return render_template('updateInfo.html', object = currUser)
+
+    return render_template('updateInfo.html', object = currUser)
+
+    
+# view bookings 
 @app.route('/currentBookings', methods = ["GET", "POST"])
 def currentBookings():
 

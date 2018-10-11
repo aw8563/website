@@ -1,3 +1,67 @@
-<h1> NEEDS TO BE DONE </h1>
+{% extends "base.html" %}
 
+{% block content %}
+
+<h1> My Profile </h1>
+
+{% if object._ispatient == 1 %}
+
+	<center><table border = "1"></center>
+        <tr>
+        <td>Name<td>
+        <td>{{object._full_name}}<td>
+        </tr>
+        <tr>
+        <td>Email Address<td>
+        <td>{{object._email_address}}<td>
+        </tr>
+        <tr>    
+        <td>phone<td>
+        <td>{{object._phone_number}}<td>
+        </tr>
+        <tr>    
+        <td>Medicare Number<td>
+        <td>{{object._medicare_number}}<td>
+        </tr>
+    </table>
+
+{% endif %}
+{% if object._isprovider == 1 %}
+
+	<center><table border = "1"></center>
+        <tr>
+        <td>Name<td>
+        <td>{{object._full_name}}<td>
+        </tr>
+        <tr>
+        <td>Email Address<td>
+        <td>{{object._email_address}}<td>
+        </tr>
+        <tr>    
+        <td>phone<td>
+        <td>{{object._phone_number}}<td>
+        </tr>
+        <tr>    
+        <td>Provider Number<td>
+        <td>{{object._provider_number}}<td>
+        </tr>
+        <tr>    
+        <td>Type<td>
+        <td>{{object._type}}<td>
+        </tr>
+    </table>
+
+{% endif %}
 <p> link here to update info </p1>
+	<!--
+    <form method="POST" action="/updateInfo">
+    <input type = hidden name = useremail value = '{{object._email_address}}'>
+    <button class = "waves-effect waves-light btn" type= "submit"
+            name = book value = 0>Update my infomation</button>
+	</form>
+	-->
+	<br>
+	<a href="{{url_for('updateInfo')}}">
+	    <button class = "waves-effect waves-light btn">Update my information</button>
+	</a>
+{% endblock %}

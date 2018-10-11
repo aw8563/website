@@ -25,15 +25,30 @@ class patient(user):
         return self._appointment_list
     def get_full_name(self):
         return self._full_name
+
+    def set_full_name(self, new_full_name):
+        self._full_name = new_full_name
+    def set_email(self, new_email):
+        self._email_address = new_email
+    def set_phone(self, new_phone):
+        self._phone_number = new_phone        
     def set_medicare_number(self, new_medicare_number):
         self._medicare_number = new_medicare_number
-
     def add_appointment(self, appointment):
         self._appointment_list.append(appointment)
         self._numAppointments += 1
     def removeAppointment(self, appointment):
         self._appointment_list.remove(appointment)
         self._numAppointments -= 1
+    def changeDetails(self, newName, newEmail, newPhone, newMedicare):
+        if newName:
+            self.set_full_name(newName)
+        if newEmail:
+            self.set_email(newEmail)
+        if newPhone:
+            self.set_phone(newPhone)
+        if newMedicare:
+            self.set_medicare_number(newMedicare)
     def __str__(self):
             return str("name: " + self._full_name)
     
@@ -70,9 +85,15 @@ class health_care_provider(user):
         return total/len(self._ratings)
     #setters
     def set_provider_number(self, new_provider_number):
-        self._provider_number = new_provider_number 
+        self._provider_number = new_provider_number
+    def set_full_name(self, new_full_name):
+        self._full_name = new_full_name
+    def set_email(self, new_email):
+        self._email_address = new_email
     def set_type(self, new_type):
         self._type = new_type
+    def set_phone(self, new_phone):
+        self._phone_number = new_phone 
     def set_working_centre(self, new_working_centre):
         self._working_centre = new_working_centre   
     def set_rating(self, new_rating):
@@ -94,9 +115,29 @@ class health_care_provider(user):
         if (search == self.get_full_name() or search == self.get_email_address() or search == self.get_type()):
             return 1
         return 0
+    def changeDetails(self, newName, newEmail, newPhone, newProvider, newType):
+        if newName:
+            self.set_full_name(newName)
+        if newEmail:
+            self.set_email(newEmail)
+        if newPhone:
+            self.set_phone(newPhone)
+        if newProvider:
+            self.set_provider_number(newProvider)
+        if newType:
+            self.set_type(newType)
     def __str__(self):
         #return str("name: " + self._full_name + " | type: " + self._type)
         return str(self._full_name + ", " + self._type)
+"""
+andy = patient("ANDY WANG", "andy@gmail.com", 000, 111)
+print(andy)
+print(andy._medicare_number)
+
+andy.changeDetails("jason", "jason@gmail.com", 123, "")
+print(andy)
+print(andy._medicare_number)
+"""
 """
 james = health_care_provider("james", "james@gmail.com", 000,123, "GP")
 james.add_rating(4)
