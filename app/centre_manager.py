@@ -88,8 +88,8 @@ class CentreManager:
 
     def get_centres(self):
         """
-        Public accessor to get get all user records.
+        Public accessor to get get all Centre records.
 
-        :return: A list of User records.
+        :return: A list of Centre records.
         """
         return self._centres
