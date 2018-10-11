@@ -17,7 +17,9 @@ This template generates the HTML for the profile page.
     <input type = hidden name = c value = {{c}}>
     <input type = hidden name = p value = {{p}}>
     <input type = hidden name = result value = 1>
-    <button type="submit" name = search value = {{search}}>Return to results</button>
+    <input type = hidden name = israting value = 0>
+    <button class = "waves-effect waves-light btn" type= "submit"
+            name = search value = {{search}}>Return to results</button>
 </form>
     <center><h1>Profile Display</h1></center>
     {% if object._isuser == 0 %}
@@ -45,13 +47,50 @@ This template generates the HTML for the profile page.
         </tr>
         <tr>    
         <td>ratings<td>
-        <td>{{object._rating}}<td>
+        <td>{{object.get_rating()}}<td>
         </tr>
         <tr>    
         <td>type<td>
         <td>{{object._type}}<td>
         </tr>
     </table>
+
+    <h4> Providers currently working here </h4>
+    {% for provider in object._providerList %}
+        <h6>{{provider}}</h6>
+        <form method="POST" action="/profile/{{provider._full_name}}">
+            <input type = hidden name = search value = {{s}}>
+            <input type = hidden name = c value = {{c}}>
+            <input type = hidden name = p value = {{p}}>
+            <input type = hidden name = israting value = 0>            
+            <button type="submit" name = provider class = "btn waves-effect waves-light"
+             value = "{{provider._email_address}}">View Profile</button>
+        </form><br>   
+    {% endfor %}
+    <center><h5>Give rating</h5></center>
+    <form method = "POST">
+
+        <!--<label>Browser Select</label> -->
+        <select class="browser-default" name = rating>
+        <option value="" disabled >Choose a rating</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        </select>
+        <input type = hidden name = c value = {{c}}>
+        <input type = hidden name = p value = {{p}}>
+        <input type = hidden name = result value = 1>
+        <input type = hidden name = "israting" value = 1>
+        <input type = hidden name = provider value = "{{object._name}}">
+        <button type="submit" name = search value = "{{search}}">Submit</button>
+    </form>
     {% endif %}
     {% if object._isuser == 1 %}
     <center><h2> Health provider Information </h2> </center>
@@ -70,13 +109,49 @@ This template generates the HTML for the profile page.
         </tr>
         <tr>    
         <td>ratings<td>
-        <td>{{object._rating}}<td>
+        <td>{{object.get_rating()}}<td>
         </tr>
         <tr>    
         <td>type<td>
         <td>{{object._type}}<td>
         </tr>          
     </table>
+    <h4> {{object._full_name}} is currently working at </h4>
+    {% for centre in object._working_centre %}
+        <h6>{{centre}}</h6>
+        <form method="POST" action="/profile/{{centre._name}}">
+            <input type = hidden name = search value = {{s}}>
+            <input type = hidden name = c value = {{c}}>
+            <input type = hidden name = p value = {{p}}>
+            <input type = hidden name = israting value = 0>            
+            <button type="submit" name = provider class = "btn waves-effect waves-light"
+             value = "{{centre._name}}">View Profile</button>
+        </form><br>   
+    {% endfor %}
+    <center><h2>Give rating</h2></center>
+    <form method = "POST">
+
+        <!--<label>Browser Select</label> -->
+        <select class="browser-default" name = rating>
+        <option value="" disabled >Choose a rating</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        </select>
+        <input type = hidden name = c value = {{c}}>
+        <input type = hidden name = p value = {{p}}>
+        <input type = hidden name = result value = 1>
+        <input type = hidden name = "israting" value = 1>
+        <input type = hidden name = provider value = "{{object._email_address}}">
+        <button type="submit" name = search value = "{{search}}">Submit</button>
+    </form>
     {% endif %}
 {% endblock %}
 
