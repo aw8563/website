@@ -21,6 +21,7 @@ from app.user import *
 from app.user_manager import UserManager
 from app.centre_manager import CentreManager
 
+
 import sys
 import logging
 from termcolor import colored
@@ -31,8 +32,8 @@ logger = logging.getLogger(__name__)
 if sys.argv[1] == 'run':
     hsc = HealthCareSystem()
 
-from app.models import Centre, User
-
+from app.models import Centre, User, Appointment
+from app import db
 
 @app.route('/')
 @login_required
@@ -274,11 +275,24 @@ def manage_bookings():
 
     :return:
         GET:  Creates and renders the booking page, along with forms used to book an appointment.
-        POST: ??
+        POST: Deletes an existing booking
     """
 
     logger.warn(colored(current_user.username, 'yellow'))
-    return render_template('currBooking.html', user=current_user)
+
+    # User is deleting booking
+    if request.method == 'POST':
+        logger.warn(colored(request.form, 'yellow'))
+
+        if request.form.get("action", False) == 'cancel':
+
+            a = Appointment.query.filter_by(id=request.form.get("appointment_id", False)).first()
+            db.session.delete(a)
+            db.session.commit()
+            logger.warn(colored("Deleted appointment: %s" % request.form.get("appointment_id", False), 'green'))
+
+
+    return render_template('manage_bookings.html', user=current_user)
 
     # cancel = 0
     # if (request.method == 'POST'):
@@ -290,7 +304,7 @@ def manage_bookings():
     #         result = request.form['result']
     #         provider = request.form['provider']
     #
-    #         return render_template('currBooking.html', user=curr_user, cancel=cancel, l=len(curr_user._appointment_list),
+    #         return render_template('manage_bookings.html', user=curr_user, cancel=cancel, l=len(curr_user._appointment_list),
     #                                view=view, is_centre_search=is_centre_search, p=p, search=s, result=result, provider=provider)
     #
     #     name = request.form['name']
@@ -305,4 +319,4 @@ def manage_bookings():
     #             cancel = 1
     #             # curr_user.removeAppointment(app)
     # length = len(curr_user._appointment_list)
-    # return render_template('currBooking.html', user=curr_user, cancel=cancel, l=length)
+    # return render_template('manage_bookings.html', user=curr_user, cancel=cancel, l=length)
