@@ -21,7 +21,7 @@
         <div>
             <label>
                 <input type="checkbox" id="do_user_search" name="do_user_search" value={{ do_user_search }}
-                       {% if do_user_search %} checked {% endif %}>
+                        {% if do_user_search %} checked {% endif %}>
                 <span class="black-text">View Users</span>
             </label>
         </div>
@@ -62,43 +62,67 @@
         {# If there are any centres found, display them #}
         {% if centre_results|length > 0 %}
             <h5 class="blue-text"> Centres </h5>
-            {% for centre in centre_results %}
-                <h4> {{ centre.name }} </h4>
-                <form method="POST" action="/profile/{{ centre.name }}">
+             <table class="responsive-table">
+                <th>Name</th>
+                <th>Suburb</th>
 
-                    <button type="submit" name=centre class="btn waves-effect waves-light"
-                            value="{{ centre.name }}">View Profile
-                    </button>
-                </form><br>
+                {% for centre in centre_results %}
+                    <tr>
+                        <td><a href="/profile/{{ centre.name }}">{{ centre.name }}</a></td>
+                        <td> {{ centre.suburb}}</td>
 
-            {% endfor %}
+                        {# Uncomment if we want to include button for profile #}
+                        {# <td>#}
+                        {#     <form method="POST" action="/profile/{{ centre.name}}">#}
+                        {#         <button type="submit" name=centre value={{ centre }}#}
+                        {#         class="btn waves-effect waves-light">View Profile</button>#}
+                        {#     </form>#}
+                        {# </td>#}
+                    </tr>
+                {% endfor %}
+            </table>
         {% endif %}
 
         {# If there are any users found, display them #}
         {% if user_results|length > 0 %}
-                <h5 class="blue-text"> Users </h5>
-                {% for user in user_results %}
-                    <p1> {{ user.username }} </p1>
-                    <form method="POST" action="/booking">
+            <br>
+            <hr>
+            <h5 class="blue-text"> Users </h5>
+            <table class="responsive-table">
+                <th>Username</th>
+                <th>Role</th>
 
-                        <input type=hidden name=book value=0>
-                        <button type="submit" name=provider value={{ user.email }}
-                                class="btn waves-effect waves-light">Book</button>
-                    </form>
-                    <form method="POST" action="/profile/{{ user.email }}">
-                        <input type=hidden name=search value= {{ s }}>
-                        <input type=hidden name=c value= {{ c }}>
-                        <input type=hidden name=p value= {{ p }}>
-                        <input type=hidden name=israting value=0>
-                        <button type="submit" name=user value={{ user }}
-                                class="btn waves-effect waves-light">View Profile</button>
-                    </form>
+                {% for user in user_results %}
+                    <tr>
+                        <td><a href="/profile/{{ user.username }}">{{ user.username }}</a></td>
+                        <td> {{ user.role }}</td>
+                        <td>
+                            {# We can't book appointments with patients or with ourselves #}
+                            {% if user.role != 'Patient' and user.username != current_user.username %}
+                                <form method="POST" action="/booking">
+                                    <input type=hidden name=book value=0>
+                                    <button type="submit" name=provider value={{ user.email }}
+                                            class="btn waves-effect waves-light">Book appointment
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                        {# Uncomment if we want to include button for profile #}
+                        {# <td>#}
+                        {#     <form method="POST" action="/profile/{{ user.email }}">#}
+                        {#         <button type="submit" name=user value={{ user }}#}
+                        {#         class="btn waves-effect waves-light">View Profile</button>#}
+                        {#     </form>#}
+                        {# </td>#}
+                    </tr>
+
                 {% endfor %}
+            </table>
         {% endif %}
 
-    {# Otherwise, indicate that no results were found #}
+        {# Otherwise, indicate that no results were found #}
     {% else %}
         <h1 style="color:red;"> Results </h1>
-            <p1> No matching results. Please search again</p1>
+        <p1> No matching results. Please search again</p1>
     {% endif %}
 {% endblock %}
