@@ -44,6 +44,14 @@ def index():
 
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
+    """
+    Create a new booking with a provider.
+
+    :return:
+        GET: Creates and renders a page which can be used to create a booking for a provider.
+        POST: Creates a booking using information from the provided posted form.
+    """
+
     pass
     # done_booking = 0
     # now = str(datetime.datetime.now())
@@ -262,11 +270,9 @@ def manage_bookings():
         POST: Deletes an existing booking
     """
 
-    logger.warn(colored(current_user.username, 'yellow'))
-
     # User is deleting booking
     if request.method == 'POST':
-        logger.warn(colored(request.form, 'yellow'))
+        logger.debug(colored(request.form, 'yellow'))
 
         if request.form.get("action", False) == 'cancel':
             a = Appointment.query.filter_by(id=request.form.get("appointment_id", False)).first()
