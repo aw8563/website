@@ -135,12 +135,13 @@ class HealthCareSystem:
 
                     # TODO: Maybe should be part of user_manager?
                     # TODO: Do we need to handle the 'usual' format?
-                    start_time = datetime.strptime(r['start_time'], '%H:%M').time()
-                    end_time = datetime.strptime(r['end_time'], '%H:%M').time()
+
+                    start_time = datetime.strptime(r['start_time'], '%d/%m/%Y_%H:%M')
+                    end_time = datetime.strptime(r['end_time'], '%d/%m/%Y_%H:%M')
 
                     a = Appointment(patient_email=r['patient'], provider_email=r['provider'], centre_name=r['centre'],
                                     start_time=start_time, end_time=end_time, is_confirmed=int(r['is_confirmed']),
-                                    notes=r['notes'])
+                                    notes=r['notes'], reason=r['reason'])
 
                     db.session.add(a)
                     db.session.commit()

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2> Current Bookings</h2>
+
+{# If the current user is a patient #}
+{% if user.role == 'Patient' %}
+
+    {# Check whether they have any bookings with providers #}
+    {% if user.provider_bookings|length <= 0 %}
+        <p>You have no bookings with providers.</p><br><br>
+
+    {% else %}
+        <p1>You have <b>{{ user.provider_bookings|length }}</b> appointments with providers.<p1><br><br>
+
+        {% for booking in user.provider_bookings %}
+            <div class="row">
+                <div class="col s12 m6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Booking with <a
+                                    href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
+                                ({{ booking.provider.role }}) </span>
+                            Status: {% if booking.is_confirmed == 0 %}
+                            <b class="yellow-text">Pending</b>
+                        {% else %}
+                            <b class="green-text">Confirmed</b>
+                        {% endif %}
+                            <br>
+                                on {{ booking.start_time }} - {{ booking.end_time }}<br>
+                                at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
+
+                                Reason for visit:<br>{{ booking.notes }}
+                            </p>
+                        </div>
+                        <div class="card-action">
+                            <form method="POST" action="/manage_bookings">
+                                <input type=hidden name=action value='cancel'>
+                                <input type=hidden name=appointment_id value='{{ booking.id }}'>
+                                <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+{# Otherwise, they're a provider #}
+{% else %}
+
+    {# Check whether they have any appointments with patients #}
+    {% if user.patient_bookings|length <= 0 %}
+        <p1>You have no appointments with patients.<p1><br><br>
+    {% else %}
+        <p1>You have <b>{{ user.patient_bookings|length }}</b> appointments with patients.<p1><br><br>
+         {% for booking in user.patient_bookings %}
+            <div class="row">
+                <div class="col s12 m6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Booking with <a
+                                    href="/profile/{{ booking.patient.username }}">{{ booking.patient.username }}</a> -
+                                ({{ booking.patient.role }}) </span>
+                            Status: {% if booking.is_confirmed == 0 %}
+                            <b class="yellow-text">Pending</b>
+                        {% else %}
+                            <b class="green-text">Confirmed</b>
+                        {% endif %}
+                            <br>
+                                on {{ booking.start_time }} - {{ booking.end_time }}<br>
+                                at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
+
+                                Reason for visit:<br>{{ booking.notes }}
+                            </p>
+                        </div>
+                        <div class="card-action">
+                            <form method="POST" action="/manage_bookings">
+                                <input type=hidden name=action value='cancel'>
+                                <input type=hidden name=appointment_id value='{{ booking.id }}'>
+                                <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+{#{% for p in user._appointment_list %}#}
+{#<p1> with {{p._health_care_provider._full_name}}, ({{p._health_care_provider._type}})<br>#}
+{#on {{p._date}}, {{p._start_time}} - {{p._end_time}}<br> at {{p._centre}}</p1>#}
+{##}
+{#<form method = "POST" action = "/currBooking">#}
+{#    <input type = hidden name = time value = "{{p._start_time}}">#}
+{#    <input type = hidden name = name value = "{{p._health_care_provider._full_name}}">#}
+{#    <input type = hidden name = date value = "{{p._date}}">#}
+{#    <input type = hidden name = centre value = "{{p._centre}}">    #}
+{#    <input type = hidden name = view value = 0>#}
+{#    {% if view != 1%}#}
+{#        <button type = 'submit', #}
+{#        class = "btn waves-effect waves-light" > cancel </button>#}
+{#    {%endif%}#}
+{#</form> <br>#}
+{#{% endfor %}#}
+{#{% if view%}#}
+{#    <form action = "/currBooking">#}
+{#        <button class = "btn waves-effect waves-light">#}
+{#        Cancel bookings</button>#}
+{#    </form>#}
+{#{% endif %}#}
+{#{% endif %}#}
+{##}
+{#{% if view %}#}
+{#<form method = "POST" action = "/booking">#}
+{#    <input type = hidden name = c value = {{c}}>#}
+{#    <input type = hidden name = p value = {{p}}>#}
+{#    <input type = hidden name = result value = 1>#}
+{#    <input type = hidden name = book value = 0>#}
+{#    <input type = hidden name = search value = "{{search}}">#}
+{#    <input type = hidden name = provider value = {{provider}}><br>#}
+{##}
+{#    <button class = "btn waves-effect waves-light"#}
+{#            type = 'submit'> Back to booking </button>#}
+{#</form> <br>#}
+{#{% else %}#}
+{#    {% if l > 0 %}#}
+{#    <form method = 'POST' action = "/currBooking">#}
+{#    <button class = "btn waves-effect waves-light" type = submit#}
+{#            name = view value = "cancelAll"> Cancel all bookings #}
+{#    </button>#}
+{#    {% endif %} #}
+{#{% endif %}#}
+{% endblock %}
