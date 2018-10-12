@@ -86,7 +86,7 @@
         {# If there are any users found, display them #}
         {% if user_results|length > 0 %}
             <br>
-            
+
             <h5 class="blue-text"> Users </h5>
             <table class="responsive-table">
                 <th>Username</th>
@@ -97,8 +97,12 @@
                         <td><a href="/profile/{{ user.username }}">{{ user.username }}</a></td>
                         <td> {{ user.role }}</td>
                         <td>
-                            {# We can't book appointments with patients or with ourselves #}
-                            {% if user.role != 'Patient' and user.username != current_user.username %}
+                            {# Ensure the following:
+                               - We can't book appointments with patients or with ourselves
+                               - We can't book appointments with ourselves.
+                               - We can't book appointments if we are not a patient.
+                             #}
+                            {% if user.role != 'Patient' and user.username != current_user.username and current_user.role == 'Patient'%}
                                 <form method="POST" action="/booking">
                                     <input type=hidden name=book value=0>
                                     <button type="submit" name=provider value={{ user.email }}
