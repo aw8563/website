@@ -5,26 +5,18 @@
 #
 # Yeahhh boiiii - das my guy - Clancy Rye
 
-import csv
-import datetime
-import os
+import logging
+import sys
 
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from termcolor import colored
 
 from app import app
-from app.appointment import *
-from app.centre import *
+from app.centre_manager import CentreManager
 from app.forms import LoginForm, RegistrationForm
 from app.health_care_system import HealthCareSystem
-from app.user import *
 from app.user_manager import UserManager
-from app.centre_manager import CentreManager
-
-
-import sys
-import logging
-from termcolor import colored
 
 logger = logging.getLogger(__name__)
 # Dirty hack - basically makes sure we don't try to use the database unless we're sure it's ready.
@@ -34,6 +26,7 @@ if sys.argv[1] == 'run':
 
 from app.models import Centre, User, Appointment
 from app import db
+
 
 @app.route('/')
 @login_required
@@ -51,8 +44,6 @@ def index():
 
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
-
-
     pass
     # done_booking = 0
     # now = str(datetime.datetime.now())
@@ -204,11 +195,6 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/appointments')
-def appointments():
-    return render_template('appointments.html')
-
-
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     """
@@ -238,7 +224,6 @@ def search():
 
         # # If we're performing a Centre search, fetch appropriate variables.
         if do_centre_search:
-
             name = request.form['c_name']
             type = request.form['c_type']
             suburb = request.form['c_suburb']
@@ -249,7 +234,6 @@ def search():
 
         # If we're performing a Provider search, fetch appropriate variables.
         if do_user_search:
-
             name = request.form['u_name']
             type = request.form['u_type']
             user_results = User.do_search(name, type)
@@ -285,38 +269,10 @@ def manage_bookings():
         logger.warn(colored(request.form, 'yellow'))
 
         if request.form.get("action", False) == 'cancel':
-
             a = Appointment.query.filter_by(id=request.form.get("appointment_id", False)).first()
             db.session.delete(a)
             db.session.commit()
             logger.warn(colored("Deleted appointment: %s" % request.form.get("appointment_id", False), 'green'))
 
-
     return render_template('manage_bookings.html', user=current_user)
 
-    # cancel = 0
-    # if (request.method == 'POST'):
-    #     view = int(request.form['view'])
-    #     if (view):
-    #         is_centre_search = request.form['is_centre_search']
-    #         p = request.form['p']
-    #         s = request.form['search']
-    #         result = request.form['result']
-    #         provider = request.form['provider']
-    #
-    #         return render_template('manage_bookings.html', user=curr_user, cancel=cancel, l=len(curr_user._appointment_list),
-    #                                view=view, is_centre_search=is_centre_search, p=p, search=s, result=result, provider=provider)
-    #
-    #     name = request.form['name']
-    #     time = request.form['time']
-    #     date = request.form['date']
-    #     centre = request.form['centre']
-    #     print(name + time + date + centre)
-    #     for a in curr_user._appointment_list:
-    #         if (
-    #                                 time == a._start_time and date == a._date and centre == a._centre and name == a._health_care_provider._full_name):
-    #             curr_user.remove_appointment(a)
-    #             cancel = 1
-    #             # curr_user.removeAppointment(app)
-    # length = len(curr_user._appointment_list)
-    # return render_template('manage_bookings.html', user=curr_user, cancel=cancel, l=length)
