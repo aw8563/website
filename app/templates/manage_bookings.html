@@ -30,7 +30,7 @@
                                 on {{ booking.start_time }} - {{ booking.end_time }}<br>
                                 at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
 
-                                Reason for visit:<br>{{ booking.notes }}
+                                Reason for visit:<br>{{ booking.reason }}
                             </p>
                         </div>
                         <div class="card-action">
@@ -71,7 +71,8 @@
                                 on {{ booking.start_time }} - {{ booking.end_time }}<br>
                                 at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
 
-                                Reason for visit:<br>{{ booking.notes }}
+                                Reason for visit:<br>{{ booking.reason }}<br><br>
+                                Doctor's notes:<br>{{ booking.notes }}
                             </p>
                         </div>
                         <div class="card-action">
