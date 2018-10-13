@@ -39,9 +39,11 @@ header and footer.
 
                 <ul id="nav-main" class="left">
                     <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>
-                    <li><a href="{{ url_for('search') }}" id="nav-logout-btn">Search</a></li>
-                    <li><a href="{{ url_for('booking') }}" id="nav-logout-btn">Make a booking</a></li>
-                    <li><a href="{{ url_for('manage_bookings') }}" id="nav-logout-btn">Manage bookings</a></li>
+                    {% if not current_user.is_anonymous %}
+                        <li><a href="{{ url_for('search') }}" id="nav-logout-btn">Search</a></li>
+                        <li><a href="{{ url_for('booking') }}" id="nav-logout-btn">Make a booking</a></li>
+                        <li><a href="{{ url_for('manage_bookings') }}" id="nav-logout-btn">Manage bookings</a></li>
+                    {% endif %}
                 </ul>
 
                 {# Right side contains login/register/logout buttons #}
