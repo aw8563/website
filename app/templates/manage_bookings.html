@@ -60,7 +60,7 @@
                 <p>You have no appointments with patients.</p><br><br>
             {# Again, if they do, show each in its own card #}
             {% else %}
-                <p>You have <b>{{ user.patient_bookings|length }}</b> appointments with patients.</p><br><br>
+                <p>You have <b>{{ user.patient_bookings|length }}</b> appointments with patients.</p>
                 {% for booking in user.patient_bookings %}
                     <div class="row">
                         <div class="col s12 m6">
