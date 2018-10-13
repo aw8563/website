@@ -104,8 +104,8 @@
                              #}
                             {% if user.role != 'Patient' and user.username != current_user.username and current_user.role == 'Patient'%}
                                 <form method="POST" action="/booking">
-                                    <input type=hidden name=book value=0>
-                                    <button type="submit" name=provider value={{ user.email }}
+{#                                    <input type=hidden name=provider value={{ user.username }}>#}
+                                    <button type="submit" name=provider_selection value={{ user.username }}
                                             class="btn waves-effect waves-light">Book appointment
                                     </button>
                                 </form>
