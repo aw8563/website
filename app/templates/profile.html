@@ -11,7 +11,7 @@ This template generates the HTML for the profile page.
 {% endblock %}
 
 {% block content %}
-
+    <h1> KJDSFJKLDSFJKLJDSKLF</h1>
     {# 'Back to results' button #}
     <form method="POST" action="/search">
         <div class="btn-return">
@@ -76,7 +76,7 @@ This template generates the HTML for the profile page.
 
         {# ----- Give Rating ----- #}
         <h5>Give rating</h5>
-        <form>
+        <form method = "POST">
             <select class="browser-default" name=rating>
                 <option value="" disabled>Choose a rating</option>
                 <option value="1">1</option>
@@ -92,6 +92,7 @@ This template generates the HTML for the profile page.
             </select>
 
             <button type="submit" class="btn waves-effect waves-light">Submit</button>
+            {% if rated %} <p>rating successful! </p>{% endif %}
         </form>
     {% elif type == 'user' %}
         <center><h2> User Information</h2></center>
@@ -152,8 +153,9 @@ This template generates the HTML for the profile page.
             </table>
 
             {# ----- Give Rating ----- #}
-            <h5>Give rating</h5>
-            <form>
+            <h5>Give rating </h5> 
+
+            <form method = "POST">
                 <select class="browser-default" name=rating>
                     <option value="" disabled>Choose a rating</option>
                     <option value="1">1</option>
@@ -169,6 +171,7 @@ This template generates the HTML for the profile page.
                 </select>
 
                 <button type="submit" class="btn waves-effect waves-light">Submit</button>
+                {% if rated %} <p>rating successful! </p>{% endif %}
             </form>
         {% endif %}
     {% endif %}

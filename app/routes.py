@@ -17,6 +17,7 @@ from app.centre_manager import CentreManager
 from app.forms import LoginForm, RegistrationForm
 from app.health_care_system import HealthCareSystem
 from app.user_manager import UserManager
+from app.models import *
 
 logger = logging.getLogger(__name__)
 # Dirty hack - basically makes sure we don't try to use the database unless we're sure it's ready.
@@ -40,7 +41,6 @@ def index():
     """
 
     return render_template('index.html', title='home')
-
 
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
@@ -116,17 +116,37 @@ def profile(name):
 
     # Determine what kind of profile we should be rendering
     profile_type = hsc.determine_type(name)
+
+    ratingType = "centre"
+    providerEmail = ""
+    centreName = ""
+    rated = False
+
     if profile_type == 'user':
         obj = UserManager.get_user(name)
+        providerEmail = obj.email
+        ratingType = "provider"
     elif profile_type == 'centre':
         obj = CentreManager.get_centre(name)
+        centreName = obj.name
     else:
         return 'Something went wrong, undetermined type for "%s"' % name
 
+    if (request.method == "POST"):
+        score = int(request.form["rating"])
+        rating = Rating(type = ratingType, rating = score, patient_email = current_user.email,\
+                        provider_email = providerEmail, centre_name = centreName)       
+        
+        db.session.add(rating)
+        db.session.commit()
+        rated = True
+
+    
     logger.warn(colored(name, "red"))
     logger.warn(colored(obj, "red"))
 
-    return render_template('profile.html', object=obj, type=profile_type)
+
+    return render_template('profile.html', object=obj, type=profile_type, rated = rated)
 
 
 @app.route('/register', methods=['GET', 'POST'])
