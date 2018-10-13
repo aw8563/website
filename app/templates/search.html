@@ -9,6 +9,7 @@
         <h2>Search Medi-soft</h2>
         <div class="divider"></div>
         <br>
+
         <form method="POST">
 
             {# Checkboxes for performing centre and provider searches #}
@@ -61,35 +62,42 @@
         {% if results_found %}
             <h2 class="red-text"> Results </h2>
 
+            <ul class="collapsible">
             {# If there are any centres found, display them #}
             {% if centre_results|length > 0 %}
-                <h5 class="blue-text"> Centres </h5>
-                 <table class="responsive-table">
-                    <th>Name</th>
-                    <th>Suburb</th>
 
-                    {% for centre in centre_results %}
-                        <tr>
-                            <td><a href="/profile/{{ centre.name }}">{{ centre.name }}</a></td>
-                            <td> {{ centre.suburb}}</td>
+            <li>
+                <div class="collapsible-header valign-wrapper"><i class="material-icons">local_hospital</i><h5 class="blue-text">Centres</h5></div>
+                <div class="collapsible-body">
 
-                            {# Uncomment if we want to include button for profile #}
-                            {# <td>#}
-                            {#     <form method="POST" action="/profile/{{ centre.name}}">#}
-                            {#         <button type="submit" name=centre value={{ centre }}#}
-                            {#         class="btn waves-effect waves-light">View Profile</button>#}
-                            {#     </form>#}
-                            {# </td>#}
-                        </tr>
-                    {% endfor %}
-                </table>
+                     <table class="responsive-table">
+                        <th>Name</th>
+                        <th>Suburb</th>
+
+                        {% for centre in centre_results %}
+                            <tr>
+                                <td><a href="/profile/{{ centre.name }}">{{ centre.name }}</a></td>
+                                <td> {{ centre.suburb}}</td>
+
+                                {# Uncomment if we want to include button for profile #}
+                                {# <td>#}
+                                {#     <form method="POST" action="/profile/{{ centre.name}}">#}
+                                {#         <button type="submit" name=centre value={{ centre }}#}
+                                {#         class="btn waves-effect waves-light">View Profile</button>#}
+                                {#     </form>#}
+                                {# </td>#}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                </li>
             {% endif %}
 
             {# If there are any users found, display them #}
             {% if user_results|length > 0 %}
-                <br>
-
-                <h5 class="blue-text"> Users </h5>
+                 <li>
+                <div class="collapsible-header valign-wrapper"><i class="material-icons">face</i><h5 class="blue-text">Users</h5></div>
+                <div class="collapsible-body">
                 <table class="responsive-table">
                     <th>Username</th>
                     <th>Role</th>
@@ -124,12 +132,24 @@
 
                     {% endfor %}
                 </table>
+                  </div>
+                </li>
             {% endif %}
 
+                </ul>
             {# Otherwise, indicate that no results were found #}
         {% else %}
             <h1 style="color:red;"> Results </h1>
-            <p1> No matching results. Please search again</p1>
+            <p1> No matching results. Please try altering your search space or criteria!</p1>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        {# Initialise collapsible #}
+        $(document).ready(function(){
+            $('.collapsible').collapsible();
+        });
+    </script>
 {% endblock %}
