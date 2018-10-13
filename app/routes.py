@@ -294,6 +294,12 @@ def manage_bookings():
     if request.method == 'POST':
         logger.debug(colored(request.form, 'yellow'))
 
+        if request.form["action"] == 'confirm': #confirm the booking request
+            appID = request.form['id']
+            a = Appointment.query.filter_by(id = appID).first()
+            a.is_confirmed = True
+            db.session.commit()
+
         if request.form.get("action", False) == 'cancel':
             a = Appointment.query.filter_by(id=request.form.get("appointment_id", False)).first()
             db.session.delete(a)

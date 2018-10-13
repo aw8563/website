@@ -63,7 +63,13 @@
                                     href="/profile/{{ booking.patient.username }}">{{ booking.patient.username }}</a> -
                                 ({{ booking.patient.role }}) </span>
                             Status: {% if booking.is_confirmed == 0 %}
-                            <b class="yellow-text">Pending</b>
+                            <b class="yellow-text">Pending</b> 
+                            <form method = "POST">
+                                <input type = hidden name = id value = '{{booking.id}}'>
+                                <button class="red darken-2 waves-effect waves-light btn"     
+                                type="submit" name = action value = confirm>Confirm Booking
+                                </button>
+                            </form>
                         {% else %}
                             <b class="green-text">Confirmed</b>
                         {% endif %}
