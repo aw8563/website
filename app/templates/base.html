@@ -29,14 +29,24 @@ header and footer.
         <!-- Nav bar -->
         <nav class="red darken-3" role="navigation">
             <div class="nav-wrapper container">
-                
+
+
                 <a class="left" id="logo-container" class="brand-logo" href="/"/>
                     <img src="/static/img/caduceus_logo.svg" height="64"/>
                 </a>
 
-                {% if not current_user.is_anonymous %}
-                    <a class="left" href="/profile/{{ current_user.username }}">Logged in as: {{ current_user.username }} - ({{ current_user.role }})</a>
-                {% endif %}
+
+
+
+
+                <ul id="nav-main" class="left">
+                    <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>
+                    <li><a href="{{ url_for('search') }}" id="nav-logout-btn">Search</a></li>
+                    <li><a href="{{ url_for('booking') }}" id="nav-logout-btn">Make a booking</a></li>
+                    <li><a href="{{ url_for('manage_bookings') }}" id="nav-logout-btn">Manage bookings</a></li>
+                </ul>
+
+
 
                 <ul id="nav-main" class="right">
 
@@ -44,7 +54,10 @@ header and footer.
                         <li><a href="{{ url_for('login') }}" id="nav-login-btn">Login</a></li>
                         <li><a href="{{ url_for('register') }}" id="nav-register-btn">Register</a></li>
                     {% else %}
-                        <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>
+
+                         <li><a class="left" href="/profile/{{ current_user.username }}">Logged in as: {{ current_user.username }} - ({{ current_user.role }})</a></li>
+
+{#                        <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>#}
                         <li><a href="{{ url_for('logout') }}" id="nav-logout-btn">Logout</a></li>
                     {% endif %}
                 </ul>
