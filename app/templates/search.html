@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
+{#----- Main content block for search page -----#}
 {% block content %}
 
+    {# Set checkbox value from previous form submission, if it exists, othewise set it to 0 #}
+    {# This means checkboxes will retain whether it's checked or not, but start unchecked #}
     {% set do_centre_search = form['do_centre_search']|default(0) %}
     {% set do_user_search = form['do_user_search']|default(0) %}
 
@@ -11,8 +14,7 @@
         <br>
 
         <form method="POST">
-
-            {# Checkboxes for performing centre and provider searches #}
+            {# Checkbox for performing centre search #}
             <div>
                 <label>
                     <input type="checkbox" id="do_centre_search" name="do_centre_search" value={{ do_centre_search }}
@@ -21,6 +23,7 @@
                 </label>
             </div>
 
+            {# Checkbox for performing user search #}
             <div>
                 <label>
                     <input type="checkbox" id="do_user_search" name="do_user_search" value={{ do_user_search }}
@@ -63,81 +66,85 @@
             <h2 class="red-text"> Results </h2>
 
             <ul class="collapsible">
-            {# If there are any centres found, display them #}
-            {% if centre_results|length > 0 %}
+                {# If there are any centres found, display them otherwise don't bother #}
+                {% if centre_results|length > 0 %}
 
-            <li>
-                <div class="collapsible-header valign-wrapper"><i class="material-icons">local_hospital</i><h5 class="blue-text">Centres</h5></div>
-                <div class="collapsible-body">
+                    <li>
+                        <div class="collapsible-header valign-wrapper"><i class="material-icons">local_hospital</i><h5
+                                class="blue-text">Centres</h5></div>
+                        <div class="collapsible-body">
 
-                     <table class="responsive-table">
-                        <th>Name</th>
-                        <th>Suburb</th>
+                            <table class="responsive-table">
+                                <th>Name</th>
+                                <th>Suburb</th>
 
-                        {% for centre in centre_results %}
-                            <tr>
-                                <td><a href="/profile/{{ centre.name }}">{{ centre.name }}</a></td>
-                                <td> {{ centre.suburb}}</td>
+                                {% for centre in centre_results %}
+                                    <tr>
+                                        <td><a href="/profile/{{ centre.name }}">{{ centre.name }}</a></td>
+                                        <td> {{ centre.suburb }}</td>
 
-                                {# Uncomment if we want to include button for profile #}
-                                {# <td>#}
-                                {#     <form method="POST" action="/profile/{{ centre.name}}">#}
-                                {#         <button type="submit" name=centre value={{ centre }}#}
-                                {#         class="btn waves-effect waves-light">View Profile</button>#}
-                                {#     </form>#}
-                                {# </td>#}
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-                </li>
-            {% endif %}
+                                        {# Uncomment if we want to include button for profile #}
+                                        {# <td>#}
+                                        {#     <form method="POST" action="/profile/{{ centre.name}}">#}
+                                        {#         <button type="submit" name=centre value={{ centre }}#}
+                                        {#         class="btn waves-effect waves-light">View Profile</button>#}
+                                        {#     </form>#}
+                                        {# </td>#}
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </li>
+                {% endif %}
 
-            {# If there are any users found, display them #}
-            {% if user_results|length > 0 %}
-                 <li>
-                <div class="collapsible-header valign-wrapper"><i class="material-icons">face</i><h5 class="blue-text">Users</h5></div>
-                <div class="collapsible-body">
-                <table class="responsive-table">
-                    <th>Username</th>
-                    <th>Role</th>
+                {# If there are any users found, display them #}
+                {% if user_results|length > 0 %}
+                    <li>
+                        <div class="collapsible-header valign-wrapper"><i class="material-icons">face</i><h5
+                                class="blue-text">Users</h5></div>
+                        <div class="collapsible-body">
+                            <table class="responsive-table">
+                                <th>Username</th>
+                                <th>Role</th>
 
-                    {% for user in user_results %}
-                        <tr>
-                            <td><a href="/profile/{{ user.username }}">{{ user.username }}</a></td>
-                            <td> {{ user.role }}</td>
-                            <td>
-                                {# Ensure the following:
-                                   - We can't book appointments with patients or with ourselves
-                                   - We can't book appointments with ourselves.
-                                   - We can't book appointments if we are not a patient.
-                                 #}
-                                {% if user.role != 'Patient' and user.username != current_user.username and current_user.role == 'Patient'%}
-                                    <form method="POST" action="/booking">
-    {#                                    <input type=hidden name=provider value={{ user.username }}>#}
-                                        <button type="submit" name=provider_selection value={{ user.username }}
-                                                class="btn waves-effect waves-light">Book appointment
-                                        </button>
-                                    </form>
-                                {% endif %}
-                            </td>
-                            {# Uncomment if we want to include button for profile #}
-                            {# <td>#}
-                            {#     <form method="POST" action="/profile/{{ user.email }}">#}
-                            {#         <button type="submit" name=user value={{ user }}#}
-                            {#         class="btn waves-effect waves-light">View Profile</button>#}
-                            {#     </form>#}
-                            {# </td>#}
-                        </tr>
+                                {% for user in user_results %}
+                                    <tr>
+                                        <td><a href="/profile/{{ user.username }}">{{ user.username }}</a></td>
+                                        <td> {{ user.role }}</td>
+                                        <td>
+                                            {# Ensure the following:
+                                               - We can't book appointments with patients or with ourselves
+                                               - We can't book appointments with ourselves.
+                                               - We can't book appointments if we are not a patient.
+                                             #}
+                                            {% if user.role != 'Patient' and user.username != current_user.username and current_user.role == 'Patient' %}
+                                                <form method="POST" action="/booking">
+                                                    {#                                    <input type=hidden name=provider value={{ user.username }}>#}
+                                                    <button type="submit" name=provider_selection
+                                                            value={{ user.username }}
+                                                                    class="btn waves-effect waves-light
+                                                    ">Book appointment
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                        {# Uncomment if we want to include button for profile #}
+                                        {# <td>#}
+                                        {#     <form method="POST" action="/profile/{{ user.email }}">#}
+                                        {#         <button type="submit" name=user value={{ user }}#}
+                                        {#         class="btn waves-effect waves-light">View Profile</button>#}
+                                        {#     </form>#}
+                                        {# </td>#}
+                                    </tr>
 
-                    {% endfor %}
-                </table>
-                  </div>
-                </li>
-            {% endif %}
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </li>
+                {% endif %}
 
-                </ul>
-            {# Otherwise, indicate that no results were found #}
+            </ul>
+        {# Otherwise, indicate that no results were found #}
         {% else %}
             <h1 style="color:red;"> Results </h1>
             <p1> No matching results. Please try altering your search space or criteria!</p1>
@@ -146,10 +153,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        {# Initialise collapsible #}
-        $(document).ready(function(){
-            $('.collapsible').collapsible();
-        });
-    </script>
+    <script src="/static/js/search.js"></script>
 {% endblock %}

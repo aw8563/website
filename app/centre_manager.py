@@ -9,11 +9,13 @@ from termcolor import colored
 from app import db
 from app.models import Centre
 
+
 class CentreManager:
     """
     Class which is responsible for Centre management for the Medi-soft HCS. Namely, it provides abstraction for:
         - Centre creation.
         - Centre deletion.
+        - Fetching Centres.
 
     Largely, it does this by querying the Medi-soft Sqlite3 backend and maintaining a queriable list of records.
     """

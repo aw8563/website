@@ -6,14 +6,9 @@ This template generates the HTML for the registration page.
 
 {% extends "base.html" %}
 
-{% block stylesheets %}
-    {#----- register.html specific stylesheets -----#}
 
-    <!-- <link rel="stylesheet" type="text/css" href="/static/css/register.css"/> -->
-{% endblock %}
-
+{#----- Main content block for registration page -----#}
 {% block content %}
-    {#----- Main content block for registration page -----#}
 
     <div class="container">
         <h4>Register</h4>
@@ -59,9 +54,4 @@ This template generates the HTML for the registration page.
             </p>
         </form>
     </div>
-{% endblock %}
-
-{% block scripts %}
-    {#----- register.html specific javascript -----#}
-
 {% endblock %}

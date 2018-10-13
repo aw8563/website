@@ -6,50 +6,39 @@ This template generates the HTML for the login page.
 
 {% extends "base.html" %}
 
-{% block stylesheets %}
-    {#----- login.html specific stylesheets -----#}
-
-    <!-- <link rel="stylesheet" type="text/css" href="/static/css/login.css"/> -->
-{% endblock %}
-
+{#----- Main content block for login page -----#}
 {% block content %}
-    {#----- Main content block for login page -----#}
 
     <div class="container">
         <h4>Sign In</h4>
         <hr>
-
-        <!-- Login form -->
+        {# Login form #}
         <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=64) }}<br>
-            {% for error in form.username.errors %}
-                <!-- We probably shouldn't use inline css here. -->
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=64) }}<br>
-            {% for error in form.password.errors %}
-                <!-- We probably shouldn't use inline css here. -->
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <!-- There is probably a better way to do this with flask-wtf (form.submit)-->
-        <p>
-            <button id="login-btn" class="btn-large waves-effect waves-light red darken-3" type="submit" name="action">
-                <input class="white-text" type="submit" value="Login">
-            </button>
-        </p>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=64) }}<br>
+                {% for error in form.username.errors %}
+                    <!-- We probably shouldn't use inline css here. -->
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=64) }}<br>
+                {% for error in form.password.errors %}
+                    <!-- We probably shouldn't use inline css here. -->
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <!-- There is probably a better way to do this with flask-wtf (form.submit)-->
+            <p>
+                <button id="login-btn" class="btn-large waves-effect waves-light red darken-3" type="submit"
+                        name="action">
+                    <input class="white-text" type="submit" value="Login">
+                </button>
+            </p>
         </form>
-            <p>Don't have an account? <a href="{{ url_for('register') }}">Register now!</a></p>
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Register now!</a></p>
     </div>
-{% endblock %}
-
-{% block scripts %}
-    {#----- login.html specific javascript -----#}
-
 {% endblock %}

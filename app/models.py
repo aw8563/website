@@ -31,15 +31,6 @@ class User(UserMixin, db.Model):
     medicare_number = db.Column(db.String(28), unique=True)  # Patient medicare number: 12345678
     provider_number = db.Column(db.String(28), unique=True)  # Provider number: 12345678
 
-    #     child_id = Column(Integer, ForeignKey('child.id'))
-    #     child = relationship("Child", back_populates="parent")
-    # appointment_id = db.Column(db.Integer, db.ForeignKey('Appointments.id'))
-    # appointment.csv = db.relationship('Appointment', back_populates="users")
-
-    # appointments = db.relationship('Appointment', backref='user', lazy='dynamic')
-
-    # company = db.relationship("Company", foreign_keys=[company_id], backref="holders")
-    # stakeholder = db.relationship("Company", foreign_keys=[stakeholder_id], backref="holdings")
     # --- Relationships ---
     centres = db.relationship('Centre', secondary='Works_At', lazy='dynamic')  # Link to centres via intermediary table (many-many)
 
@@ -342,6 +333,7 @@ class Prescription(db.Model):
         """
 
         return '<Prescription {}, {}, {}>'.format(self.patient, self.provider, self.medicine)
+
 
 class Rating(db.Model):
     """

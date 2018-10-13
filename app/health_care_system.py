@@ -10,7 +10,6 @@ import csv
 import logging
 from datetime import datetime
 
-from datetime import datetime
 from termcolor import colored
 
 from app.centre_manager import CentreManager

@@ -6,20 +6,13 @@ This template generates the HTML for the profile page.
 
 {% extends "base.html" %}
 
+{# ----- Profile page specific CSS ----- #}
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="/static/css/profile.css"/>
 {% endblock %}
 
+{#----- Main content block for profile page -----#}
 {% block content %}
-
-    {# 'Back to results' button #}
-{#    <form method="POST" action="/search">#}
-{#        <div class="btn-return">#}
-{#            <button class="waves-effect waves-light btn" type="submit"#}
-{#                    name=search>Return to search#}
-{#            </button>#}
-{#        </div>#}
-{#    </form>#}
 
     {# Profile heading & content #}
     {# If the profile is for a centre, show its relevant attributes #}
@@ -93,6 +86,8 @@ This template generates the HTML for the profile page.
 
             <button type="submit" class="btn waves-effect waves-light">Submit</button>
         </form>
+
+    {# If the profile is for a user, show its relevant attributes #}
     {% elif type == 'user' %}
         <center><h2> User Information</h2></center>
 
@@ -172,7 +167,4 @@ This template generates the HTML for the profile page.
             </form>
         {% endif %}
     {% endif %}
-{% endblock %}
-
-{% block scripts %}
 {% endblock %}

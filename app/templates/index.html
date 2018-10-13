@@ -11,38 +11,38 @@ that good stuff.
 
 {% extends "base.html" %}
 
+{#----- index.html specific stylesheets #}
 {% block stylesheets %}
-    {#----- index.html specific stylesheets -----#}
-
     <link rel="stylesheet" type="text/css" href="/static/css/index.css"
 {% endblock %}
 
+{#----- Main content block for 'home' page -----#}
 {% block content %}
-    {#----- Main content block for login page -----#}
-
-
     <div class="row">
         <h3>Welcome to Medi-soft, {{ current_user.username }}!</h3>
         <div class="divider"></div>
         <br>
         <div class="col s6 offset-s3">
-            <button class="btn-large waves-effect waves-light greedy-btn" type="button" onclick="window.location.href='{{url_for('search')}}';">Search Medi-soft database.</button>
+            <button class="btn-large waves-effect waves-light greedy-btn" type="button"
+                    onclick="window.location.href='{{ url_for('search') }}';">Search Medi-soft database.
+            </button>
             <br><br>
+            {# Only allow booking if user is a patient - also change wording between providers and patients #}
             {% if current_user.role == 'Patient' %}
-                <button class="btn-large waves-effect waves-light greedy-btn" type="button" onclick="window.location.href='{{url_for('booking')}}';">Make a booking</button>
+                <button class="btn-large waves-effect waves-light greedy-btn" type="button"
+                        onclick="window.location.href='{{ url_for('booking') }}';">Make a booking
+                </button>
                 <br><br>
-                <button class="btn-large waves-effect waves-light greedy-btn" type="button" onclick="window.location.href='{{url_for('manage_bookings')}}';">Manage my bookings (patient)</button>
+                <button class="btn-large waves-effect waves-light greedy-btn" type="button"
+                        onclick="window.location.href='{{ url_for('manage_bookings') }}';">Manage my bookings (patient)
+                </button>
                 <br><br>
             {% else %}
-                <button class="btn-large waves-effect waves-light greedy-btn" type="button" onclick="window.location.href='{{url_for('manage_bookings')}}';">Manage my bookings (provider)</button>
+                <button class="btn-large waves-effect waves-light greedy-btn" type="button"
+                        onclick="window.location.href='{{ url_for('manage_bookings') }}';">Manage my bookings (provider)
+                </button>
                 <br><br>
             {% endif %}
         </div>
     </div>
 {% endblock %}
-
-{% block scripts %}
-    {#----- index.html specific javascript -----#}
-
-{% endblock %}
-

@@ -1,26 +1,31 @@
+{#
+booking.html
+
+This template is where a patient makes a booking with a health provider.
+#}
 {% extends 'base.html' %}
 
-{% block stylesheets %}
-{#    <link rel="stylesheet" type="text/css" href="/static/css/booking.css"/>#}
-{% endblock %}
-
+{#----- Main content block for booking page -----#}
 {% block content %}
-
-    {# Provider picker #}
     <div class="row">
         <h2>Make a booking</h2>
         <div class="divider"></div>
         <br>
 
+        {# This is where the user picks the provider they're booking with #}
+        {# Upon selecting a provider, submit it to the same page so we can load their centres #}
         <div class="col s16 m6">
             <div class="input-field">
                 <form method="POST" action="/booking">
                 <select name="provider_selection" onchange="this.form.submit()">
+                    {# If we've had a provider passed to us default to that, otherwise, show a prompt #}
                     {% if provider %}
                         <option value="{{ provider.username }}" selected>{{ provider.username }}</option>
                     {% else %}
                         <option value="" disabled selected>Which provider would you like to see?</option>
                     {% endif %}
+
+                    {# Populate the options from all providers #}
                     {% for p in providers %}
                         <option value="{{ p.username }}">{{ p.username }}</option>
                     {% endfor %}
@@ -34,26 +39,28 @@
     {# If we've got a provider we'd like to book for, show their centres #}
     {% if provider %}
         <form method="POST" action="/booking">
-        <input type=hidden name=provider_selection value={{ provider.username }}>
-        <div class="row">
-        <div class="col s12 m6">
-        <label>Select a centre</label><br>
-        {% for works_at in provider.Works_At %}
-                <label style = "color:black">
-                <input type = radio name = centre_selection value = "{{works_at.centre.name}}" required>
-                <span>{{works_at.centre.name}}</span>
-                </label><br>
-        {% endfor %}
-        </div>
-        </div>
+            <input type=hidden name=provider_selection value={{ provider.username }}>
+            <div class="row">
+                <div class="col s12 m6">
+                    <label>Select a centre</label><br>
+                    {% for works_at in provider.Works_At %}
+                        <label style="color:black">
+                            <input type=radio name=centre_selection value="{{ works_at.centre.name }}" required>
+                            <span>{{ works_at.centre.name }}</span>
+                        </label><br>
+                    {% endfor %}
+                </div>
+            </div>
 
-        {# Date, time & reason for visit #}
+            {# Date, time & reason for visit #}
             <div class="row">
                 <div class="col s12 m6">
                     <label>Date of appointment</label>
-                    <input type="text" name=date class="datepicker" placeholder="What date would you like your appointment?">
+                    <input type="text" name=date class="datepicker"
+                           placeholder="What date would you like your appointment?">
                     <label>Time of appointment</label>
-                    <input type="text" name=time class="timepicker" placeholder="What time would you like your appointment?">
+                    <input type="text" name=time class="timepicker"
+                           placeholder="What time would you like your appointment?">
                     <label>Reason for visit</label>
                     <input type="text" name=reason placeholder="Reason for visit">
                 </div>
@@ -62,40 +69,22 @@
         </form>
     {% endif %}
 
+    {# Populate feedback message based off of the result #}
     {% if result == 'Added' %}
-        <a class="green-text">An appointment was booked with {{ provider.username }}. You may review your bookings and their status <a href="/manage_bookings">here.</a></a>
+        <a class="green-text">An appointment was booked with {{ provider.username }}. You may review your bookings and
+            their status <a href="/manage_bookings">here.</a></a>
     {% elif result == 'Clash' %}
-        <a class="red-text">Your appointment clashed with an existing appointment - please try again with a different time.</a>
+        <a class="red-text">Your appointment clashed with an existing appointment - please try again with a different
+            time.</a>
     {% elif result == 'Past' %}
         <a class="red-text">As much as you want to relive your past - you can't. Book for the future, friend.</a>
     {% elif result == 'Hours' %}
-        <a class="red-text">Your appointment falls outside of the provider's working hours. You may view them <a href="/profile/{{ provider.email }}">here.</a></a>
+        <a class="red-text">Your appointment falls outside of the provider's working hours. You may view them <a
+                href="/profile/{{ provider.email }}">here.</a></a>
     {% endif %}
-
 {% endblock %}
 
-
+{# Page specific JS #}
 {% block scripts %}
-  <script>
-      {# Initialise datepicker #}
-      $(document).ready(function(){
-
-          $('.datepicker').datepicker({
-              format: 'dd/mm/yyyy'
-          });
-      });
-
-      {# Initialise timepicker #}
-      $(document).ready(function(){
-        $('.timepicker').timepicker({
-            twelveHour: false
-        });
-      });
-
-      {# Initialise the select form #}
-      $(document).ready(function(){
-        $('select').formSelect();
-      });
-
-  </script>
+    <script src="/static/js/booking.js"></script>
 {% endblock %}

@@ -7,183 +7,28 @@
 
 import logging
 import sys
+from datetime import datetime, timedelta
 
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from termcolor import colored
-from datetime import datetime, timedelta
 
 from app import app
+from app import db
 from app.centre_manager import CentreManager
 from app.forms import LoginForm, RegistrationForm
 from app.health_care_system import HealthCareSystem
+from app.models import Centre, User, Appointment, WorksAt
 from app.user_manager import UserManager
 
 logger = logging.getLogger(__name__)
+
 # Dirty hack - basically makes sure we don't try to use the database unless we're sure it's ready.
 # Otherwise Flask will try to use the database - even if we are using 'flask init_db' or 'flask rm_db'
 if sys.argv[1] == 'run':
     hsc = HealthCareSystem()
 
-from app.models import Centre, User, Appointment, WorksAt
-from app import db
-
-
-@app.route('/')
-@login_required
-def index():
-    """
-    This view represents the handler for the root 'index' or 'home' screen of
-    the application.
-
-    This is loaded when no route is specified in the URL, or when redirected to
-    as a 'safety net'.
-    """
-
-    return render_template('index.html', title='home')
-
-
-@app.route('/booking', methods=['GET', 'POST'])
-def booking():
-    """
-    Create a new booking with a provider.
-
-    :return:
-        GET: Creates and renders a page which can be used to create a booking for a provider.
-        POST: Creates a booking using information from the provided posted form.
-    """
-
-    provider = None
-    result = None
-
-    logger.error(colored(request.form, "yellow"))
-
-    if request.method == 'POST':
-        provider_selection = request.form.get('provider_selection', None)
-        if provider_selection:
-            provider = UserManager.get_user(provider_selection)
-            logger.error(colored(provider.username, "red"))
-
-            date = request.form.get('date')
-            time = request.form.get('time')
-
-            logger.warn(colored(date, 'green'))
-            logger.warn(colored(time, 'green'))
-
-            # todo: Refactor all of this shit -> into classes and all that
-            if date and time:
-
-                start_time = datetime.strptime(date+"_"+time, '%d/%m/%Y_%H:%M')
-                end_time = start_time + timedelta(minutes=30)
-
-                wa = WorksAt.query.filter_by(place=request.form.get('centre_selection'), provider=provider.email).first()
-                ws = wa.hours_start
-                we = wa.hours_end
-
-                # Ensure appointment is not in the past
-                if start_time < datetime.now():
-                    result = 'Past'
-                    logger.warn(colored("Appointment is in the past, not adding.", 'red'))
-                # Ensure appointment is within providers working hours
-                elif start_time.time() < ws or end_time.time() > we:
-                    result = 'Hours'
-                    logger.warn(colored("Appointment falls outside of providers working hours, not adding.", 'red'))
-                # Ensure there aren't any appointments already booked in that time period.
-                elif Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time, Appointment.provider_email == provider.email).all():
-                    # There's already an appointment booked with this provider during this time, return an error.
-                    result = 'Clash'
-                    logger.warn(colored("Appointment clashed with existing appointment, not adding.", 'red'))
-                # Otherwise, we're good to go, create and add the appointment.
-                else:
-
-                    a = Appointment(patient_email=current_user.email, provider_email=provider.email, centre_name=request.form.get('centre_selection'),
-                                    is_confirmed=0, start_time=start_time, end_time=end_time, reason=request.form.get('reason'))
-
-                    db.session.add(a)
-                    db.session.commit()
-
-                    result = "Added"
-                    logger.warn(colored("Added appointment", 'green'))
-            logger.warn(colored(request.form, 'green'))
-
-    providers = User.query.filter(User.role.isnot('Patient')).all()
-
-    return render_template('booking.html', title="Make a booking", result=result, provider=provider, providers=providers)
-
-    # done_booking = 0
-    # now = str(datetime.datetime.now())
-    # date = now[0:now.find(" ")]
-    # time = now[now.find(" ") + 1:now.find(".") - 3]
-    # app = ""
-    # if request.method == "POST":
-    #     book = int(request.form["book"])
-    #     # parameters for search
-    #     is_centre_search = request.form["is_centre_search"]  # search for centres
-    #     p = request.form["p"]  # search for providers
-    #     search = request.form["search"]  # search input
-    #     provider = request.form['provider']  # provider currently being booked for
-    #
-    #     for prov in provider_list:
-    #         if prov._full_name == provider:
-    #             provider_class = prov  # returns the instance of provider
-    #
-    #     if (book):  # if we are booking
-    #
-    #         # set date/time/centre
-    #
-    #         date = request.form["date"]
-    #         centre = request.form["centre"]
-    #         time = str(request.form["time"])
-    #         length = int(request.form["length"])
-    #
-    #         # convert time to minutes then add on the legnth of appointment.csv and convert back to time
-    #         total_len = time_to_min(time) + length
-    #         time_end = min_to_time(total_len)
-    #
-    #         print("curent appointment.csv starts:" + time + " ends:" + time_end)
-    #         # checking the times and dates are valid
-    #         for app in provider_class._appointment_list:
-    #             clash = time_clash(time, app._start_time, time_end, app._end_time)
-    #             if (clash):
-    #                 return render_template('booking.html', user=curr_user, is_centre_search=is_centre_search, p=p, search=search, \
-    #                                        provider=provider_class, book=-1, t=time, d=date, app=app)
-    #
-    #         if (date == ""):  # just for testing, this should never happen
-    #             return render_template('booking.html', user=curr_user, is_centre_search=is_centre_search, p=p, search=search, provider=provider_class,
-    #                                    noDate=1)
-    #
-    #         app = Appointment(start_time=time, end_time=time_end, date=date, patient=curr_user,
-    #                           health_care_provider=provider_class, centre=centre)
-    #         done_booking = 1
-    #
-    # return render_template('booking.html', user=curr_user, is_centre_search=is_centre_search, p=p, search=search, provider=provider_class,
-    #                        book=done_booking, t=time, d=date, app=app)
-
-
-@app.route('/profile/<name>', methods=['POST', 'GET'])
-def profile(name):
-    """
-    Endpoint that handles User and Centre profiles.
-
-    :param name: The user or centre name whose profile we're viewing.
-    :return:
-      GET:  Creates and renders a profile page for a Centre or User.
-      POST: ???
-    """
-
-    # Determine what kind of profile we should be rendering
-    profile_type = hsc.determine_type(name)
-    if profile_type == 'user':
-        obj = UserManager.get_user(name)
-    elif profile_type == 'centre':
-        obj = CentreManager.get_centre(name)
-    else:
-        return 'Something went wrong, undetermined type for "%s"' % name
-
-    logger.warn(colored(name, "red"))
-    logger.warn(colored(obj, "red"))
-
-    return render_template('profile.html', object=obj, type=profile_type)
+# ----- Public pages ----- #
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -259,8 +104,121 @@ def logout():
     hsc.user_manager.logout_user()
     return redirect(url_for('index'))
 
+# ----- Private pages ----- #
+
+
+@app.route('/')
+@login_required
+def index():
+    """
+    This view represents the handler for the root 'index' or 'home' screen of
+    the application.
+
+    This is loaded when no route is specified in the URL, or when redirected to
+    as a 'safety net'.
+    """
+
+    return render_template('index.html', title='home')
+
+
+@app.route('/booking', methods=['GET', 'POST'])
+@login_required
+def booking():
+    """
+    Create a new booking with a provider.
+
+    :return:
+        GET: Creates and renders a page which can be used to create a booking for a provider.
+        POST: Creates a booking using information from the provided posted form.
+    """
+
+    provider = None
+    result = None
+
+    logger.error(colored(request.form, "yellow"))
+
+    if request.method == 'POST':
+        provider_selection = request.form.get('provider_selection', None)
+        if provider_selection:
+            provider = UserManager.get_user(provider_selection)
+            logger.error(colored(provider.username, "red"))
+
+            date = request.form.get('date')
+            time = request.form.get('time')
+
+            logger.warn(colored(date, 'green'))
+            logger.warn(colored(time, 'green'))
+
+            # todo: Refactor all of this shit -> into classes and all that
+            if date and time:
+
+                start_time = datetime.strptime(date+"_"+time, '%d/%m/%Y_%H:%M')
+                end_time = start_time + timedelta(minutes=30)
+
+                wa = WorksAt.query.filter_by(place=request.form.get('centre_selection'), provider=provider.email).first()
+                ws = wa.hours_start
+                we = wa.hours_end
+
+                # Ensure appointment is not in the past
+                if start_time < datetime.now():
+                    result = 'Past'
+                    logger.warn(colored("Appointment is in the past, not adding.", 'red'))
+                # Ensure appointment is within providers working hours
+                elif start_time.time() < ws or end_time.time() > we:
+                    result = 'Hours'
+                    logger.warn(colored("Appointment falls outside of providers working hours, not adding.", 'red'))
+                # Ensure there aren't any appointments already booked in that time period.
+                elif Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time, Appointment.provider_email == provider.email).all():
+                    # There's already an appointment booked with this provider during this time, return an error.
+                    result = 'Clash'
+                    logger.warn(colored("Appointment clashed with existing appointment, not adding.", 'red'))
+                # Otherwise, we're good to go, create and add the appointment.
+                else:
+
+                    a = Appointment(patient_email=current_user.email, provider_email=provider.email, centre_name=request.form.get('centre_selection'),
+                                    is_confirmed=0, start_time=start_time, end_time=end_time, reason=request.form.get('reason'))
+
+                    db.session.add(a)
+                    db.session.commit()
+
+                    result = "Added"
+                    logger.warn(colored("Added appointment", 'green'))
+            logger.warn(colored(request.form, 'green'))
+
+    providers = User.query.filter(User.role.isnot('Patient')).all()
+
+    return render_template('booking.html', title="Make a booking", result=result, provider=provider, providers=providers)
+
+
+@app.route('/profile/<name>', methods=['POST', 'GET'])
+@login_required
+def profile(name):
+    """
+    Endpoint that handles User and Centre profiles.
+
+    :param name: The user or centre name whose profile we're viewing.
+    :return:
+      GET:  Creates and renders a profile page for a Centre or User.
+      POST: ???
+    """
+
+    # Determine what kind of profile we should be rendering
+    profile_type = hsc.determine_type(name)
+    if profile_type == 'user':
+        obj = UserManager.get_user(name)
+    elif profile_type == 'centre':
+        obj = CentreManager.get_centre(name)
+    else:
+        return 'Something went wrong, undetermined type for "%s"' % name
+
+    logger.warn(colored(name, "red"))
+    logger.warn(colored(obj, "red"))
+
+    return render_template('profile.html', object=obj, type=profile_type)
+
 
 @app.route('/search', methods=['GET', 'POST'])
+@login_required
 def search():
     """
     Endpoint that handles user searches. Given specific search criteria, queries the Medi-soft database then displays
@@ -318,6 +276,7 @@ def search():
 
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
+@login_required
 def manage_bookings():
     """
     Enables the user to view their current bookings / appointments.

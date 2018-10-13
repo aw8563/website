@@ -1,27 +1,29 @@
 {% extends 'base.html' %}
 
+{#----- Main content block for 'manage bookings' page -----#}
 {% block content %}
 
     <div class="row">
         <h2> Current Bookings</h2>
         <div class="divider"></div>
         <br>
-        {# If the current user is a patient #}
+        {# We handle patients and providers separately
+        Check to see whether the current user is a patient #}
         {% if user.role == 'Patient' %}
 
             {# Check whether they have any bookings with providers #}
             {% if user.provider_bookings|length <= 0 %}
                 <p>You have no bookings with providers.</p>
+            {# If they do, display each in its own card #}
             {% else %}
                 <p>You have <b>{{ user.provider_bookings|length }}</b> appointments with providers.</p>
-
                 {% for booking in user.provider_bookings %}
                     <div class="row">
                         <div class="col s12 m6">
                             <div class="card">
                                 <div class="card-content">
                                     <span class="card-title">Booking with <a
-                                                href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
+                                            href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
                                         ({{ booking.provider.role }}) </span>
                                     Status: {% if booking.is_confirmed == 0 %}
                                     <b class="yellow-text">Pending</b>
@@ -29,17 +31,19 @@
                                     <b class="green-text">Confirmed</b>
                                 {% endif %}
                                     <br>
-                                        on {{ booking.start_time }} - {{ booking.end_time }}<br>
-                                        at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
-
-                                        Reason for visit:<br>{{ booking.reason }}
+                                    on {{ booking.start_time }} - {{ booking.end_time }}<br>
+                                    at <a
+                                        href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
+                                    Reason for visit:<br>{{ booking.reason }}
                                     </p>
                                 </div>
                                 <div class="card-action">
                                     <form method="POST" action="/manage_bookings">
                                         <input type=hidden name=action value='cancel'>
                                         <input type=hidden name=appointment_id value='{{ booking.id }}'>
-                                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
+                                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel
+                                            booking
+                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -54,9 +58,10 @@
             {# Check whether they have any appointments with patients #}
             {% if user.patient_bookings|length <= 0 %}
                 <p>You have no appointments with patients.</p><br><br>
+            {# Again, if they do, show each in its own card #}
             {% else %}
                 <p>You have <b>{{ user.patient_bookings|length }}</b> appointments with patients.</p><br><br>
-                 {% for booking in user.patient_bookings %}
+                {% for booking in user.patient_bookings %}
                     <div class="row">
                         <div class="col s12 m6">
                             <div class="card">
@@ -70,18 +75,20 @@
                                     <b class="green-text">Confirmed</b>
                                 {% endif %}
                                     <br>
-                                        on {{ booking.start_time }} - {{ booking.end_time }}<br>
-                                        at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
-
-                                        Reason for visit:<br>{{ booking.reason }}<br><br>
-                                        Doctor's notes:<br>{{ booking.notes }}
+                                    on {{ booking.start_time }} - {{ booking.end_time }}<br>
+                                    at <a
+                                        href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
+                                    Reason for visit:<br>{{ booking.reason }}<br><br>
+                                    Doctor's notes:<br>{{ booking.notes }}
                                     </p>
                                 </div>
                                 <div class="card-action">
                                     <form method="POST" action="/manage_bookings">
                                         <input type=hidden name=action value='cancel'>
                                         <input type=hidden name=appointment_id value='{{ booking.id }}'>
-                                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
+                                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel
+                                            booking
+                                        </button>
                                     </form>
                                 </div>
                             </div>
