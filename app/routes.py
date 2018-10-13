@@ -12,7 +12,7 @@ import os
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
-from app import app
+from app import app, db
 from app.appointment import *
 from app.centre import *
 from app.forms import LoginForm, RegistrationForm
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 if sys.argv[1] == 'run':
     hsc = HealthCareSystem()
 
-from app.models import Centre, User
+from app.models import *#Centre, User
 
 
 @app.route('/')
@@ -126,8 +126,46 @@ def profile(name):
     logger.warn(colored(name, "red"))
     logger.warn(colored(obj, "red"))
 
-    return render_template('profile.html', object=obj, type=profile_type)
+    return render_template('profile.html', object=obj, type=profile_type, current = current_user)
 
+@app.route('/updateInfo', methods=['POST', 'GET'])
+def updateInfo():
+
+    if (request.method == "POST"):
+        if(current_user.role != 'Patient'):
+            newUser = request.form['newUser']
+            newEmail = request.form['newEmail']
+            newPhone = request.form['newPhone']
+            newRole = request.form['newRole']
+            newProvider = request.form['newProvider']
+            print("given variables " + newUser + newEmail + newPhone + newRole + newProvider)
+
+            if newUser:
+                current_user.username = newUser
+            if newEmail:
+                current_user.email = newEmail                
+            if newPhone:
+                current_user.phone_number = newPhone                
+            if newRole:
+                current_user.role = newRole            
+            if newProvider:
+                current_user.provider_number = newProvider                
+            db.session.commit()
+        else:
+            newUser = request.form['newUser']
+            newEmail = request.form['newEmail']
+            newPhone = request.form['newPhone']
+            newMedicare = request.form['newMedicare'] 
+            if newUser:
+                current_user.username = newUser
+            if newEmail:
+                current_user.email = newEmail                
+            if newPhone:
+                current_user.phone_number = newPhone          
+            if newMedicare:
+                current_user.newMedicare = newMedicare                
+            db.session.commit()                       
+    return render_template('updateInfo.html',  object = current_user)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
