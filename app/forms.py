@@ -50,8 +50,8 @@ class RegistrationForm(FlaskForm):
 
     submit = SubmitField('Sign up!')
 
-    @staticmethod
-    def validate_email(email):
+    # Don't make static
+    def validate_email(self, email):
         """
         This method checks to see whether the provided email is already taken
         by another user.
@@ -71,8 +71,8 @@ class RegistrationForm(FlaskForm):
             raise ValidationError(
                 'This email address is already in-use, please choose another.')
 
-    @staticmethod
-    def validate_username(username):
+    # Don't make static
+    def validate_username(self, username):
         """
         This method checks to see whether the provided username is already
         taken by another user.
