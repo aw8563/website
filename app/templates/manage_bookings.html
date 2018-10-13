@@ -11,10 +11,9 @@
 
             {# Check whether they have any bookings with providers #}
             {% if user.provider_bookings|length <= 0 %}
-                <p>You have no bookings with providers.</p><br><br>
-
+                <p>You have no bookings with providers.</p>
             {% else %}
-                <p>You have <b>{{ user.provider_bookings|length }}</b> appointments with providers.</p><br><br>
+                <p>You have <b>{{ user.provider_bookings|length }}</b> appointments with providers.</p>
 
                 {% for booking in user.provider_bookings %}
                     <div class="row">
