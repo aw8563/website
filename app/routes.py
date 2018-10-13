@@ -153,9 +153,11 @@ def profile(name):
 
     # Can the current user view the patient's history?
     permission = False
-    if (current_user.role != 'patient'): # make sure current user is a provider
-        for b in current_user.patient_bookings: # and also booked with the patient    
-            if (b.provider_email == current_user.email):
+    if (current_user.role != 'patient' and profile_type == 'user'): 
+        # make sure current user is a provider
+        for b in current_user.patient_bookings: # and also booked with the patient  
+            print(b)  
+            if (b.patient_email == obj.email):
                 permission = True
                 print(b)
                 print("<<<<<<<<<<<<<<" + b.provider_email)
@@ -312,15 +314,18 @@ def appointmentDetails(ID):
 @app.route('/modifyNote/<ID>', methods=["GET", "POST"])
 def modifyNote(ID):
     app = Appointment.query.filter_by(id = ID).first()
+    patient = ""
     if (request.method == "POST"):
         patient = request.form['patient']
         action = request.form['action']
         if (action == 'edit'):
-            message = request.form['message']
-            app.notes = message
+            app.notes = request.form['message']
             db.session.commit()
-
-    return render_template('modifyNote.html', app = app, patient = patient)
+        if (action == 'add'):
+            app.notes += " " + request.form['message']
+            db.session.commit()
+            
+    return render_template('modifyNote.html', app = app, patient = patient, user = current_user)
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
 def manage_bookings():

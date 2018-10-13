@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1> PATIENT HISTORY </h1>
-
+<a href = '/profile/{{patient.email}}'> back to profile</a>
 {% for b in patient.provider_bookings %}
     <p>{{b.start_time}} - {{b.end_time}} with {{b.provider.username}}</p>
     {{b.notes}}
