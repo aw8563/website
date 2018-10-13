@@ -24,7 +24,15 @@
                             Status: {% if booking.is_confirmed == 0 %}
                             <b class="yellow-text">Pending</b>
                         {% else %}
-                            <b class="green-text">Confirmed</b>
+                            {% if booking.is_completed %}
+                                <b class="blue-text">Completed</b><br>
+                                <a href = '/appointmentDetails/{{booking.id}}'> 
+                                    View Details 
+                                </a>
+                                <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
+                            {% else %}
+                                <b class="green-text">Confirmed</b>
+                            {% endif %}
                         {% endif %}
                             <br>
                                 on {{ booking.start_time }} - {{ booking.end_time }}<br>
@@ -43,6 +51,7 @@
                     </div>
                 </div>
             </div>
+
         {% endfor %}
     {% endif %}
 
@@ -71,7 +80,21 @@
                                 </button>
                             </form>
                         {% else %}
-                            <b class="green-text">Confirmed</b>
+                            {% if booking.is_completed %} 
+                                <b class="blue-text">Completed</b><br>
+                                <a href = '/appointmentDetails/{{booking.id}}'> 
+                                    View Details 
+                                </a>
+                                <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
+                            {% else %}
+                                <b class="green-text">Confirmed</b>
+                                <form method = "POST">
+                                    <input type = hidden name = id value = '{{booking.id}}'>
+                                    <input type = hidden name = action value = complete>
+                                    <button class="red darken-2 waves-effect waves-light btn"
+                                            type = 'submit'>Complete</button>
+                                </form>
+                            {% endif %}
                         {% endif %}
                             <br>
                                 on {{ booking.start_time }} - {{ booking.end_time }}<br>

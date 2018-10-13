@@ -279,6 +279,13 @@ def search():
                                centre_results=centre_results, user_results=user_results)
     return render_template('search.html', form=None, results_found=results_found, display_results=False, title='Search')
 
+@app.route('/appointmentDetails/<ID>', methods=["GET", "POST"])
+def appointmentDetails(ID):
+    
+    app = Appointment.query.filter_by(id = ID).first()
+    
+    return render_template('appointmentDetails.html', app = app)
+
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
 def manage_bookings():
@@ -293,6 +300,12 @@ def manage_bookings():
     # User is deleting booking
     if request.method == 'POST':
         logger.debug(colored(request.form, 'yellow'))
+
+        if request.form["action"] == 'complete': #confirm the booking request
+            appID = request.form['id']
+            a = Appointment.query.filter_by(id = appID).first()
+            a.is_completed = True
+            db.session.commit()
 
         if request.form["action"] == 'confirm': #confirm the booking request
             appID = request.form['id']
