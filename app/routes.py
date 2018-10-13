@@ -11,6 +11,7 @@ import sys
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from termcolor import colored
+from datetime import datetime, timedelta
 
 from app import app
 from app.centre_manager import CentreManager
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 if sys.argv[1] == 'run':
     hsc = HealthCareSystem()
 
-from app.models import Centre, User, Appointment
+from app.models import Centre, User, Appointment, WorksAt
 from app import db
 
 
@@ -52,7 +53,63 @@ def booking():
         POST: Creates a booking using information from the provided posted form.
     """
 
-    pass
+    provider = None
+    result = None
+
+    logger.error(colored(request.form, "yellow"))
+
+    if request.method == 'POST':
+        provider_selection = request.form.get('provider_selection', None)
+        if provider_selection:
+            provider = UserManager.get_user(provider_selection)
+            logger.error(colored(provider.username, "red"))
+
+            date = request.form.get('date')
+            time = request.form.get('time')
+
+            logger.warn(colored(date, 'green'))
+            logger.warn(colored(time, 'green'))
+
+            # todo: Refactor all of this shit -> into classes and all that
+            if date and time:
+
+                start_time = datetime.strptime(date+"_"+time, '%d/%m/%Y_%H:%M')
+                end_time = start_time + timedelta(minutes=30)
+
+                wa = WorksAt.query.filter_by(place=request.form.get('centre_selection'), provider=provider.email).first()
+                ws = wa.hours_start
+                we = wa.hours_end
+
+                # Ensure appointment is not in the past
+                if start_time < datetime.now():
+                    result = 'Past'
+                    logger.warn(colored("Appointment is in the past, not adding.", 'red'))
+                # Ensure appointment is within providers working hours
+                elif start_time.time() < ws or end_time.time() > we:
+                    result = 'Hours'
+                    logger.warn(colored("Appointment falls outside of providers working hours, not adding.", 'red'))
+                # Ensure there aren't any appointments already booked in that time period.
+                elif Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time, Appointment.provider_email == provider.email).all():
+                    # There's already an appointment booked with this provider during this time, return an error.
+                    result = 'Clash'
+                    logger.warn(colored("Appointment clashed with existing appointment, not adding.", 'red'))
+                # Otherwise, we're good to go, create and add the appointment.
+                else:
+
+                    a = Appointment(patient_email=current_user.email, provider_email=provider.email, centre_name=request.form.get('centre_selection'),
+                                    is_confirmed=0, start_time=start_time, end_time=end_time, reason=request.form.get('reason'))
+
+                    db.session.add(a)
+                    db.session.commit()
+
+                    result = "Added"
+                    logger.warn(colored("Added appointment", 'green'))
+            logger.warn(colored(request.form, 'green'))
+
+    providers = User.query.filter(User.role.isnot('Patient')).all()
+
+    return render_template('booking.html', title="Make a booking", result=result, provider=provider, providers=providers)
+
     # done_booking = 0
     # now = str(datetime.datetime.now())
     # date = now[0:now.find(" ")]
