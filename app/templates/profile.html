@@ -11,7 +11,6 @@ This template generates the HTML for the profile page.
 {% endblock %}
 
 {% block content %}
-    <h1> KJDSFJKLDSFJKLJDSKLF</h1>
     {# 'Back to results' button #}
     <form method="POST" action="/search">
         <div class="btn-return">
@@ -173,6 +172,13 @@ This template generates the HTML for the profile page.
                 <button type="submit" class="btn waves-effect waves-light">Submit</button>
                 {% if rated %} <p>rating successful! </p>{% endif %}
             </form>
+        {% else %}        {# ----- is a patient ----- #}
+            <br><br>
+            {% if permission %}
+            <a href = '/patientHistory/{{object.email}}'>
+                VIEW PATIENT HISTORY    
+            </a>
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endblock %}

@@ -113,9 +113,13 @@ def profile(name):
       GET:  Creates and renders a profile page for a Centre or User.
       POST: ???
     """
-
+    
     # Determine what kind of profile we should be rendering
     profile_type = hsc.determine_type(name)
+
+
+
+    
 
     ratingType = "centre"
     providerEmail = ""
@@ -146,8 +150,25 @@ def profile(name):
     logger.warn(colored(obj, "red"))
 
 
-    return render_template('profile.html', object=obj, type=profile_type, rated = rated)
 
+    # Can the current user view the patient's history?
+    permission = False
+    if (current_user.role != 'patient'): # make sure current user is a provider
+        for b in current_user.patient_bookings: # and also booked with the patient    
+            if (b.provider_email == current_user.email):
+                permission = True
+                print("<<<<<<<<<<<<<<" + b.provider_email)
+
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
+    print(permission) 
+    return render_template('profile.html', object=obj, type=profile_type, rated = rated,\
+                            permission = permission)
+
+@app.route('/patientHistory/<name>', methods=['GET', 'POST'])
+def patientHistory(name):
+    patient = UserManager.get_user(name)
+    
+    return render_template('patientHistory.html', patient = patient)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -286,6 +307,20 @@ def appointmentDetails(ID):
     
     return render_template('appointmentDetails.html', app = app)
 
+
+@app.route('/modifyNote', methods=["GET", "POST"])
+def modifyNote():
+    if (request.method == "POST"):
+
+        ID = 4
+        app = Appointment.query.filter_by(id = ID).first()
+        print(app)
+        action = request.form['action']
+        if (action == 'edit'):
+            message = request.form['message']
+            
+
+    return render_template('modifyNote.html', app = app)
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
 def manage_bookings():

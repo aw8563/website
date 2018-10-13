@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1> PATIENT HISTORY </h1>
+
+{% for b in patient.provider_bookings %}
+    <p>{{b.start_time}} - {{b.end_time}} with {{b.provider.username}}</p>
+    {{b.notes}}
+    <form method="POST" action = '/modifyNote'>
+        <input type=hidden name=ID value='{{b.id}}'>
+        <input type=hidden name=action value='display'>
+        <input type = hidden name = patient value = {{patient.username}}>
+        <button class="red darken-2 waves-effect waves-light btn" type="submit">Edit</button>
+    </form>
+
+    <br><br><br>
+{% endfor %}
+{% endblock %}

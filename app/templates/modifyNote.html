@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>EDIT NOTES</h1>
+
+
+
+<form method="POST" action = '/modifyNote'>
+    <input type=hidden name=ID value='{{app.id}}'>
+    <input type=hidden name=action value='edit'>
+    <input placeholder = "{{app.notes}}" name = message>
+    <button class="red darken-2 waves-effect waves-light btn" type="submit">Save</button>
+</form>
+
+
+
+{% endblock %}
