@@ -1,71 +1,102 @@
 {% extends 'base.html' %}
 
+{% block stylesheets %}
+{#    <link rel="stylesheet" type="text/css" href="/static/css/booking.css"/>#}
+{% endblock %}
+
 {% block content %}
 
-<h1> Booking Page </h1>
-<form method="POST" action="/search">
-    <input type = hidden name = c value = {{c}}>
-    <input type = hidden name = p value = {{p}}>
-    <input type = hidden name = result value = 1>
-    <button class = "btn waves-effect waves-light" type="submit" 
-            name = search value = "{{search}}" >Return to results</button>
-</form>
+    <center><h2>Make a booking</h2></center>
 
-<form method = "POST" action = "/booking"> 
-    When: <input type = 'date' name = date value = {{d}} min = {{d}} re quired>
-    {% if noDate %} <p1> Please enter valid date </p1> {% endif %}<br><br>
-    Time: 
-        <input type = time name = time max = 18:00 required value = {{t}}>
+    {# Provider picker #}
+    <div class="row">
+        <div class="col s16 m6">
+            <div class="input-field">
+                <form method="POST" action="/booking">
+                <select name="provider_selection" onchange="this.form.submit()">
+                    {% if provider %}
+                        <option value="{{ provider.username }}" selected>{{ provider.username }}</option>
+                    {% else %}
+                        <option value="" disabled selected>Which provider would you like to see?</option>
+                    {% endif %}
+                    {% for p in providers %}
+                        <option value="{{ p.username }}">{{ p.username }}</option>
+                    {% endfor %}
+                </select>
+                <label>Select a provider</label>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        <div class = "input-field col s12">
+    {# If we've got a provider we'd like to book for, show their centres #}
+    {% if provider %}
+        <form method="POST" action="/booking">
+        <input type=hidden name=provider_selection value={{ provider.username }}>
+        <div class="row">
+        <div class="col s12 m6">
+        <label>Select a centre</label><br>
+        {% for works_at in provider.Works_At %}
+                <label style = "color:black">
+                <input type = radio name = centre_selection value = "{{works_at.centre.name}}" required>
+                <span>{{works_at.centre.name}}</span>
+                </label><br>
+        {% endfor %}
+        </div>
         </div>
 
-  <label style = "color:black">Select appointment length</label>
-      <select class="browser-default" name = length>
-        <option value = 30>30min</option>          
-        <option value = 60>1hr </option>          
-        <option value = 90>1hr 30min</option>          
-        <option value = 120>2hrs</option>   
-      </select>
-<br><br>
-    Where:
-    <div>
-        {% for h in provider._working_centre %}
-            <label style = "color:black">
-            <input type = radio name = centre value = "{{h._name}}" required> 
-            <span>{{h._name}}</span>
-            </label><br>
-        {% endfor %}
-    </div>
-    <input type = hidden name = c value = {{c}}>
-    <input type = hidden name = p value = {{p}}>
-    <input type = hidden name = result value = 1>
-    <input type = hidden name = search value = {{search}}>
-    <input type = hidden name = provider value = {{provider._full_name}}><br>
-    <button class = "btn waves-effect waves-light" type="submit" name = book value = 1>Book</button>
-    
-    {%if book == 1%}<font color = 'green'><p1 style = "font-size:80%" style = "color:green">
-        Succesfully booked with {{provider._full_name}} at 
-        {{app._centre}} on {{app._date}}, {{app._start_time}} - {{app._end_time}}</p1></font>
-    {%endif%}
-    {% if book == -1 %}
-        <font color = 'red'>
-        <p1 style = "font-size:80%"> Failed to book. Selected time is unavaliable. </p1>
-        </font>        
+        {# Date, time & reason for visit #}
+            <div class="row">
+                <div class="col s12 m6">
+                    <label>Date of appointment</label>
+                    <input type="text" name=date class="datepicker" placeholder="What date would you like your appointment?">
+                    <label>Time of appointment</label>
+                    <input type="text" name=time class="timepicker" placeholder="What time would you like your appointment?">
+                    <label>Reason for visit</label>
+                    <input type="text" name=reason placeholder="Reason for visit">
+                </div>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">Book appointment</button>
+        </form>
     {% endif %}
-    
-</form>
-<p1> You currently have {{user._numAppointments}} bookings </p1>
-<form method = "POST" action = "/currBooking"> 
-    <input type = hidden name = c value = {{c}}>
-    <input type = hidden name = p value = {{p}}>
-    <input type = hidden name = result value = 1>
-    <input type = hidden name = search value = {{search}}>
-    <input type = hidden name = provider value = {{provider._full_name}}><br>
-    <input type = hidden name = view value = 1>
 
-    <button class = "btn waves-effect waves-light" type="submit" name = book value = 1> View Bookings</button>
-</form>
+    {% if result == 'Added' %}
+        <a class="green-text">An appointment was booked with {{ provider.username }}. You may review your bookings and their status <a href="/manage_bookings">here.</a></a>
+    {% elif result == 'Clash' %}
+        <a class="red-text">Your appointment clashed with an existing appointment - please try again with a different time.</a>
+    {% elif result == 'Past' %}
+        <a class="red-text">As much as you want to relive your past - you can't. Book for the future, friend.</a>
+    {% elif result == 'Hours' %}
+        <a class="red-text">Your appointment falls outside of the provider's working hours. You may view them <a href="/profile/{{ provider.email }}">here.</a></a>
+    {% endif %}
 
 
+<a href="/manage_bookings">here.</a>
+
+{% endblock %}
+
+
+{% block scripts %}
+  <script>
+      {# Initialise datepicker #}
+      $(document).ready(function(){
+
+          $('.datepicker').datepicker({
+              format: 'dd/mm/yyyy'
+          });
+      });
+
+      {# Initialise timepicker #}
+      $(document).ready(function(){
+        $('.timepicker').timepicker({
+            twelveHour: false
+        });
+      });
+
+      {# Initialise the select form #}
+      $(document).ready(function(){
+        $('select').formSelect();
+      });
+
+  </script>
 {% endblock %}
