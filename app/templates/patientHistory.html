@@ -6,7 +6,7 @@
 {% for b in patient.provider_bookings %}
     <p>{{b.start_time}} - {{b.end_time}} with {{b.provider.username}}</p>
     {{b.notes}}
-    <form method="POST" action = '/modifyNote'>
+    <form method="POST" action = '/modifyNote/{{b.id}}'>
         <input type=hidden name=ID value='{{b.id}}'>
         <input type=hidden name=action value='display'>
         <input type = hidden name = patient value = {{patient.username}}>

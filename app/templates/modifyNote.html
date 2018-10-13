@@ -4,12 +4,14 @@
 
 <h1>EDIT NOTES</h1>
 
+<h4>Current Notes</h4>
+<p>{{app.notes}}</p><br><br>
 
-
-<form method="POST" action = '/modifyNote'>
-    <input type=hidden name=ID value='{{app.id}}'>
+    MODIFY:
+<form method="POST" action = '/modifyNote/{{app.id}}'>
     <input type=hidden name=action value='edit'>
-    <input placeholder = "{{app.notes}}" name = message>
+    <input placeholder = "{{app.notes}}" value = "{{app.notes}}" name = message>
+
     <button class="red darken-2 waves-effect waves-light btn" type="submit">Save</button>
 </form>
 

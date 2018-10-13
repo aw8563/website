@@ -157,6 +157,7 @@ def profile(name):
         for b in current_user.patient_bookings: # and also booked with the patient    
             if (b.provider_email == current_user.email):
                 permission = True
+                print(b)
                 print("<<<<<<<<<<<<<<" + b.provider_email)
 
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
@@ -308,19 +309,18 @@ def appointmentDetails(ID):
     return render_template('appointmentDetails.html', app = app)
 
 
-@app.route('/modifyNote', methods=["GET", "POST"])
-def modifyNote():
+@app.route('/modifyNote/<ID>', methods=["GET", "POST"])
+def modifyNote(ID):
+    app = Appointment.query.filter_by(id = ID).first()
     if (request.method == "POST"):
-
-        ID = 4
-        app = Appointment.query.filter_by(id = ID).first()
-        print(app)
+        patient = request.form['patient']
         action = request.form['action']
         if (action == 'edit'):
             message = request.form['message']
-            
+            app.notes = message
+            db.session.commit()
 
-    return render_template('modifyNote.html', app = app)
+    return render_template('modifyNote.html', app = app, patient = patient)
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
 def manage_bookings():
