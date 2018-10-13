@@ -8,6 +8,11 @@ from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db, login
+from datetime import datetime, timedelta
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class User(UserMixin, db.Model):
@@ -267,6 +272,44 @@ class WorksAt(db.Model):
 
         return '<WorksAt {}, {}>'.format(self.provider, self.place)
 
+    @staticmethod
+    def are_valid_hours(start_time, end_time, centre_name, provider_email):
+        """
+        Determines whether the appointment time is valid and within a providers working hours.
+
+        :param start_time: Start time for the appointment.
+        :param centre_name: Name of the centre the provider is working at.
+        :param provider_email: The provider whose working hours we're querying
+        :return: None, if validation is successful. Otherwise a string 'result' with the outcome of the validation:
+            'Clash' - appointment already exists within provided start_time.
+            'Past'  - appointment is in the past.
+            'Hours' - appointment exists outside of the providers working hours.
+        """
+
+        result = ''
+
+        # Fetch the working hours of the provider for our specific centre
+        wa = WorksAt.query.filter_by(place=centre_name, provider=provider_email).first()
+        hours_start = wa.hours_start
+        hours_end = wa.hours_end
+
+        # Ensure appointment is not in the past
+        if start_time < datetime.now():
+            result = 'Past'
+            logger.warn("Appointment is in the past, not adding.", 'red')
+
+        # Ensure appointment is within providers working hours
+        elif start_time.time() < hours_start or end_time.time() > hours_end:
+            result = 'Hours'
+            logger.warn("Appointment falls outside of providers working hours, not adding.")
+        # Ensure there aren't any appointments already booked in that time period.
+        elif Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time,
+                                      Appointment.provider_email == provider_email).all():
+            # There's already an appointment booked with this provider during this time, return an error.
+            result = 'Clash'
+            logger.warn("Appointment clashed with existing appointment, not adding.")
+        return result
+
 
 class Appointment(db.Model):
     """
@@ -302,6 +345,23 @@ class Appointment(db.Model):
         """
 
         return "<Appointment: Patient '{}', Provider '{}'>".format(self.patient, self.provider)
+
+    @staticmethod
+    def delete_appointment(appointment_id):
+        """
+        Deletes the appointment specified by appointment_id
+
+        :param appointment_id: The id of the appointment to delete
+        :return: None
+        """
+
+        # If we've been passed an appointment id, fetch the appointment via id, then delete it
+        if appointment_id:
+            a = Appointment.query.filter_by(id=appointment_id).first()
+            if a:
+                db.session.delete(a)
+                db.session.commit()
+                logger.info("Deleted appointment: %s" % appointment_id)
 
 
 class Prescription(db.Model):
