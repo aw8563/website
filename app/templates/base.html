@@ -41,7 +41,9 @@ header and footer.
                     <li><a href="{{ url_for('index') }}" id="nav-logout-btn">Home</a></li>
                     {% if not current_user.is_anonymous %}
                         <li><a href="{{ url_for('search') }}" id="nav-logout-btn">Search</a></li>
-                        <li><a href="{{ url_for('booking') }}" id="nav-logout-btn">Make a booking</a></li>
+                        {% if current_user.role == 'Patient' %}
+                            <li><a href="{{ url_for('booking') }}" id="nav-logout-btn">Make a booking</a></li>
+                        {% endif %}
                         <li><a href="{{ url_for('manage_bookings') }}" id="nav-logout-btn">Manage bookings</a></li>
                     {% endif %}
                 </ul>
