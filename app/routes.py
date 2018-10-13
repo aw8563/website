@@ -132,61 +132,53 @@ def booking():
         POST: Creates a booking using information from the provided posted form.
     """
 
+    # Initialise provider and result to None so we don't get undefined errors
     provider = None
     result = None
 
-    logger.error(colored(request.form, "yellow"))
+    logger.info(colored(request.form, "yellow"))
 
+    # If we're fielding a post request, we're stepping through the booking process
     if request.method == 'POST':
+
+        # If we've got a provider previously selected (from either search or previous step)
         provider_selection = request.form.get('provider_selection', None)
         if provider_selection:
+
+            # Fetch it, as we need to reference provider attributes
             provider = UserManager.get_user(provider_selection)
-            logger.error(colored(provider.username, "red"))
+            logger.info(colored(provider.username, "yellow"))
 
-            date = request.form.get('date')
-            time = request.form.get('time')
+            # Attempt to fetch the date and time from the form
+            date = request.form.get('date', False)
+            time = request.form.get('time', False)
 
-            logger.warn(colored(date, 'green'))
-            logger.warn(colored(time, 'green'))
-
-            # todo: Refactor all of this shit -> into classes and all that
+            # If we've got them, try to book the appointment, otherwise the user hasn't selected them yet.
             if date and time:
 
-                start_time = datetime.strptime(date+"_"+time, '%d/%m/%Y_%H:%M')
+                # Parse date and determine end_time as 30 minutes after the starting time.
+                start_time = datetime.strptime(date + "_" + time, '%d/%m/%Y_%H:%M')
                 end_time = start_time + timedelta(minutes=30)
 
-                wa = WorksAt.query.filter_by(place=request.form.get('centre_selection'), provider=provider.email).first()
-                ws = wa.hours_start
-                we = wa.hours_end
+                centre = request.form.get('centre_selection')
+                result = WorksAt.are_valid_hours(start_time, end_time, centre, provider.email)
 
-                # Ensure appointment is not in the past
-                if start_time < datetime.now():
-                    result = 'Past'
-                    logger.warn(colored("Appointment is in the past, not adding.", 'red'))
-                # Ensure appointment is within providers working hours
-                elif start_time.time() < ws or end_time.time() > we:
-                    result = 'Hours'
-                    logger.warn(colored("Appointment falls outside of providers working hours, not adding.", 'red'))
-                # Ensure there aren't any appointments already booked in that time period.
-                elif Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time, Appointment.provider_email == provider.email).all():
-                    # There's already an appointment booked with this provider during this time, return an error.
-                    result = 'Clash'
-                    logger.warn(colored("Appointment clashed with existing appointment, not adding.", 'red'))
-                # Otherwise, we're good to go, create and add the appointment.
-                else:
+                # If result is empty, no error was encountered - we're good to go, create and add the appointment.
+                if not result:
 
-                    a = Appointment(patient_email=current_user.email, provider_email=provider.email, centre_name=request.form.get('centre_selection'),
+                    # We might want to abstract this, but I'm not too sure tbh.
+                    a = Appointment(patient_email=current_user.email, provider_email=provider.email, centre_name=centre,
                                     is_confirmed=0, start_time=start_time, end_time=end_time, reason=request.form.get('reason'))
 
                     db.session.add(a)
                     db.session.commit()
 
                     result = "Added"
-                    logger.warn(colored("Added appointment", 'green'))
+                    logger.info(colored("Added appointment", 'green'))
             logger.warn(colored(request.form, 'green'))
 
+    # Get all providers so we can choose from them
     providers = User.query.filter(User.role.isnot('Patient')).all()
-
     return render_template('booking.html', title="Make a booking", result=result, provider=provider, providers=providers)
 
 
@@ -211,9 +203,7 @@ def profile(name):
     else:
         return 'Something went wrong, undetermined type for "%s"' % name
 
-    logger.warn(colored(name, "red"))
-    logger.warn(colored(obj, "red"))
-
+    logger.info("Rendering profile page for %s" % obj)
     return render_template('profile.html', object=obj, type=profile_type)
 
 
@@ -237,13 +227,9 @@ def search():
         # Initialise results to be None so we don't error on return.
         centre_results = user_results = []
 
-        # Fetch the search query and search options.
+        # Fetch the search query and search options, defaulting to False if non-existent.
         do_centre_search = request.form.get('do_centre_search', False)
         do_user_search = request.form.get('do_user_search', False)
-
-        # do_centre_search = do_provider_search = False
-        logger.info(colored("do_centre_search: %s" % do_centre_search, 'red'))
-        logger.info(colored("do_user_search: %s" % do_user_search, 'red'))
 
         # # If we're performing a Centre search, fetch appropriate variables.
         if do_centre_search:
@@ -272,7 +258,8 @@ def search():
 
         return render_template('search.html', form=request.form, results_found=results_found,
                                centre_results=centre_results, user_results=user_results)
-    return render_template('search.html', form=None, results_found=results_found, display_results=False, title='Search')
+
+    return render_template('search.html', form=None, results_found=results_found, display_results=False)
 
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
@@ -286,15 +273,13 @@ def manage_bookings():
         POST: Deletes an existing booking
     """
 
-    # User is deleting booking
+    # If we're handling a post request, the user is deleting a booking
     if request.method == 'POST':
         logger.debug(colored(request.form, 'yellow'))
 
+        # If the action to cancel, delete the appointment specified by appointment_id
         if request.form.get("action", False) == 'cancel':
-            a = Appointment.query.filter_by(id=request.form.get("appointment_id", False)).first()
-            db.session.delete(a)
-            db.session.commit()
-            logger.warn(colored("Deleted appointment: %s" % request.form.get("appointment_id", False), 'green'))
+            Appointment.delete_appointment(request.form.get("appointment_id", False))
 
     return render_template('manage_bookings.html', user=current_user)
 
