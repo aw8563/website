@@ -243,7 +243,63 @@ def profile(name):
     return render_template('profile.html', object=obj, type=profile_type, rated = rated,\
                             permission = permission, user = current_user)
    
-
+@app.route('/updateInfo', methods=['POST', 'GET'])
+def updateInfo():
+    if (request.method == "POST"):
+        currentPass = request.form['currentPass']
+        if (current_user.check_password(currentPass) == True):
+            if(current_user.role != 'Patient'):
+                newUser = request.form['newUser']
+                newEmail = request.form['newEmail']
+                newPhone = request.form['newPhone']
+                newRole = request.form['newRole']
+                newProvider = request.form['newProvider']
+                newPass = request.form['newPass']
+                renewPass = request.form['renewPass'] 
+                if newUser:
+                    current_user.username = newUser
+                if newEmail:
+                    current_user.email = newEmail                
+                if newPhone:
+                    current_user.phone_number = newPhone                
+                if newRole:
+                    current_user.role = newRole            
+                if newProvider:
+                    current_user.provider_number = newProvider
+                if newPass and renewPass and newPass == renewPass:
+                    current_user.set_password(newPass)
+                elif newPass != renewPass:
+                    message = 1
+                    return render_template('updateInfo.html',  object = current_user, message = 1)                  
+                db.session.commit()
+            else:
+                newUser = request.form['newUser']
+                newEmail = request.form['newEmail']
+                newPhone = request.form['newPhone']
+                newMedicare = request.form['newMedicare']
+                newPass = request.form['newPass']
+                renewPass = request.form['renewPass'] 
+                if newUser:
+                    current_user.username = newUser
+                if newEmail:
+                    current_user.email = newEmail                
+                if newPhone:
+                    current_user.phone_number = newPhone          
+                if newMedicare:
+                    current_user.medicare_number = newMedicare  
+                if newPass and renewPass and newPass == renewPass:
+                    current_user.set_password(newPass)
+                elif newPass != renewPass:
+                    message = 1
+                    #incorrect = "new password and retyped password do not match"
+                    return render_template('updateInfo.html',  object = current_user, message = 1)  
+                db.session.commit()
+            message = 2
+            return render_template('updateInfo.html',  object = current_user, message = 2)
+        else:
+            #incorrect = "you provided the wrong password"
+            return render_template('updateInfo.html',  object = current_user, message = 3)
+    return render_template('updateInfo.html',  object = current_user)
 
 @app.route('/search', methods=['GET', 'POST'])
 @login_required

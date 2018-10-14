@@ -188,4 +188,9 @@ This template generates the HTML for the profile page.
             {% endif %}
         {% endif %}
     {% endif %}
+        {% if object == user %}
+        <a href="{{url_for('updateInfo')}}">
+            <button class = "waves-effect waves-light btn">Update my information</button>
+        </a>
+        {% endif %}
 {% endblock %}
