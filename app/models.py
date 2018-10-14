@@ -36,7 +36,8 @@ class User(UserMixin, db.Model):
     phone_number = db.Column(db.String(16))  # User phone number: 555-555-555, 000, etc
     medicare_number = db.Column(db.String(28), unique=True)  # Patient medicare number: 12345678
     provider_number = db.Column(db.String(28), unique=True)  # Provider number: 12345678
-    see_specialist = db.Column(db.Boolean())
+    see_specialist = db.Column(db.String(128))
+    specialist_note = db.Column(db.String(128))
     # --- Relationships ---
     centres = db.relationship('Centre', secondary='Works_At', lazy='dynamic')  # Link to centres via intermediary table (many-many)
 
