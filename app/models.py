@@ -100,7 +100,7 @@ class User(UserMixin, db.Model):
             return 0
 
     @staticmethod
-    def do_search(name=None, type=None):
+    def do_search(name=None, type=None, expertise = None):
         """
         Performs a sub-search using the provided parameters.
         Returns a list containing each record satisfying given search criteria. (Case insensitive).
@@ -123,6 +123,7 @@ class User(UserMixin, db.Model):
         # If search attribute is provided, add it as a search criterion.
         if name: criteria.append(User.username.contains(name))
         if type: criteria.append(User.role.contains(type))
+        if expertise: criteria.append(User.expertise.contains(expertise))
 
         # Perform search using criteria list and return list of results.
         return User.query.filter(*criteria).all()

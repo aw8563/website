@@ -353,7 +353,8 @@ def search():
         if do_user_search:
             name = request.form['u_name']
             type = request.form['u_type']
-            user_results = User.do_search(name, type)
+            expertise = request.form['expertise']
+            user_results = User.do_search(name, type, expertise)
 
             logger.info(colored("User results:", "red"))
             logger.info(colored(user_results, "red"))
@@ -398,9 +399,9 @@ def modifyNote(ID):
             change = True
     specialists = []
     for provider in hsc.user_manager.get_users():
-        if provider.role == 'Specialist' and provider.email != current_user.email:
-            specialists.append(provider)
-    return render_template('modifyNote.html', app = app, patient = patient, specialists = specialists, \
+        if provider.role == 'Specialist':
+            specialists.append(provider.expertise)
+    return render_template('modifyNote.html', app = app, patient = patient, specialists = set(specialists), \
                                               user = current_user, change = change)
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
@@ -422,7 +423,7 @@ def manage_bookings():
             appID = request.form['id']
             a = Appointment.query.filter_by(id = appID).first()
             a.is_completed = True
-            if a.patient.see_specialist == a.provider_email:
+            if a.patient.see_specialist == a.provider.expertise:
                 a.patient.see_specialist = 'none'
 
             db.session.commit()
@@ -479,6 +480,11 @@ def patientHistory(name):
     if not checkViewHistory(current_user, patient):
         return render_template('error.html')
     
+    for b in patient.provider_bookings:
+        if (b.is_completed):
+            completed.append(b)
+            nCompleted +=1
+
     completed.sort(key=operator.attrgetter('start_time'))
     return render_template('patientHistory.html', patient = patient, len = nCompleted, completed = completed)
 

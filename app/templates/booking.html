@@ -31,8 +31,10 @@ This template is where a patient makes a booking with a health provider.
 
                         {# Populate the options from all providers #}
                         {% for p in providers %}
+                            {% if p.role != 'Specialist' or p.expertise == current_user.see_specialist %}
                             <option value="{{ p.username }}"
-                            {% if p.role == 'Specialist' %} disabled {%endif%}>{{p.name}} ({{ p.username }})</option>
+                            >{{p.name}}{% if p.role == 'Specialist' %}, {{p.expertise}}{%endif%} ({{ p.username }})</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                     <label>Select a provider</label>
@@ -116,10 +118,10 @@ This template is where a patient makes a booking with a health provider.
                         </select>
                         <label>Reason for visit</label>
                         <input type="text" name=reason placeholder="Reason for visit"
-                        {% if provider.email == current_user.see_specialist %} 
+                        {% if provider.expertise in current_user.see_specialist %} 
                         disabled value = "{{current_user.specialist_note}}"                        
                         {% endif %}>
-                        {% if provider.email == current_user.see_specialist %} 
+                        {% if provider.expertise in current_user.see_specialist %} 
                         <input type = hidden name = reason value = "{{current_user.specialist_note}}" >
                         {% endif %}
     
