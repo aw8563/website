@@ -147,16 +147,26 @@
                     </span>
                     Status: 
                         <b class="blue-text">Completed</b><br>
-                        <a href = '/appointmentDetails/{{booking.id}}'> 
-                            View Details 
-                        </a>
-                        <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
-                        <br>
+                        
+                        
                         on {{ booking.start_time }} - {{ booking.end_time }}<br>
                         at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
-
+                        <a href = '/appointmentDetails/{{booking.id}}'> 
+                            View Details 
+                            <b class="red-text"> <- CURRENTLY VERY UGLY</b>
+                        </a>
+                        {% if user.role == 'Patient' %}
+                            <a href = '/profile/{{booking.provider.email}}'>
+                                <br>Rate Provider
+                            </a>
+                        {% endif %}<br><br>
                         Reason for visit:<br>{{ booking.reason }}<br><br>
                         Doctor's Notes: <br> {{booking.notes}}
+                        {% if user.role != 'Patient' %}
+                        <a href = '/modifyNote/{{booking.id}}'> <br>
+                            Add or modify notes
+                        </a>
+                        {% endif %}
                     </p>
                 </div>
                 

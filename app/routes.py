@@ -144,7 +144,7 @@ def booking():
 
     # If we're fielding a post request, we're stepping through the booking process
     if request.method == 'POST':
-
+        
         # If we've got a provider previously selected (from either search or previous step)
         provider_selection = request.form.get('provider_selection', None)
         if provider_selection:
@@ -241,7 +241,7 @@ def profile(name):
                
     print(permission) 
     return render_template('profile.html', object=obj, type=profile_type, rated = rated,\
-                            permission = permission)
+                            permission = permission, user = current_user)
    
 
 
@@ -312,9 +312,8 @@ def appointmentDetails(ID):
 def modifyNote(ID):
     app = Appointment.query.filter_by(id = ID).first()
     change = False
-    patient = ""
+    patient = app.patient.email
     if (request.method == "POST"):
-        patient = request.form['patient']
         action = request.form['action']
         if (action == 'edit'):
             app.notes = request.form['message']

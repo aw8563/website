@@ -127,6 +127,15 @@ This template generates the HTML for the profile page.
 
         {# ----- Providers ----- #}
         {% if object.role != 'Patient' %}
+            {% if user.role == 'Patient' %}
+                <br>
+                <form method = "POST" action = '/booking'>
+                    <button class="btn waves-effect waves-light" type = submit
+                            name="provider_selection" value = {{object.email}}>
+                     Book with {{object.email}} 
+                    </button>
+                </form>
+            {% endif %}
             <h5>Works in the following</h5>
             <table class="responsive-table highlight" border="1">
                 <tr>
