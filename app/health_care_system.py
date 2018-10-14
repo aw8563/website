@@ -139,7 +139,7 @@ class HealthCareSystem:
                     end_time = datetime.strptime(r['end_time'], '%d/%m/%Y_%H:%M')
 
                     a = Appointment(patient_email=r['patient'], provider_email=r['provider'], centre_name=r['centre'],
-                                    start_time=start_time, end_time=end_time, is_confirmed=int(r['is_confirmed']),
+                                    start_time=start_time, end_time=end_time, is_confirmed=int(r['is_confirmed']), is_completed = False,
                                     notes=r['notes'], reason=r['reason'])
 
                     db.session.add(a)

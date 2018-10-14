@@ -8,6 +8,8 @@
 import logging
 import sys
 from datetime import datetime, timedelta
+import operator
+
 
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
@@ -20,6 +22,7 @@ from app.forms import LoginForm, RegistrationForm
 from app.health_care_system import HealthCareSystem
 from app.models import Centre, User, Appointment, WorksAt
 from app.user_manager import UserManager
+from app.models import *
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +31,8 @@ logger = logging.getLogger(__name__)
 if sys.argv[1] == 'run':
     hsc = HealthCareSystem()
 
+
 # ----- Public pages ----- #
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """
@@ -57,6 +59,7 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -103,6 +106,7 @@ def logout():
 
     hsc.user_manager.logout_user()
     return redirect(url_for('index'))
+
 
 # ----- Private pages ----- #
 
@@ -193,18 +197,52 @@ def profile(name):
       GET:  Creates and renders a profile page for a Centre or User.
       POST: ???
     """
-
+    
     # Determine what kind of profile we should be rendering
     profile_type = hsc.determine_type(name)
+
+    ratingType = "centre"
+    providerEmail = ""
+    centreName = ""
+    rated = False
+
     if profile_type == 'user':
         obj = UserManager.get_user(name)
+        providerEmail = obj.email
+        ratingType = "provider"
     elif profile_type == 'centre':
         obj = CentreManager.get_centre(name)
+        centreName = obj.name
     else:
         return 'Something went wrong, undetermined type for "%s"' % name
 
-    logger.info("Rendering profile page for %s" % obj)
-    return render_template('profile.html', object=obj, type=profile_type)
+    if (request.method == "POST"):
+        score = int(request.form["rating"])
+        rating = Rating(type = ratingType, rating = score, patient_email = current_user.email,\
+                        provider_email = providerEmail, centre_name = centreName)       
+        
+        db.session.add(rating)
+        db.session.commit()
+        rated = True
+
+    
+    logger.warn(colored(name, "red"))
+    logger.warn(colored(obj, "red"))
+
+
+
+    # Can the current user view the patient's history?
+    permission = False
+    if (current_user.role != 'patient' and profile_type == 'user'): 
+        # make sure current user is a provider
+        for b in current_user.patient_bookings: # and also booked with the patient  
+            if (b.patient_email == obj.email):
+                permission = True
+               
+    print(permission) 
+    return render_template('profile.html', object=obj, type=profile_type, rated = rated,\
+                            permission = permission)
+   
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -261,6 +299,34 @@ def search():
 
     return render_template('search.html', form=None, results_found=results_found, display_results=False)
 
+@login_required
+@app.route('/appointmentDetails/<ID>', methods=["GET", "POST"])
+def appointmentDetails(ID):
+    
+    app = Appointment.query.filter_by(id = ID).first()
+    
+    return render_template('appointmentDetails.html', app = app)
+
+@login_required
+@app.route('/modifyNote/<ID>', methods=["GET", "POST"])
+def modifyNote(ID):
+    app = Appointment.query.filter_by(id = ID).first()
+    change = False
+    patient = ""
+    if (request.method == "POST"):
+        patient = request.form['patient']
+        action = request.form['action']
+        if (action == 'edit'):
+            app.notes = request.form['message']
+            db.session.commit()
+            change = True
+        if (action == 'add'):
+            app.notes += " " + request.form['message']
+            db.session.commit()
+            change = True
+            
+    return render_template('modifyNote.html', app = app, patient = patient, \
+                                              user = current_user, change = change)
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
 @login_required
@@ -272,14 +338,66 @@ def manage_bookings():
         GET:  Creates and renders the booking page, along with forms used to book an appointment.
         POST: Deletes an existing booking
     """
-
-    # If we're handling a post request, the user is deleting a booking
+    
+    # User is deleting booking
     if request.method == 'POST':
         logger.debug(colored(request.form, 'yellow'))
 
-        # If the action to cancel, delete the appointment specified by appointment_id
+        if request.form["action"] == 'complete': #confirm the booking request
+            appID = request.form['id']
+            a = Appointment.query.filter_by(id = appID).first()
+            a.is_completed = True
+            db.session.commit()
+
+        if request.form["action"] == 'confirm': #confirm the booking request
+            appID = request.form['id']
+            a = Appointment.query.filter_by(id = appID).first()
+            a.is_confirmed = True
+            db.session.commit()
+
         if request.form.get("action", False) == 'cancel':
             Appointment.delete_appointment(request.form.get("appointment_id", False))
 
-    return render_template('manage_bookings.html', user=current_user)
+    pendingBookings = []
+    confirmedBookings = []
+    completedBookings = []
+
+    if (current_user.role == 'Patient'): #sort patient bookings with a provider
+        for b in current_user.provider_bookings:
+            if b.is_completed:
+                completedBookings.append(b)
+            elif b.is_confirmed:
+                confirmedBookings.append(b)
+            else:
+                pendingBookings.append(b)
+    else: #sort bookings that a provider has with patient
+        for b in current_user.patient_bookings:
+            if b.is_completed:
+                completedBookings.append(b)
+            elif b.is_confirmed:
+                confirmedBookings.append(b)
+            else:
+                pendingBookings.append(b)
+
+    # sort into chronological order
+    pendingBookings.sort(key=operator.attrgetter('start_time'))
+    confirmedBookings.sort(key=operator.attrgetter('start_time'))
+    completedBookings.sort(key=operator.attrgetter('start_time'))
+
+    return render_template('manage_bookings.html', user=current_user, \
+                            completed = completedBookings, \
+                            confirmed = confirmedBookings, \
+                            pending = pendingBookings)
+
+
+@login_required
+@app.route('/patientHistory/<name>', methods=['GET', 'POST'])
+def patientHistory(name):
+    patient = UserManager.get_user(name)
+    nCompleted = 0
+    for b in patient.provider_bookings:
+        if b.is_completed:
+            nCompleted += 1
+    patient.provider_bookings.sort(key=operator.attrgetter('start_time'))
+    return render_template('patientHistory.html', patient = patient, len = nCompleted)
 

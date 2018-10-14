@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1> PATIENT HISTORY </h1>
+<a href = '/profile/{{patient.email}}'> back to profile</a><br>
+{% if len <= 0 %}
+    <p1> patient has no history of appointments </p1>
+{% else %}
+    {% for b in patient.provider_bookings %}
+        {% if b.is_completed %}
+            <p>{{b.start_time}} - {{b.end_time}} with {{b.provider.username}}</p>
+            {{b.notes}}
+            <form method="POST" action = '/modifyNote/{{b.id}}'>
+                <input type=hidden name=ID value='{{b.id}}'>
+                <input type=hidden name=action value='display'>
+                <input type = hidden name = patient value = {{patient.username}}>
+                <button class="red darken-2 waves-effect waves-light btn" type="submit">Edit</button>
+            </form>
+            <br><br><br>
+        {% endif %}
+
+    {% endfor %}
+{% endif %}
+{% endblock %}

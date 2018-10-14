@@ -329,6 +329,7 @@ class Appointment(db.Model):
     start_time = db.Column(db.DateTime())  # Start time of appointment.csv
     end_time = db.Column(db.DateTime())  # End time of appointment.csv
     is_confirmed = db.Column(db.Boolean())  # Whether appointment.csv is confirmed or not.
+    is_completed = db.Column(db.Boolean())
     reason = db.Column(db.String(128)) # Reason for patient visit
     notes = db.Column(db.String(128))  # Notes from provider
 

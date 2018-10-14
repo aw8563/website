@@ -69,7 +69,7 @@ This template generates the HTML for the profile page.
 
         {# ----- Give Rating ----- #}
         <h5>Give rating</h5>
-        <form>
+        <form method = "POST">
             <select class="browser-default" name=rating>
                 <option value="" disabled>Choose a rating</option>
                 <option value="1">1</option>
@@ -85,6 +85,7 @@ This template generates the HTML for the profile page.
             </select>
 
             <button type="submit" class="btn waves-effect waves-light">Submit</button>
+            {% if rated %} <p>rating successful! </p>{% endif %}
         </form>
 
     {# If the profile is for a user, show its relevant attributes #}
@@ -147,8 +148,9 @@ This template generates the HTML for the profile page.
             </table>
 
             {# ----- Give Rating ----- #}
-            <h5>Give rating</h5>
-            <form>
+            <h5>Give rating </h5> 
+
+            <form method = "POST">
                 <select class="browser-default" name=rating>
                     <option value="" disabled>Choose a rating</option>
                     <option value="1">1</option>
@@ -164,7 +166,17 @@ This template generates the HTML for the profile page.
                 </select>
 
                 <button type="submit" class="btn waves-effect waves-light">Submit</button>
+                {% if rated %} <p>rating successful! </p>{% endif %}
             </form>
+        {% else %}        {# ----- is a patient profile ----- #}
+            <br><br>
+            {% if permission %}
+            <a href = '/patientHistory/{{object.email}}'>
+                VIEW PATIENT HISTORY    
+            </a>
+            {% else %}
+                <p class = red-text>You must have an appointment with patient to view history</p>
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endblock %}

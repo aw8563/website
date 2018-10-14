@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>EDIT NOTES</h1>
+
+<a href = '/patientHistory/{{patient}}'> back to history</a>
+
+
+<h4>Current Notes</h4>
+<p>{{app.notes}}</p><br><br>
+{% if app.provider.email == user.email %}
+    <b>MODIFY:</b>
+<form method="POST" action = '/modifyNote/{{app.id}}'>
+    <input type=hidden name=action value='edit'>
+    <input placeholder = "{{app.notes}}" value = "{{app.notes}}" name = message>
+    <input type = hidden name = patient value = '{{patient}}'>
+    <button class="red darken-2 waves-effect waves-light btn" type="submit">Save</button>
+</form>
+{% else %}
+    <b>ADD ON:</b>
+<form method="POST" action = '/modifyNote/{{app.id}}'>
+    <input type=hidden name=action value='add'>
+    <input placeholder = "{{app.notes}}" name = message>
+    <input type = hidden name = patient value = '{{patient}}'>
+    <button class="red darken-2 waves-effect waves-light btn" type="submit">Save</button>
+</form>
+{% endif %}
+{% if change %}
+<p class = green-text> Change Successful! </p>
+{% endif %}
+{% endblock %}
