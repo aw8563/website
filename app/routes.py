@@ -258,7 +258,7 @@ def updateInfo():
                 newPass = request.form['newPass']
                 renewPass = request.form['renewPass'] 
                 if newUser:
-                    current_user.username = newUser
+                    current_user.name = newUser
                 if newEmail:
                     current_user.email = newEmail                
                 if newPhone:
@@ -281,7 +281,7 @@ def updateInfo():
                 newPass = request.form['newPass']
                 renewPass = request.form['renewPass'] 
                 if newUser:
-                    current_user.username = newUser
+                    current_user.name = newUser
                 if newEmail:
                     current_user.email = newEmail                
                 if newPhone:
@@ -352,9 +352,9 @@ def search():
             results_found = False
 
         return render_template('search.html', form=request.form, results_found=results_found,
-                               centre_results=centre_results, user_results=user_results)
+                               centre_results=centre_results, user_results=user_results, user = current_user)
 
-    return render_template('search.html', form=None, results_found=results_found, display_results=False)
+    return render_template('search.html', form=None, results_found=results_found, display_results=False, user = current_user)
 
 @login_required
 @app.route('/appointmentDetails/<ID>', methods=["GET", "POST"])
@@ -413,6 +413,12 @@ def manage_bookings():
 
         if request.form.get("action", False) == 'cancel':
             Appointment.delete_appointment(request.form.get("appointment_id", False))
+
+        if request.form['action'] == 'refer': # refer to specialist
+            appID = request.form['id']
+            a = Appointment.query.filter_by(id = appID).first()
+            a.patient.see_specialist = True            
+            db.session.commit()
 
     pendingBookings = []
     confirmedBookings = []

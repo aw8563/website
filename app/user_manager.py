@@ -61,8 +61,10 @@ class UserManager:
         """
 
         # Initialise new user - always remember to season your passwords to taste.
-        user = User(username=username, email=email, role=role, phone_number=phone_number,
-                    medicare_number=medicare_number, provider_number=provider_number)
+
+        name = email[0:email.find('@')]
+        user = User(name = name, username=username, email=email, role=role, phone_number=phone_number,
+                    medicare_number=medicare_number, provider_number=provider_number, see_specialist = False)
         user.set_password(password)
 
         # Below will throw exception if email is already registered.

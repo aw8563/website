@@ -27,6 +27,7 @@ class User(UserMixin, db.Model):
     __tablename__ = "Users"
 
     # --- Columns ---
+    name = db.Column(db.String(32))
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier
     username = db.Column(db.String(64), unique=True)  # User 'username': defaults to email if not given
     email = db.Column(db.String(128), unique=True)  # User email: 'toby@gmail.com', 'neko@weeb.com'
@@ -35,7 +36,7 @@ class User(UserMixin, db.Model):
     phone_number = db.Column(db.String(16))  # User phone number: 555-555-555, 000, etc
     medicare_number = db.Column(db.String(28), unique=True)  # Patient medicare number: 12345678
     provider_number = db.Column(db.String(28), unique=True)  # Provider number: 12345678
-
+    see_specialist = db.Column(db.Boolean())
     # --- Relationships ---
     centres = db.relationship('Centre', secondary='Works_At', lazy='dynamic')  # Link to centres via intermediary table (many-many)
 
@@ -339,6 +340,7 @@ class Appointment(db.Model):
     patient = db.relationship("User", foreign_keys=[patient_email], backref='provider_bookings')
     provider = db.relationship("User", foreign_keys=[provider_email], backref='patient_bookings')
     centre = db.relationship("Centre", foreign_keys=[centre_name], backref='all_appointments')
+
 
     def __repr__(self):
         """

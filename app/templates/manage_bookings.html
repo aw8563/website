@@ -35,12 +35,12 @@
                     {% if user.role != 'Patient' %}
                             <a
                             href="/profile/{{ booking.patient.username }}">
-                            {{ booking.patient.username }}</a> -
+                            {{ booking.patient.name }}</a> -
                             ({{ booking.patient.role }})
                     {% else %}
                             <a
                             href="/profile/{{ booking.provider.username }}">
-                            {{ booking.provider.username }}</a> -
+                            {{ booking.provider.name }}</a> -
                             ({{ booking.provider.role }})
                     {% endif %}  
                     </span> 
@@ -86,12 +86,12 @@
                     {% if user.role != 'Patient' %}
                             <a
                             href="/profile/{{ booking.patient.username }}">
-                            {{ booking.patient.username }}</a> -
+                            {{ booking.patient.name }}</a> -
                             ({{ booking.patient.role }})
                     {% else %}
                             <a
                             href="/profile/{{ booking.provider.username }}">
-                            {{ booking.provider.username }}</a> -
+                            {{ booking.provider.name }}</a> -
                             ({{ booking.provider.role }})
                     {% endif %}
                          </span>
@@ -136,12 +136,12 @@
                     {% if user.role != 'Patient' %}
                             <a
                             href="/profile/{{ booking.patient.username }}">
-                            {{ booking.patient.username }}</a> -
+                            {{ booking.patient.name }}</a> -
                             ({{ booking.patient.role }})
                     {% else %}
                             <a
                             href="/profile/{{ booking.provider.username }}">
-                            {{ booking.provider.username }}</a> -
+                            {{ booking.provider.name }}</a> -
                             ({{ booking.provider.role }})
                     {% endif %}                     
                     </span>
@@ -167,6 +167,18 @@
                             Add or modify notes
                         </a>
                         {% endif %}
+                        <br><br>
+                        {% if booking.patient.see_specialist %}
+                            <p class = green-text>Patient is referred to specialist</p>
+                        {% else %}
+                            <p class = orange-text> Patient has no specialist referrals</p>
+                            <form method="POST" action="/manage_bookings">
+                            <input type=hidden name=action value='refer'>
+                            <input type=hidden name=id value='{{ booking.id }}'>
+                            <button class="red darken-2 waves-effect waves-light btn" type="submit">Refer</button>
+                            </form>
+                        {% endif %}
+                
                     </p>
                 </div>
                 

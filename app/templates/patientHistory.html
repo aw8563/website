@@ -6,6 +6,13 @@
 {% if len <= 0 %}
     <p1> patient has no history of appointments </p1>
 {% else %}
+
+    {% if patient.see_specialist %}
+        <p class = green-text> Patient has been referred to a specialist</p>
+    {% else %}
+        <p class = orange-text> Patient has not been referred to a specialist</p>                
+    {% endif %}
+    
     {% for b in patient.provider_bookings %}
         {% if b.is_completed %}
             <p>{{b.start_time}} - {{b.end_time}} with {{b.provider.username}}</p>
