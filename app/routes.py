@@ -171,8 +171,12 @@ def profile(name):
 @app.route('/patientHistory/<name>', methods=['GET', 'POST'])
 def patientHistory(name):
     patient = UserManager.get_user(name)
-    
-    return render_template('patientHistory.html', patient = patient)
+    nCompleted = 0
+    for b in patient.provider_bookings:
+        if b.is_completed:
+            nCompleted += 1
+    patient.provider_bookings.sort(key=operator.attrgetter('start_time'))
+    return render_template('patientHistory.html', patient = patient, len = nCompleted)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

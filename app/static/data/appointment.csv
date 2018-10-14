@@ -1,5 +1,5 @@
 patient,provider,centre,start_time,end_time,is_confirmed,notes,reason
-jack@gmail.com,toby@gmail.com,Sydney Children Hospital,22/12/2018_09:00,22/12/2018_09:30,1,Patient is a pathological liar.,My nose has grown very long.
+jack@gmail.com,toby@gmail.com,Sydney Children Hospital,22/12/2018_09:00,22/12/2018_09:30,0,Patient is a pathological liar.,My nose has grown very long.
 isaac@gmail.com,samuel@gmail.com,Prince of Wales Hospital,22/11/2018_09:30,22/11/2018_10:00,1,Patient does not have an alarm clock.,I can't stop sleeping in!
 tom@gmail.com,samuel@gmail.com,Prince of Wales Hospital,11/11/2018_10:30,11/11/2018_11:00,1,Patient missed bus and needs certificate.,I missed my bus and need a doctors note for my real cold.
 tom@gmail.com,anna@gmail.com,Prince of Wales Hospital,11/12/2018_10:30,11/12/2018_11:00,1,TEST.

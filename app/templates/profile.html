@@ -178,6 +178,8 @@ This template generates the HTML for the profile page.
             <a href = '/patientHistory/{{object.email}}'>
                 VIEW PATIENT HISTORY    
             </a>
+            {% else %}
+                <p class = red-text>You must have an appointment with patient to view history</p>
             {% endif %}
         {% endif %}
     {% endif %}

@@ -32,21 +32,29 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Booking with <a
-                            href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
-                        ({{ booking.provider.role }}) </span>
-                    Status: {% if booking.is_confirmed == 0 %}
-                    <b class="yellow-text">Pending</b>
-                {% else %}
-                    {% if booking.is_completed %}
-                        <b class="blue-text">Completed</b><br>
-                        <a href = '/appointmentDetails/{{booking.id}}'> 
-                            View Details 
-                        </a>
-                        <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
+                    {% if user.role != 'Patient' %}
+                            <a
+                            href="/profile/{{ booking.patient.username }}">
+                            {{ booking.patient.username }}</a> -
+                            ({{ booking.patient.role }})
                     {% else %}
-                        <b class="green-text">Confirmed</b>
+                            <a
+                            href="/profile/{{ booking.provider.username }}">
+                            {{ booking.provider.username }}</a> -
+                            ({{ booking.provider.role }})
+                    {% endif %}  
+                    </span> 
+                    Status:
+                    <b class="yellow-text">Pending</b>
+                    {% if user.role != 'Patient' %}
+                        <form method = 'POST'>
+                            <input type = hidden name = action value = confirm>
+                            <input type=hidden name=id value='{{ booking.id }}'>
+                            <button class="red darken-2 waves-effect waves-light btn" 
+                                    type="submit">Confirm</button>
+                        </form>
                     {% endif %}
-                {% endif %}
+                
                     <br>
                         on {{ booking.start_time }} - {{ booking.end_time }}<br>
                         at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
@@ -74,22 +82,29 @@
         <div class="col s12 m6">
             <div class="card">
                 <div class="card-content">
-                    <span class="card-title">Booking with <a
-                            href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
-                        ({{ booking.provider.role }}) </span>
-                    Status: {% if booking.is_confirmed == 0 %}
-                    <b class="yellow-text">Pending</b>
-                {% else %}
-                    {% if booking.is_completed %}
-                        <b class="blue-text">Completed</b><br>
-                        <a href = '/appointmentDetails/{{booking.id}}'> 
-                            View Details 
-                        </a>
-                        <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
+                    <span class="card-title">Booking with 
+                    {% if user.role != 'Patient' %}
+                            <a
+                            href="/profile/{{ booking.patient.username }}">
+                            {{ booking.patient.username }}</a> -
+                            ({{ booking.patient.role }})
                     {% else %}
-                        <b class="green-text">Confirmed</b>
+                            <a
+                            href="/profile/{{ booking.provider.username }}">
+                            {{ booking.provider.username }}</a> -
+                            ({{ booking.provider.role }})
                     {% endif %}
-                {% endif %}
+                         </span>
+                    Status: 
+                    <b class="green-text">Confirmed</b>
+                    {% if user.role != 'Patient' %}
+                        <form method = 'POST'>
+                            <input type = hidden name = action value = complete>
+                            <input type=hidden name=id value='{{ booking.id }}'>
+                            <button class="red darken-2 waves-effect waves-light btn" 
+                                    type="submit">Complete</button>
+                        </form>
+                    {% endif %}
                     <br>
                         on {{ booking.start_time }} - {{ booking.end_time }}<br>
                         at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
@@ -117,23 +132,26 @@
         <div class="col s12 m6">
             <div class="card">
                 <div class="card-content">
-                    <span class="card-title">Booking with <a
-                            href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
-                        ({{ booking.provider.role }}) </span>
-                    Status: {% if booking.is_confirmed == 0 %}
-                    <b class="yellow-text">Pending</b>
-                {% else %}
-                    {% if booking.is_completed %}
+                    <span class="card-title">Booking with 
+                    {% if user.role != 'Patient' %}
+                            <a
+                            href="/profile/{{ booking.patient.username }}">
+                            {{ booking.patient.username }}</a> -
+                            ({{ booking.patient.role }})
+                    {% else %}
+                            <a
+                            href="/profile/{{ booking.provider.username }}">
+                            {{ booking.provider.username }}</a> -
+                            ({{ booking.provider.role }})
+                    {% endif %}                     
+                    </span>
+                    Status: 
                         <b class="blue-text">Completed</b><br>
                         <a href = '/appointmentDetails/{{booking.id}}'> 
                             View Details 
                         </a>
                         <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
-                    {% else %}
-                        <b class="green-text">Confirmed</b>
-                    {% endif %}
-                {% endif %}
-                    <br>
+                        <br>
                         on {{ booking.start_time }} - {{ booking.end_time }}<br>
                         at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
 
