@@ -23,6 +23,7 @@ from app.health_care_system import HealthCareSystem
 from app.models import Centre, User, Appointment, WorksAt
 from app.user_manager import UserManager
 from app.models import *
+from app.exceptions import *
 
 logger = logging.getLogger(__name__)
 
@@ -474,10 +475,9 @@ def patientHistory(name):
     patient = UserManager.get_user(name)
     nCompleted = 0
     completed = []
-    for b in patient.provider_bookings:
-        if b.is_completed:
-            nCompleted += 1
-            completed.append(b)
+    
+    if not checkViewHistory(current_user, patient):
+        return render_template('error.html')
     
     completed.sort(key=operator.attrgetter('start_time'))
     return render_template('patientHistory.html', patient = patient, len = nCompleted, completed = completed)
