@@ -27,7 +27,7 @@ def test_not_a_provider(): # patients can't view patietn history
 
 
 def test_bookings_clash():
-    start_time = datetime.strptime("25/10/2018_09:30", '%d/%m/%Y_%H:%M')
+    start_time = datetime.strptime("11/11/2018_10:30", '%d/%m/%Y_%H:%M')
     end_time = start_time + timedelta(minutes=30)
     result = WorksAt.are_valid_hours(start_time, end_time, "Prince of Wales Hospital", 'samuel@gmail.com', 'tom@gmail.com')
     assert(result == 'Clash')
