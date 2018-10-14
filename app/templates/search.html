@@ -8,7 +8,6 @@
     {% set do_user_search = form['do_user_search']|default(0) %}
 
 
-    {{current_user.name}}
     <div class="row">
         <h2>Search Medi-soft</h2>
         <div class="divider"></div>
@@ -120,13 +119,12 @@
                                                - We can't book appointments if we are not a patient.
                                              #}
                                             {% if user.role != 'Patient' and user.username != current_user.username and
-                                                current_user.role == 'Patient'%}
+                                                current_user.role == 'Patient' and user.role != 'Specialist'%}
                                                 <form method="POST" action="/booking">
                                                     
                                                     <button type="submit" name=provider_selection
                                                             value={{ user.username }}
                                                                     class="btn waves-effect waves-light"
-                {% if user.role == 'Specialist' and current_user.see_specialist != True %} disabled {% endif %}
                                                     >Book appointment
                                                     </button>
                                                 </form>

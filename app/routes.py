@@ -169,7 +169,7 @@ def booking():
 
                 # If result is empty, no error was encountered - we're good to go, create and add the appointment.
                 if not result:
-
+                    print(">>>>>>>>>>>>>>>>>>>>>>>>>>" + request.form['reason'])
                     # We might want to abstract this, but I'm not too sure tbh.
                     a = Appointment(patient_email=current_user.email, provider_email=provider.email, centre_name=centre,
                                     is_confirmed=0, start_time=start_time, end_time=end_time, reason=request.form.get('reason'))
@@ -207,6 +207,7 @@ def profile(name):
     centreName = ""
     rated = False
 
+
     if profile_type == 'user':
         obj = UserManager.get_user(name)
         providerEmail = obj.email
@@ -221,8 +222,12 @@ def profile(name):
         score = int(request.form["rating"])
         rating = Rating(type = ratingType, rating = score, patient_email = current_user.email,\
                         provider_email = providerEmail, centre_name = centreName)       
-        
-        db.session.add(rating)
+
+        existing = Rating.query.filter_by(patient_email = current_user.email, provider_email = providerEmail).first()        
+        if (existing != None): # only the most recent rating counts           
+            db.session.delete(existing)
+
+        db.session.add(rating)      
         db.session.commit()
         rated = True
 
@@ -230,19 +235,26 @@ def profile(name):
     logger.warn(colored(name, "red"))
     logger.warn(colored(obj, "red"))
 
-
+    
 
     # Can the current user view the patient's history?
     permission = False
-    if (current_user.role != 'patient' and profile_type == 'user'): 
+    if (current_user.role != 'Patient' and profile_type == 'user'): 
         # make sure current user is a provider
         for b in current_user.patient_bookings: # and also booked with the patient  
             if (b.patient_email == obj.email):
                 permission = True
                
-    print(permission) 
+    # Can the user give a rating?
+    ratingPermission = False
+    if (current_user.role == 'Patient' and profile_type == 'user'):
+        for b in current_user.provider_bookings:
+            print(b.provider_email)
+            if (b.provider_email == obj.email and b.is_completed == True):
+                ratingPermission = True
+
     return render_template('profile.html', object=obj, type=profile_type, rated = rated,\
-                            permission = permission, user = current_user)
+                            permission = permission, user = current_user, ratingPermission = ratingPermission)
    
 @app.route('/updateInfo', methods=['POST', 'GET'])
 def updateInfo():
@@ -374,14 +386,20 @@ def modifyNote(ID):
         action = request.form['action']
         if (action == 'edit'):
             app.notes = request.form['message']
+            if (request.form['specialist'] != 'nobody'):
+                app.patient.see_specialist = request.form['specialist']
+                app.patient.specialist_note = request.form['message']
             db.session.commit()
             change = True
         if (action == 'add'):
             app.notes += " " + request.form['message']
             db.session.commit()
             change = True
-            
-    return render_template('modifyNote.html', app = app, patient = patient, \
+    specialists = []
+    for provider in hsc.user_manager.get_users():
+        if provider.role == 'Specialist' and provider.email != current_user.email:
+            specialists.append(provider)
+    return render_template('modifyNote.html', app = app, patient = patient, specialists = specialists, \
                                               user = current_user, change = change)
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
@@ -403,6 +421,9 @@ def manage_bookings():
             appID = request.form['id']
             a = Appointment.query.filter_by(id = appID).first()
             a.is_completed = True
+            if a.patient.see_specialist == a.provider_email:
+                a.patient.see_specialist = 'none'
+
             db.session.commit()
 
         if request.form["action"] == 'confirm': #confirm the booking request
@@ -414,12 +435,7 @@ def manage_bookings():
         if request.form.get("action", False) == 'cancel':
             Appointment.delete_appointment(request.form.get("appointment_id", False))
 
-        if request.form['action'] == 'refer': # refer to specialist
-            appID = request.form['id']
-            a = Appointment.query.filter_by(id = appID).first()
-            a.patient.see_specialist = True            
-            db.session.commit()
-
+       
     pendingBookings = []
     confirmedBookings = []
     completedBookings = []
@@ -457,9 +473,12 @@ def manage_bookings():
 def patientHistory(name):
     patient = UserManager.get_user(name)
     nCompleted = 0
+    completed = []
     for b in patient.provider_bookings:
         if b.is_completed:
             nCompleted += 1
-    patient.provider_bookings.sort(key=operator.attrgetter('start_time'))
-    return render_template('patientHistory.html', patient = patient, len = nCompleted)
+            completed.append(b)
+    
+    completed.sort(key=operator.attrgetter('start_time'))
+    return render_template('patientHistory.html', patient = patient, len = nCompleted, completed = completed)
 

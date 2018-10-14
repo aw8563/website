@@ -128,8 +128,11 @@ This template generates the HTML for the profile page.
         </table>
         {% if object.email == current_user.email and current_user.role == 'Patient' %}
             <br>
-            {% if current_user.see_specialist %}
-                <p class = green-text> You are currently referred to a specialist</p>
+            {% if current_user.see_specialist != 'none' %}
+                <p class = green-text> You have been referred to {{current_user.see_specialist}}. Book from his 
+                                      <a  href = '/profile/{{current_user.see_specialist}}'> profile</a></p>
+            Notes: 
+            <p>{{current_user.specialist_note}}</p>
             {% else %}
                 <p class = orange-text> You are currently not referred to a specialist</p>                
             {% endif %}
@@ -141,7 +144,7 @@ This template generates the HTML for the profile page.
                     <br>
                     <button class="btn waves-effect waves-light" type = submit
                             name="provider_selection" value = {{object.email}}
-                            {% if user.see_specialist != True and  object.role == "Specialist"%} 
+                            {% if user.see_specialist != object.email and  object.role == "Specialist"%} 
                                 disabled 
                             {% endif %}>
                      Book with {{object.name}} 
@@ -169,9 +172,9 @@ This template generates the HTML for the profile page.
             </table>
             <br>
             {# ----- Give Rating ----- #}
-            {% if current_user.email != object.email %}
+            {% if current_user.email != object.email  and ratingPermission%}
             <h5>Give rating </h5> 
-
+            
             <form method = "POST">
                 <select class="browser-default" name=rating>
                     <option value="" disabled>Choose a rating</option>

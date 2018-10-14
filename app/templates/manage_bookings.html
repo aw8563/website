@@ -7,16 +7,16 @@
 {% if user.role == 'Patient' %}
 
     {# Check whether they have any bookings with providers #}
-    {% if user.provider_bookings|length <= 0 %}
-        <p>You have no bookings with providers.</p><br><br>
+    {% if pending|length + confirmed|length <= 0 %}
+        <p>You have no upcoming bookings with providers.</p><br><br>
     {% else %}
-        <p>You have <b>{{ user.provider_bookings|length }}</b> appointments with providers.</p><br>
+        <p>You have <b> {{pending|length + confirmed|length}}</b> upcoming appointments with providers.</p><br>
     {% endif %}
 {% else %}
-    {% if user.patient_bookings|length <= 0 %}
-        <p>You have no appointments with patients.</p><br><br>
+    {% if pending|length + confirmed|length <= 0 %}
+        <p>You have no upcoming appointments with patients.</p><br><br>
     {% else %}
-        <p>You have <b>{{ user.patient_bookings|length }}</b> appointments with patients.</p><br>
+        <p>You have <b>{{pending|length + confirmed|length}}</b> upcoming appointments with patients.</p><br>
     {% endif %}
 {% endif %}
 
@@ -151,32 +151,23 @@
                         
                         on {{ booking.start_time }} - {{ booking.end_time }}<br>
                         at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
-                        <a href = '/appointmentDetails/{{booking.id}}'> 
-                            View Details 
-                            <b class="red-text"> <- CURRENTLY VERY UGLY</b>
-                        </a>
                         {% if user.role == 'Patient' %}
                             <a href = '/profile/{{booking.provider.email}}'>
                                 <br>Rate Provider
                             </a>
-                        {% endif %}<br><br>
+                        {% endif %}
                         Reason for visit:<br>{{ booking.reason }}<br><br>
                         Doctor's Notes: <br> {{booking.notes}}
                         {% if user.role != 'Patient' %}
                         <a href = '/modifyNote/{{booking.id}}'> <br>
-                            Add or modify notes
+                            Modify notes or refer to specialist
                         </a>
                         {% endif %}
                         <br><br>
-                        {% if booking.patient.see_specialist %}
+                        {% if booking.patient.see_specialist != 'none' %}
                             <p class = green-text>Patient is referred to specialist</p>
                         {% else %}
                             <p class = orange-text> Patient has no specialist referrals</p>
-                            <form method="POST" action="/manage_bookings">
-                            <input type=hidden name=action value='refer'>
-                            <input type=hidden name=id value='{{ booking.id }}'>
-                            <button class="red darken-2 waves-effect waves-light btn" type="submit">Refer</button>
-                            </form>
                         {% endif %}
                 
                     </p>
