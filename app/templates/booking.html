@@ -23,14 +23,15 @@ This template is where a patient makes a booking with a health provider.
                     <select name="provider_selection" onchange="this.form.submit()">
                         {# If we've had a provider passed to us default to that, otherwise, show a prompt #}
                         {% if provider %}
-                            <option value="{{ provider.username }}" selected>{{ provider.username }}</option>
+                            <option value="{{ provider.username }}" selected>{{provider.name}}
+ ({{ provider.username }})</option>
                         {% else %}
                             <option value="" disabled selected>Which provider would you like to see?</option>
                         {% endif %}
 
                         {# Populate the options from all providers #}
                         {% for p in providers %}
-                            <option value="{{ p.username }}">{{ p.username }}</option>
+                            <option value="{{ p.username }}">{{p.name}} ({{ p.username }})</option>
                         {% endfor %}
                     </select>
                     <label>Select a provider</label>

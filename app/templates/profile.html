@@ -54,11 +54,13 @@ This template generates the HTML for the profile page.
             <table class="responsive-table highlight" border="1">
                 <tr>
                     <th>Provider name</th>
+                    <th>Email</th>
                     <th>Service</th>
                 </tr>
                 <tr>
                     {% for provider in object.has_providers() %}
                         <tr>
+                            <td>{{provider.name}}</td>
                             <td><a href="/profile/{{ provider.username }}">{{ provider.username }}</a></td>
                             <td>{{ provider.role }}</td>
                         </tr>
@@ -111,7 +113,7 @@ This template generates the HTML for the profile page.
             </thead>
             <tbody>
             <tr>
-                <td>{{ object.username }}</td>
+                <td>{{ object.name }}</td>
                 <td>{{ object.email }}</td>
                 <td>{{ object.phone_number }}</td>
                 <td>{{ object.role }}</td>
@@ -124,15 +126,25 @@ This template generates the HTML for the profile page.
             </tr>
             </tbody>
         </table>
-
+        {% if object.email == current_user.email and current_user.role == 'Patient' %}
+            <br>
+            {% if current_user.see_specialist %}
+                <p class = green-text> You are currently referred to a specialist</p>
+            {% else %}
+                <p class = orange-text> You are currently not referred to a specialist</p>                
+            {% endif %}
+        {% endif %}
         {# ----- Providers ----- #}
         {% if object.role != 'Patient' %}
-            {% if user.role == 'Patient' %}
-                <br>
+            {% if user.email != object.email and current_user.role == 'Patient' %}
                 <form method = "POST" action = '/booking'>
+                    <br>
                     <button class="btn waves-effect waves-light" type = submit
-                            name="provider_selection" value = {{object.email}}>
-                     Book with {{object.email}} 
+                            name="provider_selection" value = {{object.email}}
+                            {% if user.see_specialist != True and  object.role == "Specialist"%} 
+                                disabled 
+                            {% endif %}>
+                     Book with {{object.name}} 
                     </button>
                 </form>
             {% endif %}
@@ -155,8 +167,9 @@ This template generates the HTML for the profile page.
                     {% endfor %}
                 </tr>
             </table>
-
+            <br>
             {# ----- Give Rating ----- #}
+            {% if current_user.email != object.email %}
             <h5>Give rating </h5> 
 
             <form method = "POST">
@@ -177,15 +190,16 @@ This template generates the HTML for the profile page.
                 <button type="submit" class="btn waves-effect waves-light">Submit</button>
                 {% if rated %} <p>rating successful! </p>{% endif %}
             </form>
+            {% endif %}
         {% else %}        {# ----- is a patient profile ----- #}
-            <br><br>
+            <br>
             {% if permission %}
-            <a href = '/patientHistory/{{object.email}}'>
+            <a href = '/patientHistory/{{object.email}}'><br>
                 VIEW PATIENT HISTORY    
             </a>
             {% else %}
-            {% if user.role != 'Patient' %}
-                <p class = red-text>You must have an appointment with patient to view history</p>
+            {% if current_user.role != 'Patient' %}
+                <p class = red-text>You must have an appointment with user to view history</p>
             {% endif %}
             {% endif %}
         {% endif %}
