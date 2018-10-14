@@ -116,7 +116,7 @@ This template generates the HTML for the profile page.
                 <td>{{ object.name }}</td>
                 <td>{{ object.email }}</td>
                 <td>{{ object.phone_number }}</td>
-                <td>{{ object.role }}</td>
+                <td>{{ object.role }} {%if object.role == 'Specialist' %} ({{object.expertise}}) {% endif %}</td>
                 {% if object.role == 'Patient' %}
                     <td>{{ object.medicare_number }}</td>
                 {% else %}
@@ -129,8 +129,7 @@ This template generates the HTML for the profile page.
         {% if object.email == current_user.email and current_user.role == 'Patient' %}
             <br>
             {% if current_user.see_specialist != 'none' %}
-                <p class = green-text> You have been referred to {{current_user.see_specialist}}. Book from his 
-                                      <a  href = '/profile/{{current_user.see_specialist}}'> profile</a></p>
+                <p class = green-text> You have been referred to see a {{current_user.see_specialist}}</p>
             Notes: 
             <p>{{current_user.specialist_note}}</p>
             {% else %}
@@ -144,7 +143,7 @@ This template generates the HTML for the profile page.
                     <br>
                     <button class="btn waves-effect waves-light" type = submit
                             name="provider_selection" value = {{object.email}}
-                            {% if user.see_specialist != object.email and  object.role == "Specialist"%} 
+                            {% if user.see_specialist not in object.expertise and  object.role == "Specialist"%} 
                                 disabled 
                             {% endif %}>
                      Book with {{object.name}} 

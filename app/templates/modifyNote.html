@@ -18,8 +18,8 @@
     <br><br>Refer to a specialist
     <select class="browser-default" name = specialist>   
         <option value = "nobody" selected>Don't refer</option>
-        {% for s in specialists %}
-        <option value = "{{s.email}}">{{s.name}}</option>
+        {% for expertise in specialists %}
+        <option value = "{{expertise}}">{{expertise}}</option>
         {% endfor %}
     </select>                     
 </form>

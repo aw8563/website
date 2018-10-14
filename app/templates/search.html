@@ -52,6 +52,9 @@
             <input name="c_type" placeholder="Centre Type"
                     {% if form %} value="{{ form["c_type"] }}" {% endif %}>
             </input>
+            <input name="expertise" placeholder="Specialist Expertise"
+                    {% if form %} value="{{ form["expertise"] }}" {% endif %}>
+            </input>
 
             <br/>
 
@@ -111,7 +114,9 @@
                                     <tr>
                                         <td>{{user.name}}</td>
                                         <td><a href="/profile/{{ user.username }}">{{user.email}}</a></td>
-                                        <td> {{ user.role }}</td>
+                                        <td> {{ user.role }} {%if user.role == 'Specialist' %}
+                                             ({{user.expertise}}) {% endif %}</td>
+               
                                         <td>
                                             {# Ensure the following:
                                                - We can't book appointments with patients or with ourselves
