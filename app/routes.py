@@ -9,7 +9,7 @@ import logging
 import sys
 from datetime import datetime, timedelta
 import operator
-
+import datetime
 
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
@@ -165,7 +165,7 @@ def booking():
                 end_time = start_time + timedelta(minutes=30)
 
                 centre = request.form.get('centre_selection')
-                result = WorksAt.are_valid_hours(start_time, end_time, centre, provider.email)
+                result = WorksAt.are_valid_hours(start_time, end_time, centre, provider.email, current_user.email)
 
                 # If result is empty, no error was encountered - we're good to go, create and add the appointment.
                 if not result:
@@ -183,6 +183,7 @@ def booking():
 
     # Get all providers so we can choose from them
     providers = User.query.filter(User.role.isnot('Patient')).all()
+    
     return render_template('booking.html', title="Make a booking", result=result, provider=provider, providers=providers)
 
 

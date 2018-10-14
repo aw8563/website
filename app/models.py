@@ -273,7 +273,7 @@ class WorksAt(db.Model):
         return '<WorksAt {}, {}>'.format(self.provider, self.place)
 
     @staticmethod
-    def are_valid_hours(start_time, end_time, centre_name, provider_email):
+    def are_valid_hours(start_time, end_time, centre_name, provider_email, patient_email):
         """
         Determines whether the appointment time is valid and within a providers working hours.
 
@@ -303,8 +303,10 @@ class WorksAt(db.Model):
             result = 'Hours'
             logger.warn("Appointment falls outside of providers working hours, not adding.")
         # Ensure there aren't any appointments already booked in that time period.
-        elif Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time,
-                                      Appointment.provider_email == provider_email).all():
+        elif Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time,\
+                                      Appointment.provider_email == provider_email).all()\
+            or Appointment.query.filter(Appointment.start_time >= start_time, Appointment.end_time <= end_time,\
+                                      Appointment.patient_email == patient_email).all():
             # There's already an appointment booked with this provider during this time, return an error.
             result = 'Clash'
             logger.warn("Appointment clashed with existing appointment, not adding.")

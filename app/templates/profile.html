@@ -184,7 +184,9 @@ This template generates the HTML for the profile page.
                 VIEW PATIENT HISTORY    
             </a>
             {% else %}
+            {% if user.role != 'Patient' %}
                 <p class = red-text>You must have an appointment with patient to view history</p>
+            {% endif %}
             {% endif %}
         {% endif %}
     {% endif %}
