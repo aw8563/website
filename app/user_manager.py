@@ -12,7 +12,7 @@ from app.models import User
 
 
 class UserManager:
-    """
+    """add
     Class which is responsible for user management for the Medi-soft HCS. Namely, it provides abstraction for:
         - User creation.
         - User deletion.
@@ -49,7 +49,7 @@ class UserManager:
 
         return users
 
-    def add_user(self, username, email, password, phone_number=None, medicare_number=None, provider_number=None, role='Patient'):
+    def add_user(self, username, email, password, phone_number=None, medicare_number=None, provider_number=None, role='Patient', expertise = "none"):
         """
         Creates a new user and adds it to the user database. If successful, also appends new user to current users list.
 
@@ -64,7 +64,8 @@ class UserManager:
 
         name = email[0:email.find('@')]
         user = User(name = name, username=username, email=email, role=role, phone_number=phone_number, specialist_note = "",
-                    medicare_number=medicare_number, provider_number=provider_number, see_specialist = "none")
+                    medicare_number=medicare_number, provider_number=provider_number, see_specialist = "none",\
+                    expertise = expertise)
         user.set_password(password)
 
         # Below will throw exception if email is already registered.

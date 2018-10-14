@@ -38,6 +38,7 @@ class User(UserMixin, db.Model):
     provider_number = db.Column(db.String(28), unique=True)  # Provider number: 12345678
     see_specialist = db.Column(db.String(128))
     specialist_note = db.Column(db.String(128))
+    expertise = db.Column(db.String(64))
     # --- Relationships ---
     centres = db.relationship('Centre', secondary='Works_At', lazy='dynamic')  # Link to centres via intermediary table (many-many)
 
