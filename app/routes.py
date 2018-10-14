@@ -7,6 +7,7 @@
 
 import logging
 import sys
+import operator
 
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
@@ -314,6 +315,7 @@ def appointmentDetails(ID):
 @app.route('/modifyNote/<ID>', methods=["GET", "POST"])
 def modifyNote(ID):
     app = Appointment.query.filter_by(id = ID).first()
+    change = False
     patient = ""
     if (request.method == "POST"):
         patient = request.form['patient']
@@ -321,11 +323,14 @@ def modifyNote(ID):
         if (action == 'edit'):
             app.notes = request.form['message']
             db.session.commit()
+            change = True
         if (action == 'add'):
             app.notes += " " + request.form['message']
             db.session.commit()
+            change = True
             
-    return render_template('modifyNote.html', app = app, patient = patient, user = current_user)
+    return render_template('modifyNote.html', app = app, patient = patient, \
+                                              user = current_user, change = change)
 
 @app.route('/manage_bookings', methods=["GET", "POST"])
 def manage_bookings():
@@ -337,6 +342,7 @@ def manage_bookings():
         POST: Deletes an existing booking
     """
 
+    
     # User is deleting booking
     if request.method == 'POST':
         logger.debug(colored(request.form, 'yellow'))
@@ -359,5 +365,34 @@ def manage_bookings():
             db.session.commit()
             logger.warn(colored("Deleted appointment: %s" % request.form.get("appointment_id", False), 'green'))
 
-    return render_template('manage_bookings.html', user=current_user)
+    pendingBookings = []
+    confirmedBookings = []
+    completedBookings = []
+
+    if (current_user.role == 'Patient'): #sort patient bookings with a provider
+        for b in current_user.provider_bookings:
+            if b.is_completed:
+                completedBookings.append(b)
+            elif b.is_confirmed:
+                confirmedBookings.append(b)
+            else:
+                pendingBookings.append(b)
+    else: #sort bookings that a provider has with patient
+        for b in current_user.patient_bookings:
+            if b.is_completed:
+                completedBookings.append(b)
+            elif b.is_confirmed:
+                confirmedBookings.append(b)
+            else:
+                pendingBookings.append(b)
+
+    # sort into chronological order
+    pendingBookings.sort(key=operator.attrgetter('start_time'))
+    confirmedBookings.sort(key=operator.attrgetter('start_time'))
+    completedBookings.sort(key=operator.attrgetter('start_time'))
+
+    return render_template('manage_bookings.html', user=current_user, \
+                            completed = completedBookings, \
+                            confirmed = confirmedBookings, \
+                            pending = pendingBookings)
 

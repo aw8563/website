@@ -9,112 +9,153 @@
     {# Check whether they have any bookings with providers #}
     {% if user.provider_bookings|length <= 0 %}
         <p>You have no bookings with providers.</p><br><br>
-
     {% else %}
-        <p>You have <b>{{ user.provider_bookings|length }}</b> appointments with providers.</p><br><br>
-
-        {% for booking in user.provider_bookings %}
-            <div class="row">
-                <div class="col s12 m6">
-                    <div class="card">
-                        <div class="card-content">
-                            <span class="card-title">Booking with <a
-                                    href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
-                                ({{ booking.provider.role }}) </span>
-                            Status: {% if booking.is_confirmed == 0 %}
-                            <b class="yellow-text">Pending</b>
-                        {% else %}
-                            {% if booking.is_completed %}
-                                <b class="blue-text">Completed</b><br>
-                                <a href = '/appointmentDetails/{{booking.id}}'> 
-                                    View Details 
-                                </a>
-                                <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
-                            {% else %}
-                                <b class="green-text">Confirmed</b>
-                            {% endif %}
-                        {% endif %}
-                            <br>
-                                on {{ booking.start_time }} - {{ booking.end_time }}<br>
-                                at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
-
-                                Reason for visit:<br>{{ booking.reason }}
-                            </p>
-                        </div>
-                        <div class="card-action">
-                            <form method="POST" action="/manage_bookings">
-                                <input type=hidden name=action value='cancel'>
-                                <input type=hidden name=appointment_id value='{{ booking.id }}'>
-                                <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        {% endfor %}
+        <p>You have <b>{{ user.provider_bookings|length }}</b> appointments with providers.</p><br>
     {% endif %}
-
-{# Otherwise, they're a provider #}
 {% else %}
-
-    {# Check whether they have any appointments with patients #}
     {% if user.patient_bookings|length <= 0 %}
         <p>You have no appointments with patients.</p><br><br>
     {% else %}
-        <p>You have <b>{{ user.patient_bookings|length }}</b> appointments with patients.</p><br><br>
-         {% for booking in user.patient_bookings %}
-            <div class="row">
-                <div class="col s12 m6">
-                    <div class="card">
-                        <div class="card-content">
-                            <span class="card-title">Booking with <a
-                                    href="/profile/{{ booking.patient.username }}">{{ booking.patient.username }}</a> -
-                                ({{ booking.patient.role }}) </span>
-                            Status: {% if booking.is_confirmed == 0 %}
-                            <b class="yellow-text">Pending</b> 
-                            <form method = "POST">
-                                <input type = hidden name = id value = '{{booking.id}}'>
-                                <button class="red darken-2 waves-effect waves-light btn"     
-                                type="submit" name = action value = confirm>Confirm Booking
-                                </button>
-                            </form>
-                        {% else %}
-                            {% if booking.is_completed %} 
-                                <b class="blue-text">Completed</b><br>
-                                <a href = '/appointmentDetails/{{booking.id}}'> 
-                                    View Details 
-                                </a>
-                                <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
-                            {% else %}
-                                <b class="green-text">Confirmed</b>
-                                <form method = "POST">
-                                    <input type = hidden name = id value = '{{booking.id}}'>
-                                    <input type = hidden name = action value = complete>
-                                    <button class="red darken-2 waves-effect waves-light btn"
-                                            type = 'submit'>Complete</button>
-                                </form>
-                            {% endif %}
-                        {% endif %}
-                            <br>
-                                on {{ booking.start_time }} - {{ booking.end_time }}<br>
-                                at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
-
-                                Reason for visit:<br>{{ booking.reason }}<br><br>
-                                Doctor's notes:<br>{{ booking.notes }}
-                            </p>
-                        </div>
-                        <div class="card-action">
-                            <form method="POST" action="/manage_bookings">
-                                <input type=hidden name=action value='cancel'>
-                                <input type=hidden name=appointment_id value='{{ booking.id }}'>
-                                <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+        <p>You have <b>{{ user.patient_bookings|length }}</b> appointments with patients.</p><br>
     {% endif %}
 {% endif %}
+
+
+
+
+{% if pending|length > 0 %}
+    <h4 class = yellow-text>Pending Bookings</h4>
+{% endif %}
+{% for booking in pending %}
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Booking with <a
+                            href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
+                        ({{ booking.provider.role }}) </span>
+                    Status: {% if booking.is_confirmed == 0 %}
+                    <b class="yellow-text">Pending</b>
+                {% else %}
+                    {% if booking.is_completed %}
+                        <b class="blue-text">Completed</b><br>
+                        <a href = '/appointmentDetails/{{booking.id}}'> 
+                            View Details 
+                        </a>
+                        <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
+                    {% else %}
+                        <b class="green-text">Confirmed</b>
+                    {% endif %}
+                {% endif %}
+                    <br>
+                        on {{ booking.start_time }} - {{ booking.end_time }}<br>
+                        at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
+
+                        Reason for visit:<br>{{ booking.reason }}
+                    </p>
+                </div>
+                <div class="card-action">
+                    <form method="POST" action="/manage_bookings">
+                        <input type=hidden name=action value='cancel'>
+                        <input type=hidden name=appointment_id value='{{ booking.id }}'>
+                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endfor %}
+{% if confirmed|length > 0 %}
+    <h4 class = green-text>Confirmed Bookings</h4>
+{% endif %}
+{% for booking in confirmed %}
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Booking with <a
+                            href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
+                        ({{ booking.provider.role }}) </span>
+                    Status: {% if booking.is_confirmed == 0 %}
+                    <b class="yellow-text">Pending</b>
+                {% else %}
+                    {% if booking.is_completed %}
+                        <b class="blue-text">Completed</b><br>
+                        <a href = '/appointmentDetails/{{booking.id}}'> 
+                            View Details 
+                        </a>
+                        <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
+                    {% else %}
+                        <b class="green-text">Confirmed</b>
+                    {% endif %}
+                {% endif %}
+                    <br>
+                        on {{ booking.start_time }} - {{ booking.end_time }}<br>
+                        at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
+
+                        Reason for visit:<br>{{ booking.reason }}
+                    </p>
+                </div>
+                <div class="card-action">
+                    <form method="POST" action="/manage_bookings">
+                        <input type=hidden name=action value='cancel'>
+                        <input type=hidden name=appointment_id value='{{ booking.id }}'>
+                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endfor %}
+{% if completed|length > 0 %}
+    <h4 class = blue-text>Completed Bookings</h4>
+{% endif %}
+{% for booking in completed %}
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Booking with <a
+                            href="/profile/{{ booking.provider.username }}">{{ booking.provider.username }}</a> -
+                        ({{ booking.provider.role }}) </span>
+                    Status: {% if booking.is_confirmed == 0 %}
+                    <b class="yellow-text">Pending</b>
+                {% else %}
+                    {% if booking.is_completed %}
+                        <b class="blue-text">Completed</b><br>
+                        <a href = '/appointmentDetails/{{booking.id}}'> 
+                            View Details 
+                        </a>
+                        <b class="red-text"> <- CURRENTLY VERY UGLY</b><br>
+                    {% else %}
+                        <b class="green-text">Confirmed</b>
+                    {% endif %}
+                {% endif %}
+                    <br>
+                        on {{ booking.start_time }} - {{ booking.end_time }}<br>
+                        at <a href="/profile/{{ booking.centre.name }}">{{ booking.centre.name }}</a><br><br>
+
+                        Reason for visit:<br>{{ booking.reason }}
+                    </p>
+                </div>
+                <div class="card-action">
+                    <form method="POST" action="/manage_bookings">
+                        <input type=hidden name=action value='cancel'>
+                        <input type=hidden name=appointment_id value='{{ booking.id }}'>
+                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Cancel booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endfor %}
+
+
+
+
+
+
 {% endblock %}
