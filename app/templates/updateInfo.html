@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="/static/css/profile.css"/>
+{% endblock %}
+ {% block content %}
+	{% if object.role != 'Patient' %}
+	    {# ----- General information ----- #}
+        <h5>General Information</h5>
+    	<form method = "POST">
+        <table class="responsive-table highlight">
+            <thead>
+            <tr>
+            	<th></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Provider Number</th>
+                <th>Average Rating</th>
+                <th>Password</th>
+                <th>Password Retype</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            	<td>Current Info</td>
+                <td>{{ object.username }}</td>
+                <td>{{ object.email }}</td>
+                <td>{{ object.phone_number }}</td>
+                <td>{{ object.role }}</td>
+                <td>{{ object.provider_number }}</td>
+                <td>{{ object.calc_rating() }}</td>
+            </tr>
+            </tbody>
+            <tbody>
+            <tr>
+            	<td>Change</td>
+                <td><input name = "newUser"></input></td>
+                <td><input name = "newEmail"></input></td>
+                <td><input name = "newPhone"></input></td>
+                <td><input name = "newRole"></input></td>
+                <td><input name = "newProvider"></input></td>
+                <td></td>
+                <td><input type = "password" name = "newPass"></input><br></td>
+                <td><input type = "password" name = "renewPass"></input><br></td>  
+            </tr>
+            </tbody>
+        </table>
+        <label>Provide current password to validate changes</label>
+        <input type = "password" name = "currentPass"></input><br>
+        <button class = "waves-effect waves-light btn" type= "submit">Update</button>
+        </form>
+        {% if message == 1 %}
+            <font face="verdana" color="red">new password and retyped password do not match!</font>
+        {%endif%}
+        {% if message == 2%}
+            <font face="verdana" color="green">Changes successfully made!</font>
+        {% endif %}
+        {% if message == 3 %}
+            <font face="verdana" color="red">you provided the wrong password!</font>
+        {% endif %}
+	{% endif %}
+	{% if object.role == 'Patient' %}
+	    {# ----- General information ----- #}
+        <h5>General Information</h5>
+    	<form method = "POST">
+        <table class="responsive-table highlight">
+            <thead>
+            <tr>
+            	<th></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Medicare Number</th>
+                <th>Password</th>
+                <th>Password Retype</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            	<td>Current Info</td>
+                <td>{{ object.username }}</td>
+                <td>{{ object.email }}</td>
+                <td>{{ object.phone_number }}</td>
+                <td>{{ object.role }}</td>
+                <td>{{ object.medicare_number }}</td>
+            </tr>
+            </tbody>
+            <tbody>
+            <tr>
+            	<td>Change</td>
+                <td><input name = "newUser"></input></td>
+                <td><input name = "newEmail"></input></td>
+                <td><input name = "newPhone"></input></td>
+                <td></td>
+                <td><input name = "newMedicare"></input></td>
+                <td><input type = "password" name = "newPass"></input><br></td>
+                <td><input type = "password" name = "renewPass"></input><br></td>                
+            </tr>
+            </tbody>
+        </table>
+        <label>Provide current password to validate changes</label>
+        <input type = "password" name = "currentPass"></input><br>
+        <button class = "waves-effect waves-light btn" type= "submit">Update</button>
+        </form>
+        {% if message == 1 %}
+            <font face="verdana" color="red">new password and retyped password do not match!</font>
+        {%endif%}
+        {% if message == 2%}
+            <font face="verdana" color="green">Changes successfully made!</font>
+        {% endif %}
+        {% if message == 3 %}
+            <font face="verdana" color="red">you provided the wrong password!</font>
+        {% endif %}
+    {% endif %}
+{% endblock %}
