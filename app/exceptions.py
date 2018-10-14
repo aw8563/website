@@ -1,8 +1,22 @@
 class  UnauthAccess(Exception):
     pass
     # can have def __init__(): and __str__() for error messages
-def  checkViewHistory(provider, patient):
 
+class BookingError(Exception):
+    pass
+def checkBooking(WorksAt, start, end, centre, providerEmail, patientEmail):
+    try:
+        error = WorksAt.are_valid_hours(start, end, centre, providerEmail, patientEmail)
+        if error != '':
+            raise BookingError(error)
+
+    except BookingError as error_message:
+        print(BookingError)
+    else :
+        return True
+
+
+def checkViewHistory(provider, patient):
     try:
         if (provider.role == 'Patient'):
             raise UnauthAccess("you need to be a provider to view this")
@@ -23,7 +37,7 @@ def  checkViewHistory(provider, patient):
     else:
         print("no problems")
         return True
-    
 
+    
 #check line 479 in routes
 

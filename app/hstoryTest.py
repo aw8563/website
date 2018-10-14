@@ -2,6 +2,7 @@ from .exceptions import *
 from .models import *
 import pytest
 from . import db
+from datetime import datetime, timedelta
 # include the . before the directory
 
 ian = User.query.filter_by(email = 'ian@gmail.com').first()
@@ -23,6 +24,32 @@ def test_not_a_provider(): # patients can't view patietn history
     hao = User.query.filter_by(email = 'hao@gmail.com').first()    
     tom = User.query.filter_by(email = 'tom@gmail.com').first() 
     assert(checkViewHistory(tom, hao) == False)
+
+
+def test_bookings_clash():
+    start_time = datetime.strptime("25/10/2018_09:30", '%d/%m/%Y_%H:%M')
+    end_time = start_time + timedelta(minutes=30)
+    result = WorksAt.are_valid_hours(start_time, end_time, "Prince of Wales Hospital", 'samuel@gmail.com', 'tom@gmail.com')
+    assert(result == 'Clash')
+
+def test_bookings_success():
+    start_time = datetime.strptime("25/12/2018_09:30", '%d/%m/%Y_%H:%M')
+    end_time = start_time + timedelta(minutes=30)
+    result = WorksAt.are_valid_hours(start_time, end_time, "Prince of Wales Hospital", 'samuel@gmail.com', 'tom@gmail.com')
+    assert(result == '')
+
+def test_bookings_past():
+    start_time = datetime.strptime("25/10/2017_09:30", '%d/%m/%Y_%H:%M')
+    end_time = start_time + timedelta(minutes=30)
+    result = WorksAt.are_valid_hours(start_time, end_time, "Prince of Wales Hospital", 'samuel@gmail.com', 'tom@gmail.com')
+    assert(result == 'Past')
+
+def test_bookings_outside_hours():
+    start_time = datetime.strptime("25/10/2018_00:30", '%d/%m/%Y_%H:%M')
+    end_time = start_time + timedelta(minutes=30)
+    result = WorksAt.are_valid_hours(start_time, end_time, "Prince of Wales Hospital", 'samuel@gmail.com', 'tom@gmail.com')
+    assert(result == 'Hours')
+
 
 def xd(): # need to start everything with test_
     assert(False)
