@@ -2,11 +2,11 @@
 
 {#----- Main content block for search page -----#}
 {% block content %}
-
     {# Set checkbox value from previous form submission, if it exists, othewise set it to 0 #}
     {# This means checkboxes will retain whether it's checked or not, but start unchecked #}
     {% set do_centre_search = form['do_centre_search']|default(0) %}
     {% set do_user_search = form['do_user_search']|default(0) %}
+
 
     <div class="row">
         <h2>Search Medi-soft</h2>
@@ -104,12 +104,13 @@
                                 class="blue-text">Users</h5></div>
                         <div class="collapsible-body">
                             <table class="responsive-table">
-                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
                                 <th>Role</th>
-
                                 {% for user in user_results %}
                                     <tr>
-                                        <td><a href="/profile/{{ user.username }}">{{ user.username }}</a></td>
+                                        <td>{{user.name}}</td>
+                                        <td><a href="/profile/{{ user.username }}">{{user.email}}</a></td>
                                         <td> {{ user.role }}</td>
                                         <td>
                                             {# Ensure the following:
@@ -117,24 +118,19 @@
                                                - We can't book appointments with ourselves.
                                                - We can't book appointments if we are not a patient.
                                              #}
-                                            {% if user.role != 'Patient' and user.username != current_user.username and current_user.role == 'Patient' %}
+                                            {% if user.role != 'Patient' and user.username != current_user.username and
+                                                current_user.role == 'Patient' and user.role != 'Specialist'%}
                                                 <form method="POST" action="/booking">
-                                                    {#                                    <input type=hidden name=provider value={{ user.username }}>#}
+                                                    
                                                     <button type="submit" name=provider_selection
                                                             value={{ user.username }}
-                                                                    class="btn waves-effect waves-light
-                                                    ">Book appointment
+                                                                    class="btn waves-effect waves-light"
+                                                    >Book appointment
                                                     </button>
                                                 </form>
                                             {% endif %}
                                         </td>
-                                        {# Uncomment if we want to include button for profile #}
-                                        {# <td>#}
-                                        {#     <form method="POST" action="/profile/{{ user.email }}">#}
-                                        {#         <button type="submit" name=user value={{ user }}#}
-                                        {#         class="btn waves-effect waves-light">View Profile</button>#}
-                                        {#     </form>#}
-                                        {# </td>#}
+                                       
                                     </tr>
 
                                 {% endfor %}

@@ -6,9 +6,44 @@
 {% if len <= 0 %}
     <p1> patient has no history of appointments </p1>
 {% else %}
-    {% for b in patient.provider_bookings %}
-        {% if b.is_completed %}
-            <p>{{b.start_time}} - {{b.end_time}} with {{b.provider.username}}</p>
+
+    {% if patient.see_specialist != 'none' %}
+        <p class = green-text> Patient has been referred to {{patient.see_specialist}}</p>
+    {% else %}
+        <p class = orange-text> Patient has not been referred to a specialist</p>                
+    {% endif %}
+    
+    {% for b in completed %}
+
+
+
+        <div class="row">
+        <div class="col s12 m6">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title"><b>Booking with {{b.provider.name}}</b></span><br>
+                    <b>Date</b>: {{b.start_time}} at {{b.centre.name}}<br><br>
+                    <b>Reason:</b><br>
+                    {{b.reason}}<br><br>
+                    <b>Notes:</b> <br>
+                    {{b.notes}}<br><br>  
+                    <form method="POST" action = '/modifyNote/{{b.id}}'>
+                        <input type=hidden name=ID value='{{b.id}}'>
+                        <input type=hidden name=action value='display'>
+                        <input type = hidden name = patient value = {{patient.username}}>
+                        <button class="red darken-2 waves-effect waves-light btn" type="submit">Modify</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+
+         
+
+    {% endfor %}
+{% endif %}
+{% endblock %}
+ <p>{{b.start_time}} - {{b.end_time}} with {{b.provider.username}}</p>
             {{b.notes}}
             <form method="POST" action = '/modifyNote/{{b.id}}'>
                 <input type=hidden name=ID value='{{b.id}}'>
@@ -17,8 +52,3 @@
                 <button class="red darken-2 waves-effect waves-light btn" type="submit">Edit</button>
             </form>
             <br><br><br>
-        {% endif %}
-
-    {% endfor %}
-{% endif %}
-{% endblock %}

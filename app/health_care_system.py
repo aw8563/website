@@ -92,7 +92,8 @@ class HealthCareSystem:
                     # TODO: Do we need to handle the 'usual' format?
                     self.user_manager.add_user(r['provider_email'], r['provider_email'], r['password'],
                                                r['phone_number'],
-                                               None, r['provider_number'], role=r['provider_type'])
+                                               None, r['provider_number'], role=r['provider_type'], \
+expertise = r['expertise'])
 
                 self._logger.info(colored("Providers initialised", "green"))
 
