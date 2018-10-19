@@ -49,7 +49,7 @@ class UserManager:
 
         return users
 
-    def add_user(self, username, email, password, phone_number=None, medicare_number=None, provider_number=None, role='Patient', expertise = "none"):
+    def add_user(self, username, email, password, phone_number=None, medicare_number=None, provider_number=None, role='Patient', expertise = ""):
         """
         Creates a new user and adds it to the user database. If successful, also appends new user to current users list.
 
