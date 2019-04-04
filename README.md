@@ -45,6 +45,10 @@ Prior to running this application, you'll need to do a couple things:
 			export FLASK_DEBUG=1
 			
 			flask run
+			
+
+Login details are in app/static/data
+Provider.csv, Patients.csv and Specialist.csv
 
 Tada!
 
